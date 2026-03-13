@@ -43,6 +43,7 @@
         
         .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         
+        /* --- CARD ITEM STYLE (KONTAK & USER) --- */
         .contact-item { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .contact-item .c-name { font-weight: bold; font-size: 16px; color: #333; margin-bottom: 4px; }
         .contact-item .c-phone { color: var(--dark); font-size: 14px; margin-bottom: 2px; }
@@ -50,13 +51,18 @@
         .contact-item .c-actions { display: flex; gap: 10px; border-top: 1px solid #eee; padding-top: 10px; }
         .contact-item .c-actions button { margin-top: 0; padding: 8px; font-size: 13px; }
         
+        /* Queue Card */
         .queue-card { background: #f9fff9; border: 1px solid var(--primary); }
         .btn-send-single { background: var(--primary); color: white; width: auto; padding: 8px 15px; font-size: 13px; }
         
-        /* Filter Grid untuk Admin */
+        /* Admin Scroll List */
+        .scroll-list-container { max-height: 400px; overflow-y: auto; border: 1px solid #eee; padding: 10px; border-radius: 8px; background: #fafafa; }
+
+        /* Filter Grid */
         .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .filter-grid input { margin: 0; }
-        .filter-full { width: 100%; }
+        .filter-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        .filter-row input { margin: 0; }
 
         .status-active { color: green; font-weight: bold; }
         .status-banned { color: red; font-weight: bold; }
@@ -144,8 +150,14 @@
             <input type="text" id="cLocation" placeholder="Lokasi">
             <button type="button" class="btn-primary" onclick="addContact()">Simpan Kontak</button>
         </div>
-        <input type="text" id="searchContact" onkeyup="renderContacts()" placeholder="🔍 Cari Nama/No HP...">
-        <div id="contactListContainer" style="margin-top:10px;"></div>
+
+        <!-- Filter Kontak (Update) -->
+        <div class="filter-row">
+            <input type="text" id="searchContact" placeholder="Nama / No HP" onkeyup="renderContacts()">
+            <input type="text" id="searchLocation" placeholder="Lokasi" onkeyup="renderContacts()">
+        </div>
+
+        <div id="contactListContainer"></div>
     </div>
 
     <!-- KIRIM PESAN -->
@@ -206,7 +218,8 @@
 
         <div class="card">
             <h3>Daftar User</h3>
-            <div id="adminUserList"></div>
+            <!-- Container Scroll -->
+            <div class="scroll-list-container" id="adminUserList"></div>
         </div>
         
         <div class="card">
@@ -325,25 +338,12 @@
             
             if (currentRole === 'admin') {
                 menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'admin\')">Admin</span><span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
-                adminLinkBtn.style.display = 'none'; 
-                initAdminFilters(); // Set tanggal default saat login
+                adminLinkBtn.style.display = 'none';
                 navigateTo('admin');
             } else {
                 menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
                 adminLinkBtn.style.display = 'block'; navigateTo('kirim');
             }
-        }
-
-        function initAdminFilters() {
-            // Set default: 1 bulan terakhir
-            const today = new Date();
-            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-            
-            const fStart = document.getElementById('adminFilterStart');
-            const fEnd = document.getElementById('adminFilterEnd');
-            
-            if(!fStart.value) fStart.value = firstDay.toISOString().split('T')[0];
-            if(!fEnd.value) fEnd.value = today.toISOString().split('T')[0];
         }
 
         function navigateTo(page) {
@@ -392,7 +392,14 @@
 
         function renderContacts() {
             const q = document.getElementById('searchContact').value.toLowerCase();
-            const filtered = allContacts.filter(c => c.name.toLowerCase().includes(q) || c.phone.includes(q));
+            const l = document.getElementById('searchLocation').value.toLowerCase(); // Filter Lokasi Baru
+            
+            const filtered = allContacts.filter(c => {
+                const matchMain = c.name.toLowerCase().includes(q) || c.phone.includes(q);
+                const matchLoc = (c.location || '').toLowerCase().includes(l);
+                return matchMain && matchLoc;
+            });
+
             const container = document.getElementById('contactListContainer');
             
             container.innerHTML = filtered.map(c => `
@@ -442,7 +449,7 @@
             }
         }
 
-        // --- LOGIC KIRIM PESAN (NEW QUEUE SYSTEM) ---
+        // --- LOGIC KIRIM PESAN ---
         function renderAvailableContacts() {
             const nameQ = document.getElementById('filterName').value.toLowerCase();
             const locQ = document.getElementById('filterLoc').value.toLowerCase();
@@ -535,11 +542,8 @@
 
             let query = _supabase.from('profiles').select('id, username, email, wa_number, is_active, created_at', { count: 'exact' });
             
-            // Filter Tanggal (Rentang)
             if(fStart) query = query.gte('created_at', fStart + ' 00:00:00');
             if(fEnd) query = query.lte('created_at', fEnd + ' 23:59:59');
-
-            // Filter Lainnya
             if(fName) query = query.ilike('username', '%'+fName+'%');
             if(fEmail) query = query.ilike('email', '%'+fEmail+'%');
             if(fWa) query = query.ilike('wa_number', '%'+fWa+'%');
@@ -549,17 +553,22 @@
             document.getElementById('adminCount').innerText = "Total User: " + count;
 
             const container = document.getElementById('adminUserList');
-            container.innerHTML = users.map(u => `
+            container.innerHTML = users.map(u => {
+                // Tentukan teks dan warna tombol
+                const btnText = u.is_active ? 'Non-Aktifkan' : 'Aktifkan';
+                const btnClass = u.is_active ? 'btn-danger' : 'btn-primary';
+                
+                return `
                 <div class="contact-item">
                     <div class="c-name">${u.email}</div>
                     <div class="c-phone">${u.username} | WA: ${u.wa_number || '-'}</div>
                     <div class="c-loc">📅 ${u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}</div>
                     <div class="c-actions">
-                        <button type="button" onclick="toggleUserStatus('${u.id}', ${u.is_active})" class="${u.is_active ? 'btn-primary' : 'btn-danger'}">${u.is_active ? 'AKTIF' : 'BLOKIR'}</button>
+                        <button type="button" class="${btnClass}" onclick="toggleUserStatus('${u.id}', ${u.is_active})">${btnText}</button>
                         <button type="button" class="btn-secondary" onclick="adminDeleteUser('${u.id}')">Hapus</button>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
 
         async function toggleUserStatus(userId, currentStatus) {
