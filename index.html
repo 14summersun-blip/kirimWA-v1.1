@@ -3,33 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WA Sender Pro</title>
+    <title>kirimWA</title>
+    
+    <!-- Import Font Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { --primary: #25D366; --dark: #128C7E; --bg: #ece5dd; }
-        body { font-family: sans-serif; background: var(--bg); margin: 0; min-height: 100vh; font-size: 16px; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; min-height: 100vh; font-size: 16px; }
         .screen { display: none; padding: 20px; max-width: 600px; margin: 0 auto; }
         .screen.active { display: block; }
-        .header { background: var(--primary); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .menu-btn { background: none; border: 2px solid white; color: white; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        .menu-popup { display: none; position: absolute; top: 60px; right: 10px; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-radius: 8px; overflow: hidden; width: 220px; }
+        
+        /* HEADER DESIGN BARU */
+        .header { 
+            background: var(--primary); 
+            color: white; 
+            padding: 15px; 
+            display: flex; 
+            justify-content: space-between; /* Menu Kiri, Judul Kanan */
+            align-items: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+        }
+        
+        /* Tombol Menu (Kiri) - Tanpa Border */
+        .menu-btn { 
+            background: none; 
+            border: none; /* Border dihilangkan */
+            color: white; 
+            padding: 8px 15px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 18px;
+            order: 1; /* Urutan pertama */
+        }
+        
+        /* Judul Aplikasi (Kanan) */
+        .header-title {
+            text-align: right;
+            line-height: 1.2;
+            order: 2; /* Urutan kedua */
+            font-family: 'Poppins', sans-serif; /* Pastikan pakai Poppins */
+        }
+        .title-main {
+            font-weight: 700; /* Bold */
+            font-style: italic;
+            font-size: 18px; /* Medium */
+        }
+        .title-version {
+            font-weight: 400; /* Regular */
+            font-style: italic;
+            font-size: 12px; /* Ukuran lebih kecil */
+            margin-left: 2px;
+        }
+
+        .menu-popup { display: none; position: absolute; top: 60px; left: 10px; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-radius: 8px; overflow: hidden; width: 220px; }
         .menu-popup.active { display: block; }
         .menu-item { display: block; padding: 15px 20px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; cursor: pointer; }
         .menu-item:hover { background: #f1f1f1; }
         .menu-item.logout { color: red; }
         
         /* Input Styling */
-        input, textarea, select { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        input, textarea, select { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; font-family: 'Poppins', sans-serif; }
         
         /* Custom Password Wrapper untuk Ikon Mata */
         .pass-wrapper { position: relative; width: 100%; }
-        .pass-wrapper input { padding-right: 45px; } /* Ruang untuk ikon */
+        .pass-wrapper input { padding-right: 45px; } 
         .pass-wrapper .toggle-pass { 
             position: absolute; right: 15px; top: 50%; transform: translateY(-50%); 
             cursor: pointer; color: #666; font-size: 18px; user-select: none; 
         }
 
-        button { cursor: pointer; padding: 15px; border: none; border-radius: 8px; width: 100%; margin-top: 10px; font-size: 16px; font-weight: bold; }
+        button { cursor: pointer; padding: 15px; border: none; border-radius: 8px; width: 100%; margin-top: 10px; font-size: 16px; font-weight: bold; font-family: 'Poppins', sans-serif; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-secondary { background: #ddd; color: #333; }
         .btn-danger { background: #ff4444; color: white; }
@@ -50,8 +100,14 @@
 <body>
 
     <div class="header" id="mainHeader" style="display:none;">
-        <h3 style="margin:0">WA Sender</h3>
+        <!-- Tombol Menu di Kiri -->
         <button type="button" class="menu-btn" onclick="toggleMenu()">☰ Menu</button>
+        
+        <!-- Judul di Kanan -->
+        <div class="header-title">
+            <span class="title-main">kirimWA</span><span class="title-version"> v1.1</span>
+        </div>
+
         <div class="menu-popup" id="menuPopup">
             <div id="dynamicMenu"></div>
             <a id="adminLinkBtn" href="#" target="_blank" class="menu-item" style="display:none;">Hubungi Admin</a>
@@ -65,17 +121,13 @@
             <h2>Login</h2>
             <input type="email" id="loginEmail" placeholder="Email">
             
-            <!-- Password dengan Ikon Mata -->
             <div class="pass-wrapper">
                 <input type="password" id="loginPass" placeholder="Password">
                 <span class="toggle-pass" onclick="togglePassword('loginPass')">👁️</span>
             </div>
 
             <button type="button" class="btn-primary" onclick="handleLogin()">Login</button>
-            
-            <!-- Tombol Lupa Password -->
             <button type="button" class="btn-link" onclick="forgotPassword()">Lupa Password?</button>
-            
             <p>Belum punya akun? <a href="#" onclick="showScreen('screenRegister'); return false;">Register di sini</a></p>
         </div>
     </div>
@@ -88,7 +140,6 @@
             <input type="email" id="regEmail" placeholder="Email">
             <input type="text" id="regWa" placeholder="Nomor WA (cth: 62812...)">
             
-            <!-- Password dengan Ikon Mata -->
             <div class="pass-wrapper">
                 <input type="password" id="regPass" placeholder="Password">
                 <span class="toggle-pass" onclick="togglePassword('regPass')">👁️</span>
@@ -111,7 +162,6 @@
             <button type="button" class="btn-secondary" onclick="updateProfile()">Simpan Nomor WA</button>
             <br><br>
             
-            <!-- Password dengan Ikon Mata -->
             <div class="pass-wrapper">
                 <input type="password" id="editPass" placeholder="Password Baru">
                 <span class="toggle-pass" onclick="togglePassword('editPass')">👁️</span>
@@ -194,8 +244,6 @@
         // --- KONFIGURASI SUPABASE ---
         const SUPABASE_URL = 'https://whlyxdcsrvrpxmdsfdjz.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndobHl4ZGNzcnZycHhtZHNmZGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzODY3OTYsImV4cCI6MjA4ODk2Mjc5Nn0.A4SFdoE72-xNn99ez9Ug5R1fndrcTu4GhYy9Mpe1Zfk';
-        
-        // --- LINK ADMIN BARU ---
         const ADMIN_LINK = 'https://wa.me/6285161990373?text=Hai%20Admin%20kirimWA,%20mau%20minta%20info%20ya'; 
 
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -225,7 +273,6 @@
         
         function closeModal() { document.getElementById('editModal').classList.remove('active'); }
 
-        // Fungsi Toggle Password (Ikon Mata)
         function togglePassword(inputId) {
             const x = document.getElementById(inputId);
             if (x.type === "password") {
@@ -299,7 +346,6 @@
             }
         }
 
-        // FITUR LUPA PASSWORD
         async function forgotPassword() {
             const email = document.getElementById('loginEmail').value;
             if(!email) {
