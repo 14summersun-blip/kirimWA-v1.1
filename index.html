@@ -27,6 +27,7 @@
         .menu-item { display: block; padding: 15px 20px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; cursor: pointer; }
         .menu-item:hover { background: #f1f1f1; }
         .menu-item.logout { color: red; }
+        .menu-item.highlight { background: #fff3cd; color: #856404; font-weight: bold; }
         
         input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; font-family: 'Poppins', sans-serif; }
         
@@ -43,7 +44,7 @@
         
         .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         
-        /* --- CARD ITEM STYLE (KONTAK & USER) --- */
+        /* --- CARD ITEM STYLE --- */
         .contact-item { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .contact-item .c-name { font-weight: bold; font-size: 16px; color: #333; margin-bottom: 4px; }
         .contact-item .c-phone { color: var(--dark); font-size: 14px; margin-bottom: 2px; }
@@ -51,14 +52,11 @@
         .contact-item .c-actions { display: flex; gap: 10px; border-top: 1px solid #eee; padding-top: 10px; }
         .contact-item .c-actions button { margin-top: 0; padding: 8px; font-size: 13px; }
         
-        /* Queue Card */
         .queue-card { background: #f9fff9; border: 1px solid var(--primary); }
         .btn-send-single { background: var(--primary); color: white; width: auto; padding: 8px 15px; font-size: 13px; }
         
-        /* Admin Scroll List */
         .scroll-list-container { max-height: 400px; overflow-y: auto; border: 1px solid #eee; padding: 10px; border-radius: 8px; background: #fafafa; }
 
-        /* Filter Grid */
         .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .filter-grid input { margin: 0; }
         .filter-row { display: flex; gap: 10px; margin-bottom: 10px; }
@@ -72,6 +70,9 @@
         
         .counter-badge { background: #eee; padding: 5px 10px; border-radius: 20px; font-size: 14px; display: inline-block; margin-bottom: 10px; }
         .label-small { font-size: 11px; color: #666; margin-bottom: 2px; display: block; }
+        
+        /* Warning Banner */
+        .warning-banner { background: #fff3cd; color: #856404; padding: 10px; text-align: center; font-size: 13px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ffeeba; }
     </style>
 </head>
 <body>
@@ -122,9 +123,15 @@
     <!-- AKUN -->
     <div class="screen" id="screenAkun">
         <h2>Akun Saya</h2>
+        <!-- Warning untuk Non-Aktif User -->
+        <div class="warning-banner" id="inactiveWarning" style="display:none;">
+            ⚠️ <strong>AKUN BELUM AKTIF.</strong><br>Silakan hubungi Admin via Menu untuk aktivasi agar bisa mengirim pesan.
+        </div>
+
         <div class="card">
             <p><strong>Username:</strong> <span id="profUsername">-</span></p>
             <p><strong>Email:</strong> <span id="profEmail">-</span></p>
+            <p><strong>Status:</strong> <span id="profStatus">-</span></p>
             <hr>
             <h3>Edit Data</h3>
             <input type="text" id="editWa" placeholder="Nomor WA Baru">
@@ -151,7 +158,6 @@
             <button type="button" class="btn-primary" onclick="addContact()">Simpan Kontak</button>
         </div>
 
-        <!-- Filter Kontak (Update) -->
         <div class="filter-row">
             <input type="text" id="searchContact" placeholder="Nama / No HP" onkeyup="renderContacts()">
             <input type="text" id="searchLocation" placeholder="Lokasi" onkeyup="renderContacts()">
@@ -195,8 +201,6 @@
         
         <div class="card">
             <h3>Filter User</h3>
-            
-            <!-- Rentang Tanggal -->
             <div class="filter-grid">
                 <div>
                     <span class="label-small">Dari Tanggal</span>
@@ -207,18 +211,14 @@
                     <input type="date" id="adminFilterEnd" onchange="loadAdminData()" style="margin:0">
                 </div>
             </div>
-
-            <!-- Filter Lainnya -->
             <input type="text" id="adminFilterName" placeholder="Nama User" onkeyup="loadAdminData()" style="margin-top:5px;">
             <input type="text" id="adminFilterEmail" placeholder="Email" onkeyup="loadAdminData()">
             <input type="text" id="adminFilterWa" placeholder="No WA" onkeyup="loadAdminData()">
-
             <div class="counter-badge" id="adminCount" style="margin-top:10px;">Total User: 0</div>
         </div>
 
         <div class="card">
             <h3>Daftar User</h3>
-            <!-- Container Scroll -->
             <div class="scroll-list-container" id="adminUserList"></div>
         </div>
         
@@ -251,6 +251,7 @@
 
         let currentUser = null;
         let currentRole = 'user';
+        let isActive = true; // Status aktif user
         let allContacts = [];
         let sendList = []; 
 
@@ -289,7 +290,7 @@
                 options: { data: { username: user, wa_number: wa } }
             });
             if (error) alert("Error: " + error.message);
-            else { alert("Registrasi berhasil! Anda bisa login sekarang."); showScreen('screenLogin'); }
+            else { alert("Registrasi berhasil!\nAkun Anda perlu DISETUJUI ADMIN sebelum bisa digunakan.\nSilakan login dan hubungi Admin."); showScreen('screenLogin'); }
         }
 
         async function handleLogin() {
@@ -301,8 +302,15 @@
             currentUser = data.user;
             const { data: profile } = await _supabase.from('profiles').select('is_active, role').eq('id', currentUser.id).single();
             
-            if (profile && profile.is_active === false) { await _supabase.auth.signOut(); alert("Akun DIBLOKIR."); return; }
+            // Set status global
             currentRole = profile?.role || 'user';
+            isActive = profile?.is_active ?? true; // Ambil status aktif
+
+            // Logika baru: Jika bukan admin dan tidak aktif -> Peringatan
+            if (currentRole !== 'admin' && !isActive) {
+                alert("PERHATIAN: Akun Anda BELUM AKTIF.\n\nFitur 'Kirim Pesan' dikunci.\nSilakan hubungi Admin via Menu.");
+            }
+
             setupUI();
         }
 
@@ -326,8 +334,11 @@
             if (user) {
                 currentUser = user;
                 const { data: profile } = await _supabase.from('profiles').select('is_active, role').eq('id', user.id).single();
-                if (profile && profile.is_active !== false) { currentRole = profile.role; setupUI(); }
-                else logout();
+                if (profile) {
+                    currentRole = profile.role;
+                    isActive = profile.is_active ?? true;
+                }
+                setupUI();
             }
         }
 
@@ -336,21 +347,45 @@
             const adminLinkBtn = document.getElementById('adminLinkBtn');
             adminLinkBtn.href = ADMIN_LINK;
             
+            // Tampilkan warning di Jendela Akun
+            const warning = document.getElementById('inactiveWarning');
+            
             if (currentRole === 'admin') {
                 menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'admin\')">Admin</span><span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
                 adminLinkBtn.style.display = 'none';
+                warning.style.display = 'none';
                 navigateTo('admin');
             } else {
-                menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
-                adminLinkBtn.style.display = 'block'; navigateTo('kirim');
+                // Jika USER NON-AKTIF
+                if (!isActive) {
+                    // Sembunyikan menu Kirim, Tampilkan Hubungi Admin
+                    menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
+                    adminLinkBtn.style.display = 'block'; // Paksa tampil
+                    adminLinkBtn.className = 'menu-item highlight'; // Highlight kuning
+                    warning.style.display = 'block'; // Tampilkan warning
+                    navigateTo('akun'); // Langsung arahkan ke akun
+                } else {
+                    // USER AKTIF
+                    menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
+                    adminLinkBtn.style.display = 'block';
+                    adminLinkBtn.className = 'menu-item'; // Style biasa
+                    warning.style.display = 'none';
+                    navigateTo('kirim');
+                }
             }
         }
 
         function navigateTo(page) {
             const map = { 'akun': 'screenAkun', 'kirim': 'screenKirim', 'kontak': 'screenKontak', 'admin': 'screenAdmin' };
             showScreen(map[page]);
+            
+            // Update status di profile
+            if(page === 'akun') {
+                loadProfile();
+                document.getElementById('profStatus').innerText = isActive ? "AKTIF" : "NON-AKTIF";
+                document.getElementById('profStatus').className = isActive ? "status-active" : "status-banned";
+            }
             if(page === 'kontak') loadContacts();
-            if(page === 'akun') loadProfile();
             if(page === 'admin') loadAdminData();
             if(page === 'kirim') { loadContacts(); renderAvailableContacts(); }
         }
@@ -392,7 +427,7 @@
 
         function renderContacts() {
             const q = document.getElementById('searchContact').value.toLowerCase();
-            const l = document.getElementById('searchLocation').value.toLowerCase(); // Filter Lokasi Baru
+            const l = document.getElementById('searchLocation').value.toLowerCase();
             
             const filtered = allContacts.filter(c => {
                 const matchMain = c.name.toLowerCase().includes(q) || c.phone.includes(q);
@@ -534,41 +569,53 @@
 
         // --- LOGIC ADMIN ---
         async function loadAdminData() {
-            const fStart = document.getElementById('adminFilterStart').value;
-            const fEnd = document.getElementById('adminFilterEnd').value;
-            const fName = document.getElementById('adminFilterName').value.toLowerCase();
-            const fEmail = document.getElementById('adminFilterEmail').value.toLowerCase();
-            const fWa = document.getElementById('adminFilterWa').value.toLowerCase();
+            try {
+                const fStart = document.getElementById('adminFilterStart').value;
+                const fEnd = document.getElementById('adminFilterEnd').value;
+                const fName = document.getElementById('adminFilterName').value.toLowerCase();
+                const fEmail = document.getElementById('adminFilterEmail').value.toLowerCase();
+                const fWa = document.getElementById('adminFilterWa').value.toLowerCase();
 
-            let query = _supabase.from('profiles').select('id, username, email, wa_number, is_active, created_at', { count: 'exact' });
-            
-            if(fStart) query = query.gte('created_at', fStart + ' 00:00:00');
-            if(fEnd) query = query.lte('created_at', fEnd + ' 23:59:59');
-            if(fName) query = query.ilike('username', '%'+fName+'%');
-            if(fEmail) query = query.ilike('email', '%'+fEmail+'%');
-            if(fWa) query = query.ilike('wa_number', '%'+fWa+'%');
-
-            const { data: users, count } = await query;
-
-            document.getElementById('adminCount').innerText = "Total User: " + count;
-
-            const container = document.getElementById('adminUserList');
-            container.innerHTML = users.map(u => {
-                // Tentukan teks dan warna tombol
-                const btnText = u.is_active ? 'Non-Aktifkan' : 'Aktifkan';
-                const btnClass = u.is_active ? 'btn-danger' : 'btn-primary';
+                let query = _supabase.from('profiles').select('id, username, email, wa_number, is_active, created_at', { count: 'exact' });
                 
-                return `
-                <div class="contact-item">
-                    <div class="c-name">${u.email}</div>
-                    <div class="c-phone">${u.username} | WA: ${u.wa_number || '-'}</div>
-                    <div class="c-loc">📅 ${u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}</div>
-                    <div class="c-actions">
-                        <button type="button" class="${btnClass}" onclick="toggleUserStatus('${u.id}', ${u.is_active})">${btnText}</button>
-                        <button type="button" class="btn-secondary" onclick="adminDeleteUser('${u.id}')">Hapus</button>
+                if(fStart) query = query.gte('created_at', fStart + 'T00:00:00');
+                if(fEnd) query = query.lte('created_at', fEnd + 'T23:59:59');
+                if(fName) query = query.ilike('username', '%'+fName+'%');
+                if(fEmail) query = query.ilike('email', '%'+fEmail+'%');
+                if(fWa) query = query.ilike('wa_number', '%'+fWa+'%');
+
+                const { data, error, count } = await query;
+
+                if (error) throw error;
+
+                document.getElementById('adminCount').innerText = "Total User: " + (count !== null ? count : 0);
+                const container = document.getElementById('adminUserList');
+                
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<p style="text-align:center; color:#999;">Tidak ada user.</p>';
+                    return;
+                }
+
+                container.innerHTML = data.map(u => {
+                    const btnText = u.is_active ? 'Non-Aktifkan' : 'Aktifkan';
+                    const btnClass = u.is_active ? 'btn-danger' : 'btn-primary';
+                    
+                    return `
+                    <div class="contact-item">
+                        <div class="c-name">${u.email}</div>
+                        <div class="c-phone">${u.username} | WA: ${u.wa_number || '-'}</div>
+                        <div class="c-loc">📅 ${u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}</div>
+                        <div class="c-actions">
+                            <button type="button" class="${btnClass}" onclick="toggleUserStatus('${u.id}', ${u.is_active})">${btnText}</button>
+                            <button type="button" class="btn-secondary" onclick="adminDeleteUser('${u.id}')">Hapus</button>
+                        </div>
                     </div>
-                </div>
-            `}).join('');
+                `}).join('');
+                
+            } catch (err) {
+                console.error(err);
+                document.getElementById('adminUserList').innerHTML = '<p style="color:red; text-align:center;">Error loading data.</p>';
+            }
         }
 
         async function toggleUserStatus(userId, currentStatus) {
