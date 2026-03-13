@@ -150,11 +150,8 @@
 
     <script>
         // --- KONFIGURASI SUPABASE ---
-        // PASTIKAN TANDA PETIK LURUS ('...') TIDAK BERUBAH MENJADI (‘...’)
         const SUPABASE_URL = 'https://whlyxdcsrvrpxmdsfdjz.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndobHl4ZGNzcnZycHhtZHNmZGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzODY3OTYsImV4cCI6MjA4ODk2Mjc5Nn0.A4SFdoE72-xNn99ez9Ug5R1fndrcTu4GhYy9Mpe1Zfk';
-        
-        // Link Admin (Ganti nomor ini dengan nomor Anda)
         const ADMIN_LINK = 'https://wa.me/6281234567890'; 
 
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -217,16 +214,33 @@
                 const { data, error } = await _supabase.auth.signInWithPassword({ email, password: pass });
                 if (error) { alert("Login Gagal: " + error.message); return; }
                 
-                const { data: profile } = await _supabase.from('profiles').select('is_active, role').eq('id', data.user.id).single();
+                // Login berhasil, lalu cek profile
+                currentUser = data.user;
+                
+                const { data: profile, error: profileError } = await _supabase
+                    .from('profiles')
+                    .select('is_active, role')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                // Jika tabel profiles error (misal kolom hilang)
+                if (profileError) {
+                    console.error("Profile Error:", profileError);
+                    alert("Error: Tabel profile belum siap. Jalankan SQL di Supabase atau hubungi Admin.");
+                    await _supabase.auth.signOut();
+                    return;
+                }
+
+                // Cek blokir
                 if (profile && profile.is_active === false) {
                     await _supabase.auth.signOut();
                     alert("Akun Anda DIBLOKIR Admin.");
                     return;
                 }
 
-                currentUser = data.user;
                 currentRole = profile?.role || 'user';
                 setupUI();
+
             } catch (err) {
                  alert("Error koneksi: " + err.message);
             }
@@ -239,19 +253,38 @@
         }
 
         _supabase.auth.onAuthStateChange((event, session) => {
-            if (session && !currentUser) checkSession();
-            else if (!session) showScreen('screenLogin');
+            // Hanya auto-login jika ada session dan state di memori belum ada
+            if (session && session.user && !currentUser) {
+                checkSession();
+            } else if (!session) {
+                showScreen('screenLogin');
+            }
         });
 
         async function checkSession() {
             const { data: { user } } = await _supabase.auth.getUser();
             if (user) {
-                const { data: profile } = await _supabase.from('profiles').select('is_active, role').eq('id', user.id).single();
+                currentUser = user;
+                
+                const { data: profile, error: profileError } = await _supabase
+                    .from('profiles')
+                    .select('is_active, role')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profileError) {
+                    // Jika error, jangan logout otomatis, tapi tampilkan error di konsol
+                    console.error("Session Check Error:", profileError);
+                    logout(); // Biar aman, kembalikan ke login kalau struktur tabel salah
+                    return;
+                }
+
                 if (profile && profile.is_active !== false) {
-                    currentUser = user;
                     currentRole = profile.role;
                     setupUI();
-                } else logout();
+                } else {
+                    logout();
+                }
             }
         }
 
