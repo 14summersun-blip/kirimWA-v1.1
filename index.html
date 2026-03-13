@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>kirimWA</title>
     
-    <!-- Import Font Poppins -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
@@ -17,7 +16,6 @@
         .screen { display: none; padding: 20px; max-width: 600px; margin: 0 auto; }
         .screen.active { display: block; }
         
-        /* --- HEADER --- */
         .header { background: var(--primary); color: white; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
         .menu-btn { background: none; border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 18px; margin-left: -5px; }
         .header-title { white-space: nowrap; text-align: right; line-height: 1.2; }
@@ -30,7 +28,6 @@
         .menu-item:hover { background: #f1f1f1; }
         .menu-item.logout { color: red; }
         
-        /* Input Styling */
         input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; font-family: 'Poppins', sans-serif; }
         
         .pass-wrapper { position: relative; width: 100%; }
@@ -46,7 +43,6 @@
         
         .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         
-        /* --- STYLE KONTAK & USER CARD --- */
         .contact-item { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .contact-item .c-name { font-weight: bold; font-size: 16px; color: #333; margin-bottom: 4px; }
         .contact-item .c-phone { color: var(--dark); font-size: 14px; margin-bottom: 2px; }
@@ -54,13 +50,13 @@
         .contact-item .c-actions { display: flex; gap: 10px; border-top: 1px solid #eee; padding-top: 10px; }
         .contact-item .c-actions button { margin-top: 0; padding: 8px; font-size: 13px; }
         
-        /* List Pengiriman Styles */
         .queue-card { background: #f9fff9; border: 1px solid var(--primary); }
         .btn-send-single { background: var(--primary); color: white; width: auto; padding: 8px 15px; font-size: 13px; }
         
-        /* Filter Grid */
-        .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        /* Filter Grid untuk Admin */
+        .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .filter-grid input { margin: 0; }
+        .filter-full { width: 100%; }
 
         .status-active { color: green; font-weight: bold; }
         .status-banned { color: red; font-weight: bold; }
@@ -69,6 +65,7 @@
         .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; }
         
         .counter-badge { background: #eee; padding: 5px 10px; border-radius: 20px; font-size: 14px; display: inline-block; margin-bottom: 10px; }
+        .label-small { font-size: 11px; color: #666; margin-bottom: 2px; display: block; }
     </style>
 </head>
 <body>
@@ -171,13 +168,11 @@
         <div class="card">
             <h3>List Pengiriman (<span id="countSend">0</span>)</h3>
             <div id="sendListDisplay" style="margin-bottom:15px;"></div>
-            
-            <!-- TOMBOL UTAMA BARU -->
             <button type="button" class="btn-primary" id="btnSendNext" onclick="sendNextInQueue()" style="display:none;">
                 🚀 Kirim ke Nomor Teratas
             </button>
             <p style="font-size:12px; color:#666; margin-top:10px; text-align:center;">
-                Klik tombol di atas -> Kirim di WA -> Kembali ke sini -> Klik lagi.
+                Klik tombol di atas -> Kirim di WA -> Kembali ke sini.
             </p>
         </div>
     </div>
@@ -188,12 +183,24 @@
         
         <div class="card">
             <h3>Filter User</h3>
+            
+            <!-- Rentang Tanggal -->
             <div class="filter-grid">
-                <input type="date" id="adminFilterDate" onchange="loadAdminData()" style="margin:0">
-                <input type="text" id="adminFilterName" placeholder="Nama" onkeyup="loadAdminData()" style="margin:0">
-                <input type="text" id="adminFilterEmail" placeholder="Email" onkeyup="loadAdminData()" style="margin:0">
-                <input type="text" id="adminFilterWa" placeholder="No WA" onkeyup="loadAdminData()" style="margin:0">
+                <div>
+                    <span class="label-small">Dari Tanggal</span>
+                    <input type="date" id="adminFilterStart" onchange="loadAdminData()" style="margin:0">
+                </div>
+                <div>
+                    <span class="label-small">Sampai Tanggal</span>
+                    <input type="date" id="adminFilterEnd" onchange="loadAdminData()" style="margin:0">
+                </div>
             </div>
+
+            <!-- Filter Lainnya -->
+            <input type="text" id="adminFilterName" placeholder="Nama User" onkeyup="loadAdminData()" style="margin-top:5px;">
+            <input type="text" id="adminFilterEmail" placeholder="Email" onkeyup="loadAdminData()">
+            <input type="text" id="adminFilterWa" placeholder="No WA" onkeyup="loadAdminData()">
+
             <div class="counter-badge" id="adminCount" style="margin-top:10px;">Total User: 0</div>
         </div>
 
@@ -269,7 +276,7 @@
                 options: { data: { username: user, wa_number: wa } }
             });
             if (error) alert("Error: " + error.message);
-            else { alert("Registrasi berhasil! Cek email verifikasi."); showScreen('screenLogin'); }
+            else { alert("Registrasi berhasil! Anda bisa login sekarang."); showScreen('screenLogin'); }
         }
 
         async function handleLogin() {
@@ -315,13 +322,28 @@
             const menuDiv = document.getElementById('dynamicMenu');
             const adminLinkBtn = document.getElementById('adminLinkBtn');
             adminLinkBtn.href = ADMIN_LINK;
+            
             if (currentRole === 'admin') {
                 menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'admin\')">Admin</span><span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
-                adminLinkBtn.style.display = 'none'; navigateTo('admin');
+                adminLinkBtn.style.display = 'none'; 
+                initAdminFilters(); // Set tanggal default saat login
+                navigateTo('admin');
             } else {
                 menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
                 adminLinkBtn.style.display = 'block'; navigateTo('kirim');
             }
+        }
+
+        function initAdminFilters() {
+            // Set default: 1 bulan terakhir
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            
+            const fStart = document.getElementById('adminFilterStart');
+            const fEnd = document.getElementById('adminFilterEnd');
+            
+            if(!fStart.value) fStart.value = firstDay.toISOString().split('T')[0];
+            if(!fEnd.value) fEnd.value = today.toISOString().split('T')[0];
         }
 
         function navigateTo(page) {
@@ -464,7 +486,6 @@
             document.getElementById('countSend').innerText = sendList.length;
             const btnSendNext = document.getElementById('btnSendNext');
             
-            // Tampilkan tombol "Kirim Teratas" hanya jika ada isi
             if(sendList.length > 0) btnSendNext.style.display = 'block';
             else btnSendNext.style.display = 'none';
 
@@ -485,13 +506,11 @@
             `).join('');
         }
 
-        // Fungsi Kirim ke Nomor Teratas
         function sendNextInQueue() {
             if(sendList.length === 0) return;
-            sendSingle(0); // Kirim index 0
+            sendSingle(0);
         }
 
-        // Fungsi Kirim Spesifik per Index
         async function sendSingle(index) {
             const msg = document.getElementById('messageText').value;
             if(!msg) return alert("Pesan kosong!");
@@ -500,34 +519,33 @@
             let phone = c.phone.replace(/[^0-9]/g, '');
             let text = encodeURIComponent(msg);
             
-            // Buka WA
             window.open('https://wa.me/'+phone+'?text='+text, '_blank');
             
-            // Hapus dari list setelah diklik (opsional, tapi sesuai request "otomatis hilang")
-            // Saya akan hapus dari list agar enak alurnya.
             sendList.splice(index, 1);
             renderSendList();
         }
 
         // --- LOGIC ADMIN ---
         async function loadAdminData() {
-            // Ambil filter
-            const fDate = document.getElementById('adminFilterDate').value;
+            const fStart = document.getElementById('adminFilterStart').value;
+            const fEnd = document.getElementById('adminFilterEnd').value;
             const fName = document.getElementById('adminFilterName').value.toLowerCase();
             const fEmail = document.getElementById('adminFilterEmail').value.toLowerCase();
             const fWa = document.getElementById('adminFilterWa').value.toLowerCase();
 
-            // Query
             let query = _supabase.from('profiles').select('id, username, email, wa_number, is_active, created_at', { count: 'exact' });
             
-            if(fDate) query = query.gte('created_at', fDate + ' 00:00:00').lte('created_at', fDate + ' 23:59:59');
+            // Filter Tanggal (Rentang)
+            if(fStart) query = query.gte('created_at', fStart + ' 00:00:00');
+            if(fEnd) query = query.lte('created_at', fEnd + ' 23:59:59');
+
+            // Filter Lainnya
             if(fName) query = query.ilike('username', '%'+fName+'%');
             if(fEmail) query = query.ilike('email', '%'+fEmail+'%');
             if(fWa) query = query.ilike('wa_number', '%'+fWa+'%');
 
             const { data: users, count } = await query;
 
-            // Update Counter
             document.getElementById('adminCount').innerText = "Total User: " + count;
 
             const container = document.getElementById('adminUserList');
@@ -535,7 +553,7 @@
                 <div class="contact-item">
                     <div class="c-name">${u.email}</div>
                     <div class="c-phone">${u.username} | WA: ${u.wa_number || '-'}</div>
-                    <div class="c-loc">📅 ${u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID') : 'N/A'}</div>
+                    <div class="c-loc">📅 ${u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}</div>
                     <div class="c-actions">
                         <button type="button" onclick="toggleUserStatus('${u.id}', ${u.is_active})" class="${u.is_active ? 'btn-primary' : 'btn-danger'}">${u.is_active ? 'AKTIF' : 'BLOKIR'}</button>
                         <button type="button" class="btn-secondary" onclick="adminDeleteUser('${u.id}')">Hapus</button>
@@ -551,7 +569,7 @@
         }
         
         async function adminDeleteUser(userId) {
-            if(!confirm("Hapus?")) return;
+            if(!confirm("Hapus user ini dari aplikasi?")) return;
             await _supabase.from('contacts').delete().eq('user_id', userId);
             await _supabase.from('profiles').delete().eq('id', userId);
             loadAdminData();
