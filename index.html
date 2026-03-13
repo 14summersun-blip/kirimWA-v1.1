@@ -532,44 +532,69 @@
             renderSendList();
         }
 
-        // --- LOGIC ADMIN ---
-        async function loadAdminData() {
-            const fStart = document.getElementById('adminFilterStart').value;
-            const fEnd = document.getElementById('adminFilterEnd').value;
-            const fName = document.getElementById('adminFilterName').value.toLowerCase();
-            const fEmail = document.getElementById('adminFilterEmail').value.toLowerCase();
-            const fWa = document.getElementById('adminFilterWa').value.toLowerCase();
+        // --- LOGIC ADMIN (PERBAIKAN) ---
+async function loadAdminData() {
+    try {
+        const fStart = document.getElementById('adminFilterStart').value;
+        const fEnd = document.getElementById('adminFilterEnd').value;
+        const fName = document.getElementById('adminFilterName').value.toLowerCase();
+        const fEmail = document.getElementById('adminFilterEmail').value.toLowerCase();
+        const fWa = document.getElementById('adminFilterWa').value.toLowerCase();
 
-            let query = _supabase.from('profiles').select('id, username, email, wa_number, is_active, created_at', { count: 'exact' });
-            
-            if(fStart) query = query.gte('created_at', fStart + ' 00:00:00');
-            if(fEnd) query = query.lte('created_at', fEnd + ' 23:59:59');
-            if(fName) query = query.ilike('username', '%'+fName+'%');
-            if(fEmail) query = query.ilike('email', '%'+fEmail+'%');
-            if(fWa) query = query.ilike('wa_number', '%'+fWa+'%');
+        // Bangun query
+        let query = _supabase.from('profiles').select('id, username, email, wa_number, is_active, created_at', { count: 'exact' });
+        
+        // Filter Tanggal (Hanya jika diisi)
+        if(fStart) query = query.gte('created_at', fStart + 'T00:00:00');
+        if(fEnd) query = query.lte('created_at', fEnd + 'T23:59:59');
 
-            const { data: users, count } = await query;
+        // Filter Lainnya
+        if(fName) query = query.ilike('username', '%'+fName+'%');
+        if(fEmail) query = query.ilike('email', '%'+fEmail+'%');
+        if(fWa) query = query.ilike('wa_number', '%'+fWa+'%');
 
-            document.getElementById('adminCount').innerText = "Total User: " + count;
+        const { data, error, count } = await query;
 
-            const container = document.getElementById('adminUserList');
-            container.innerHTML = users.map(u => {
-                // Tentukan teks dan warna tombol
-                const btnText = u.is_active ? 'Non-Aktifkan' : 'Aktifkan';
-                const btnClass = u.is_active ? 'btn-danger' : 'btn-primary';
-                
-                return `
-                <div class="contact-item">
-                    <div class="c-name">${u.email}</div>
-                    <div class="c-phone">${u.username} | WA: ${u.wa_number || '-'}</div>
-                    <div class="c-loc">📅 ${u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}</div>
-                    <div class="c-actions">
-                        <button type="button" class="${btnClass}" onclick="toggleUserStatus('${u.id}', ${u.is_active})">${btnText}</button>
-                        <button type="button" class="btn-secondary" onclick="adminDeleteUser('${u.id}')">Hapus</button>
-                    </div>
-                </div>
-            `}).join('');
+        // Jika ada error dari Supabase
+        if (error) {
+            console.error("Supabase Error:", error);
+            document.getElementById('adminCount').innerText = "Error Load Data";
+            document.getElementById('adminUserList').innerHTML = '<p style="color:red; text-align:center;">Gagal memuat data.<br>Pastikan Policy SQL sudah dijalankan.</p>';
+            return;
         }
+
+        // Update Counter
+        document.getElementById('adminCount').innerText = "Total User: " + (count !== null ? count : 0);
+
+        // Render List
+        const container = document.getElementById('adminUserList');
+        
+        if (!data || data.length === 0) {
+            container.innerHTML = '<p style="text-align:center; color:#999;">Tidak ada user ditemukan.</p>';
+            return;
+        }
+
+        container.innerHTML = data.map(u => {
+            const btnText = u.is_active ? 'Non-Aktifkan' : 'Aktifkan';
+            const btnClass = u.is_active ? 'btn-danger' : 'btn-primary';
+            
+            return `
+            <div class="contact-item">
+                <div class="c-name">${u.email}</div>
+                <div class="c-phone">${u.username} | WA: ${u.wa_number || '-'}</div>
+                <div class="c-loc">📅 ${u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}</div>
+                <div class="c-actions">
+                    <button type="button" class="${btnClass}" onclick="toggleUserStatus('${u.id}', ${u.is_active})">${btnText}</button>
+                    <button type="button" class="btn-secondary" onclick="adminDeleteUser('${u.id}')">Hapus</button>
+                </div>
+            </div>
+        `}).join('');
+        
+    } catch (err) {
+        console.error("System Error:", err);
+        alert("Terjadi kesalahan sistem.");
+    }
+}
 
         async function toggleUserStatus(userId, currentStatus) {
             const newStatus = !currentStatus;
