@@ -2,73 +2,60 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WA Sender Pro + Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WA Sender Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { --primary: #25D366; --dark: #128C7E; --bg: #ece5dd; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; min-height: 100vh; }
-        
-        /* Layout */
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); margin: 0; min-height: 100vh; font-size: 16px; }
         .screen { display: none; padding: 20px; max-width: 600px; margin: 0 auto; }
         .screen.active { display: block; }
-        
-        /* Header & Menu */
         .header { background: var(--primary); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .menu-btn { background: none; border: 2px solid white; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
-        .menu-popup { display: none; position: absolute; top: 60px; right: 20px; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-radius: 8px; overflow: hidden; width: 220px; }
+        .menu-btn { background: none; border: 2px solid white; color: white; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .menu-popup { display: none; position: absolute; top: 60px; right: 10px; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-radius: 8px; overflow: hidden; width: 220px; }
         .menu-popup.active { display: block; }
-        .menu-item { display: block; padding: 12px 20px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; cursor: pointer; }
+        .menu-item { display: block; padding: 15px 20px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; cursor: pointer; }
         .menu-item:hover { background: #f1f1f1; }
         .menu-item.logout { color: red; }
-
-        /* Forms & Inputs */
-        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        button { cursor: pointer; padding: 12px; border: none; border-radius: 5px; width: 100%; margin-top: 10px; }
+        input, textarea, select { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        button { cursor: pointer; padding: 15px; border: none; border-radius: 8px; width: 100%; margin-top: 10px; font-size: 16px; font-weight: bold; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-secondary { background: #ddd; color: #333; }
         .btn-danger { background: #ff4444; color: white; }
         .btn-admin { background: #ffc107; color: black; }
-        
-        /* Cards & Tables */
-        .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #eee; }
-        .tag { background: #eee; padding: 2px 6px; border-radius: 4px; font-size: 11px; }
+        .card { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
+        .tag { background: #eee; padding: 3px 8px; border-radius: 4px; font-size: 12px; }
         .status-active { color: green; font-weight: bold; }
         .status-banned { color: red; font-weight: bold; }
-        
-        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); }
+        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 200; }
         .modal.active { display: flex; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; }
     </style>
 </head>
 <body>
 
-    <!-- HEADER GLOBAL -->
     <div class="header" id="mainHeader" style="display:none;">
-        <h3 style="margin:0">WA Sender Pro</h3>
+        <h3 style="margin:0">WA Sender</h3>
         <button class="menu-btn" onclick="toggleMenu()">☰ Menu</button>
         <div class="menu-popup" id="menuPopup">
-            <!-- Menu items akan diisi dinamis oleh JS sesuai role -->
             <div id="dynamicMenu"></div>
-            <a id="adminLinkBtn" href="#" target="_blank" class="menu-item" style="display:none;">Hubungi Admin</a>
+            <a id="adminLinkBtn" href="https://wa.me/6281234567890" target="_blank" class="menu-item" style="display:none;">Hubungi Admin</a>
             <span class="menu-item logout" onclick="logout()">Logout</span>
         </div>
     </div>
 
-    <!-- 1. LAYAR LOGIN -->
     <div class="screen active" id="screenLogin">
         <div class="card" style="margin-top:50px; text-align:center;">
             <h2>Login</h2>
             <input type="email" id="loginEmail" placeholder="Email">
             <input type="password" id="loginPass" placeholder="Password">
             <button class="btn-primary" onclick="handleLogin()">Login</button>
-            <p>Belum punya akun? <a href="#" onclick="showScreen('screenRegister')">Register</a></p>
+            <p>Belum punya akun? <a href="#" onclick="showScreen('screenRegister')">Register di sini</a></p>
         </div>
     </div>
 
-    <!-- 2. LAYAR REGISTER -->
     <div class="screen" id="screenRegister">
         <div class="card" style="margin-top:50px; text-align:center;">
             <h2>Register</h2>
@@ -76,12 +63,11 @@
             <input type="email" id="regEmail" placeholder="Email">
             <input type="text" id="regWa" placeholder="Nomor WA (cth: 62812...)">
             <input type="password" id="regPass" placeholder="Password">
-            <button class="btn-primary" onclick="handleRegister()">Register</button>
+            <button class="btn-primary" onclick="handleRegister()">Register Sekarang</button>
             <p>Sudah punya akun? <a href="#" onclick="showScreen('screenLogin')">Login</a></p>
         </div>
     </div>
 
-    <!-- 3. LAYAR AKUN -->
     <div class="screen" id="screenAkun">
         <h2>Akun Saya</h2>
         <div class="card">
@@ -99,7 +85,6 @@
         </div>
     </div>
 
-    <!-- 4. LAYAR DAFTAR KONTAK -->
     <div class="screen" id="screenKontak">
         <h2>Daftar Kontak</h2>
         <div class="card">
@@ -117,7 +102,6 @@
         </div>
     </div>
 
-    <!-- 5. LAYAR KIRIM PESAN -->
     <div class="screen" id="screenKirim">
         <h2>Kirim Pesan</h2>
         <div class="card">
@@ -126,7 +110,7 @@
         </div>
         <div class="card">
             <h3>Cari & Pilih Kontak</h3>
-            <input type="text" id="searchSend" onkeyup="searchContactForSend()" placeholder="Cari nama kontak...">
+            <input type="text" id="searchSend" onkeyup="searchContactForSend()" placeholder="Ketik nama kontak...">
             <div id="contactSearchResults"></div>
         </div>
         <div class="card">
@@ -136,26 +120,22 @@
         </div>
     </div>
 
-    <!-- 6. LAYAR ADMIN (BARU) -->
     <div class="screen" id="screenAdmin">
         <h2 style="color:#ffc107;">Admin Dashboard</h2>
-        
         <div class="card">
             <h3>Manajemen User</h3>
-            <p><small>Klik status untuk mengaktifkan/menonaktifkan user.</small></p>
+            <p><small>Klik status untuk Blokir/Aktifkan.</small></p>
             <table>
                 <thead><tr><th>Email</th><th>Status</th><th>Aksi</th></tr></thead>
                 <tbody id="adminUserList"></tbody>
             </table>
         </div>
-
         <div class="card">
             <h3>Data Global</h3>
-            <button class="btn-admin" onclick="downloadAllContacts()">Download Semua Data Kontak (CSV)</button>
+            <button class="btn-admin" onclick="downloadAllContacts()">Download Semua Kontak (CSV)</button>
         </div>
     </div>
 
-    <!-- MODAL EDIT KONTAK -->
     <div class="modal" id="editModal">
         <div class="modal-content">
             <h3>Edit Kontak</h3>
@@ -169,26 +149,24 @@
     </div>
 
     <script>
-        // --- KONFIGURASI SUPABASE ---
+        // --- KONFIGURASI SUPABASE (SUDAH TERISI) ---
         const SUPABASE_URL = 'https://whlyxdcsrvrpxmdsfdjz.supabase.co'; 
-        const SUPABASE_KEY = 'sb_publishable_OyYRllXpUoEFECXdWuaQZg_VkcYkisV';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndobHl4ZGNzcnZycHhtZHNmZGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzODY3OTYsImV4cCI6MjA4ODk2Mjc5Nn0.A4SFdoE72-xNn99ez9Ug5R1fndrcTu4GhYy9Mpe1Zfk';
+        
+        // Link Admin (Ganti nomor ini dengan nomor Anda)
+        // Saat ini terisi: 6281234567890
+        const ADMIN_LINK = 'https://wa.me/6281234567890'; 
 
-        // --- KONFIGURASI ADMIN ---
-        // Ganti dengan link WA atau URL tujuan Anda
-        const ADMIN_LINK = 'https://wa.me/6285161990373?text=Hai%20Admin%20kirimWA,%20minta%20info%20ya'; 
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Variabel Global
         let currentUser = null;
         let currentRole = 'user';
         let allContacts = [];
         let sendList = []; 
 
-        // --- FUNGSI NAVIGASI & UI ---
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            
             if(id === 'screenLogin' || id === 'screenRegister') {
                 document.getElementById('mainHeader').style.display = 'none';
             } else {
@@ -202,134 +180,104 @@
             if(state === undefined) popup.classList.toggle('active');
             else state ? popup.classList.add('active') : popup.classList.remove('active');
         }
-
+        
         function closeModal() { document.getElementById('editModal').classList.remove('active'); }
 
-        // --- AUTH: REGISTER & LOGIN ---
         async function handleRegister() {
             const email = document.getElementById('regEmail').value;
             const pass = document.getElementById('regPass').value;
             const user = document.getElementById('regUser').value;
             const wa = document.getElementById('regWa').value;
 
-            const { data, error } = await supabase.auth.signUp({
+            if(!email || !pass || !user) { alert("Harap isi Email, Password, dan Username!"); return; }
+
+            const { data, error } = await _supabase.auth.signUp({
                 email: email,
                 password: pass,
                 options: { data: { username: user, wa_number: wa } }
             });
 
-            if (error) return alert(error.message);
-            alert("Registrasi berhasil! Silakan cek email untuk verifikasi, lalu login.");
-            showScreen('screenLogin');
+            if (error) {
+                alert("Error Register: " + error.message);
+            } else {
+                alert("Registrasi berhasil! Cek email untuk verifikasi lalu login.");
+                showScreen('screenLogin');
+            }
         }
 
         async function handleLogin() {
             const email = document.getElementById('loginEmail').value;
             const pass = document.getElementById('loginPass').value;
             
-            // 1. Login Auth
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
-            if (error) return alert("Email/Password salah atau akun belum verifikasi.");
+            const { data, error } = await _supabase.auth.signInWithPassword({ email, password: pass });
+            if (error) { alert("Login Gagal: " + error.message); return; }
             
-            // 2. Cek Status Aktif di Database
-            const { data: profile, error: pErr } = await supabase
-                .from('profiles')
-                .select('is_active, role')
-                .eq('id', data.user.id)
-                .single();
-
-            if (!profile) return alert("Profil tidak ditemukan.");
-            
-            // 3. Jika Tidak Aktif -> Kick
-            if (profile.is_active === false) {
-                await supabase.auth.signOut();
-                return alert("Akun Anda telah DINONAKTIFKAN oleh Admin. Tidak bisa login.");
+            const { data: profile } = await _supabase.from('profiles').select('is_active, role').eq('id', data.user.id).single();
+            if (profile && profile.is_active === false) {
+                await _supabase.auth.signOut();
+                alert("Akun Anda DIBLOKIR Admin.");
+                return;
             }
 
-            // Jika Oke, set global variable
             currentUser = data.user;
-            currentRole = profile.role;
-            
+            currentRole = profile?.role || 'user';
             setupUI();
         }
 
         async function logout() {
-            await supabase.auth.signOut();
-            currentUser = null;
-            currentRole = 'user';
+            await _supabase.auth.signOut();
+            currentUser = null; currentRole = 'user';
             showScreen('screenLogin');
         }
 
-        // --- SESSION HANDLER ---
-        supabase.auth.onAuthStateChange((event, session) => {
-            if (session && !currentUser) {
-                // Auto handle session on refresh
-                checkSession();
-            } else if (!session) {
-                showScreen('screenLogin');
-            }
+        _supabase.auth.onAuthStateChange((event, session) => {
+            if (session && !currentUser) checkSession();
+            else if (!session) showScreen('screenLogin');
         });
 
         async function checkSession() {
-            const { data: { user } } = await supabase.auth.getUser();
+            const { data: { user } } = await _supabase.auth.getUser();
             if (user) {
-                const { data: profile } = await supabase.from('profiles').select('is_active, role').eq('id', user.id).single();
+                const { data: profile } = await _supabase.from('profiles').select('is_active, role').eq('id', user.id).single();
                 if (profile && profile.is_active !== false) {
                     currentUser = user;
                     currentRole = profile.role;
                     setupUI();
-                } else {
-                    logout();
-                }
+                } else logout();
             }
         }
 
         function setupUI() {
-            // Atur Menu berdasarkan Role
             const menuDiv = document.getElementById('dynamicMenu');
             const adminLinkBtn = document.getElementById('adminLinkBtn');
-            
-            // Set Link Admin
             adminLinkBtn.href = ADMIN_LINK;
 
             if (currentRole === 'admin') {
-                menuDiv.innerHTML = `
-                    <span class="menu-item" onclick="navigateTo('admin')">Admin Dashboard</span>
+                menuDiv.innerHTML = `<span class="menu-item" onclick="navigateTo('admin')">Admin Dashboard</span>
                     <span class="menu-item" onclick="navigateTo('kirim')">Jendela Kirim</span>
                     <span class="menu-item" onclick="navigateTo('kontak')">Jendela Kontak</span>
-                    <span class="menu-item" onclick="navigateTo('akun')">Jendela Akun</span>
-                `;
-                adminLinkBtn.style.display = 'none'; // Admin tidak perlu hubungi admin
+                    <span class="menu-item" onclick="navigateTo('akun')">Jendela Akun</span>`;
+                adminLinkBtn.style.display = 'none';
                 navigateTo('admin');
             } else {
-                menuDiv.innerHTML = `
-                    <span class="menu-item" onclick="navigateTo('kirim')">Jendela Kirim</span>
+                menuDiv.innerHTML = `<span class="menu-item" onclick="navigateTo('kirim')">Jendela Kirim</span>
                     <span class="menu-item" onclick="navigateTo('kontak')">Jendela Kontak</span>
-                    <span class="menu-item" onclick="navigateTo('akun')">Jendela Akun</span>
-                `;
-                adminLinkBtn.style.display = 'block'; // User biasa bisa hubungi admin
+                    <span class="menu-item" onclick="navigateTo('akun')">Jendela Akun</span>`;
+                adminLinkBtn.style.display = 'block';
                 navigateTo('kirim');
             }
         }
 
         function navigateTo(page) {
-            const map = { 
-                'akun': 'screenAkun', 
-                'kirim': 'screenKirim', 
-                'kontak': 'screenKontak', 
-                'admin': 'screenAdmin' 
-            };
+            const map = { 'akun': 'screenAkun', 'kirim': 'screenKirim', 'kontak': 'screenKontak', 'admin': 'screenAdmin' };
             showScreen(map[page]);
-            
-            // Load data spesifik
             if(page === 'kontak') loadContacts();
             if(page === 'akun') loadProfile();
             if(page === 'admin') loadAdminData();
         }
 
-        // --- LOGIC AKUN ---
         async function loadProfile() {
-            const { data } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+            const { data } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single();
             document.getElementById('profUsername').innerText = data.username;
             document.getElementById('profEmail').innerText = currentUser.email;
             document.getElementById('editWa').value = data.wa_number || '';
@@ -337,27 +285,25 @@
 
         async function updateProfile() {
             const wa = document.getElementById('editWa').value;
-            const { error } = await supabase.from('profiles').update({ wa_number: wa }).eq('id', currentUser.id);
-            alert(error ? "Gagal update: "+error.message : "Nomor WA diupdate!");
+            const { error } = await _supabase.from('profiles').update({ wa_number: wa }).eq('id', currentUser.id);
+            alert(error ? "Gagal update" : "Nomor WA diupdate!");
         }
 
         async function updatePassword() {
             const pass = document.getElementById('editPass').value;
-            const { error } = await supabase.auth.updateUser({ password: pass });
+            const { error } = await _supabase.auth.updateUser({ password: pass });
             alert(error ? "Gagal ganti password" : "Password berhasil diubah!");
         }
 
         async function deleteAccount() {
-            if(!confirm("Yakin hapus akun? Semua data kontak akan hilang.")) return;
-            await supabase.from('contacts').delete().eq('user_id', currentUser.id);
-            await supabase.from('profiles').delete().eq('id', currentUser.id);
-            alert("Data terhapus.");
-            logout();
+            if(!confirm("Yakin hapus akun?")) return;
+            await _supabase.from('contacts').delete().eq('user_id', currentUser.id);
+            await _supabase.from('profiles').delete().eq('id', currentUser.id);
+            alert("Data terhapus."); logout();
         }
 
-        // --- LOGIC KONTAK (Sama seperti sebelumnya) ---
         async function loadContacts() {
-            const { data } = await supabase.from('contacts').select('*').eq('user_id', currentUser.id);
+            const { data } = await _supabase.from('contacts').select('*').eq('user_id', currentUser.id);
             allContacts = data || [];
             renderContacts();
         }
@@ -368,11 +314,11 @@
             const tbody = document.getElementById('contactTableBody');
             tbody.innerHTML = filtered.map(c => `
                 <tr>
-                    <td>${c.name}<br><small class="tag">${c.location || '-'}</small></td>
+                    <td><b>${c.name}</b><br><small class="tag">${c.location || '-'}</small></td>
                     <td>${c.phone}</td>
                     <td>
-                        <button onclick="editContact('${c.id}', '${c.name}', '${c.phone}', '${c.location || ''}')" style="background:orange; color:white; width:auto; padding:5px;">Edit</button>
-                        <button onclick="deleteContact('${c.id}')" style="background:red; color:white; width:auto; padding:5px;">X</button>
+                        <button onclick="editContact('${c.id}', '${c.name}', '${c.phone}', '${c.location || ''}')" style="background:orange; color:white; width:auto; padding:5px 10px;">Edit</button>
+                        <button onclick="deleteContact('${c.id}')" style="background:red; color:white; width:auto; padding:5px 10px;">X</button>
                     </td>
                 </tr>
             `).join('');
@@ -384,7 +330,7 @@
             const loc = document.getElementById('cLocation').value;
             if(!name || !phone) return alert("Nama & No HP wajib!");
             
-            await supabase.from('contacts').insert({ user_id: currentUser.id, name, phone, location: loc });
+            await _supabase.from('contacts').insert({ user_id: currentUser.id, name, phone, location: loc });
             document.getElementById('cName').value = ''; document.getElementById('cPhone').value = ''; document.getElementById('cLocation').value = '';
             loadContacts();
         }
@@ -402,26 +348,24 @@
             const name = document.getElementById('editName').value;
             const phone = document.getElementById('editPhone').value;
             const loc = document.getElementById('editLocation').value;
-            await supabase.from('contacts').update({ name, phone, location: loc }).eq('id', id);
-            closeModal();
-            loadContacts();
+            await _supabase.from('contacts').update({ name, phone, location: loc }).eq('id', id);
+            closeModal(); loadContacts();
         }
 
         async function deleteContact(id) {
             if(confirm("Hapus kontak ini?")) {
-                await supabase.from('contacts').delete().eq('id', id);
+                await _supabase.from('contacts').delete().eq('id', id);
                 loadContacts();
             }
         }
 
-        // --- LOGIC KIRIM PESAN (Sama seperti sebelumnya) ---
         function searchContactForSend() {
             const q = document.getElementById('searchSend').value.toLowerCase();
             const filtered = allContacts.filter(c => c.name.toLowerCase().includes(q) && q.length > 0);
             const div = document.getElementById('contactSearchResults');
             div.innerHTML = filtered.map(c => `
-                <div onclick="addToSendList('${c.id}')" style="padding:10px; border-bottom:1px solid #eee; cursor:pointer;">
-                    ${c.name} - ${c.phone} <span style="color:green">(+ Tambah)</span>
+                <div onclick="addToSendList('${c.id}')" style="padding:15px; border-bottom:1px solid #eee; cursor:pointer; background:#fff;">
+                    <b>${c.name}</b> - ${c.phone} <span style="color:green; float:right;">+ Tambah</span>
                 </div>
             `).join('');
         }
@@ -444,9 +388,9 @@
             document.getElementById('countSend').innerText = sendList.length;
             const div = document.getElementById('sendListDisplay');
             div.innerHTML = sendList.map(c => `
-                <div style="display:flex; justify-content:space-between; padding:5px; border-bottom:1px solid #eee;">
+                <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee; background:#fff;">
                     <span>${c.name}</span>
-                    <button onclick="removeFromSendList('${c.id}')" style="width:auto; padding:2px 10px; background:red; color:white;">X</button>
+                    <button onclick="removeFromSendList('${c.id}')" style="width:auto; padding:5px 10px; background:red; color:white;">X</button>
                 </div>
             `).join('');
         }
@@ -456,29 +400,27 @@
             if(!msg) return alert("Pesan kosong!");
             if(sendList.length == 0) return alert("List pengiriman kosong!");
 
-            if(!confirm("Buka "+sendList.length+" jendela WA?")) return;
+            if(!confirm("Buka "+sendList.length+" jendela WA? (Izinkan Pop-up)")) return;
 
             for(let i=0; i<sendList.length; i++) {
                 let phone = sendList[i].phone.replace(/[^0-9]/g, '');
                 let text = encodeURIComponent(msg);
                 let link = `https://wa.me/${phone}?text=${text}`;
                 window.open(link, '_blank');
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                await new Promise(resolve => setTimeout(resolve, 2500));
             }
-            alert("Selesai.");
+            alert("Selesai membuka jendela.");
         }
 
-        // --- LOGIC ADMIN (BARU) ---
         async function loadAdminData() {
-            // Load Users
-            const { data: users } = await supabase.from('profiles').select('id, username, email, is_active');
+            const { data: users } = await _supabase.from('profiles').select('id, username, email, is_active');
             const tbody = document.getElementById('adminUserList');
             tbody.innerHTML = users.map(u => `
                 <tr>
-                    <td>${u.email} <br> <small>${u.username}</small></td>
+                    <td>${u.email}<br><small>${u.username}</small></td>
                     <td onclick="toggleUserStatus('${u.id}', ${u.is_active})" style="cursor:pointer;">
                         <span class="${u.is_active ? 'status-active' : 'status-banned'}">
-                            ${u.is_active ? 'AKTIF (Klik Blokir)' : 'BLOKIR (Klik Aktifkan)'}
+                            ${u.is_active ? 'AKTIF' : 'BLOKIR'}
                         </span>
                     </td>
                     <td>
@@ -490,41 +432,29 @@
 
         async function toggleUserStatus(userId, currentStatus) {
             const newStatus = !currentStatus;
-            const { error } = await supabase.from('profiles').update({ is_active: newStatus }).eq('id', userId);
-            if(!error) {
-                alert(`User berhasil di ${newStatus ? 'diaktifkan' : 'dinonaktifkan'}`);
-                loadAdminData();
-            } else {
-                alert("Gagal mengubah status.");
-            }
+            const { error } = await _supabase.from('profiles').update({ is_active: newStatus }).eq('id', userId);
+            if(!error) { alert(`User berhasil di ${newStatus ? 'diaktifkan' : 'dinonaktifkan'}`); loadAdminData(); }
+            else alert("Gagal mengubah status.");
         }
         
         async function adminDeleteUser(userId) {
-            if(!confirm("Hapus user ini beserta kontaknya?")) return;
-            await supabase.from('contacts').delete().eq('user_id', userId);
-            await supabase.from('profiles').delete().eq('id', userId);
-            alert("User dihapus.");
-            loadAdminData();
+            if(!confirm("Hapus user ini?")) return;
+            await _supabase.from('contacts').delete().eq('user_id', userId);
+            await _supabase.from('profiles').delete().eq('id', userId);
+            alert("User dihapus."); loadAdminData();
         }
 
         async function downloadAllContacts() {
-            const { data } = await supabase.from('contacts').select('name, phone, location, profiles(email)');
+            const { data } = await _supabase.from('contacts').select('name, phone, location, profiles(email)');
             if(!data) return alert("Gagal ambil data");
-
-            // Convert to CSV
             let csv = "Nama,No HP,Lokasi,Email Pemilik\n";
-            data.forEach(row => {
-                csv += `${row.name},${row.phone},${row.location},${row.profiles?.email || 'Unknown'}\n`;
-            });
-
-            // Download
+            data.forEach(row => { csv += `${row.name},${row.phone},${row.location},${row.profiles?.email || 'Unknown'}\n`; });
             var hiddenElement = document.createElement('a');
             hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
             hiddenElement.target = '_blank';
-            hiddenElement.download = 'semua_kontak.csv';
+            hiddenElement.download = 'database_kontak.csv';
             hiddenElement.click();
         }
-
     </script>
 </body>
 </html>
