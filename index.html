@@ -17,12 +17,25 @@
         .menu-item { display: block; padding: 15px 20px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; cursor: pointer; }
         .menu-item:hover { background: #f1f1f1; }
         .menu-item.logout { color: red; }
+        
+        /* Input Styling */
         input, textarea, select { width: 100%; padding: 15px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        
+        /* Custom Password Wrapper untuk Ikon Mata */
+        .pass-wrapper { position: relative; width: 100%; }
+        .pass-wrapper input { padding-right: 45px; } /* Ruang untuk ikon */
+        .pass-wrapper .toggle-pass { 
+            position: absolute; right: 15px; top: 50%; transform: translateY(-50%); 
+            cursor: pointer; color: #666; font-size: 18px; user-select: none; 
+        }
+
         button { cursor: pointer; padding: 15px; border: none; border-radius: 8px; width: 100%; margin-top: 10px; font-size: 16px; font-weight: bold; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-secondary { background: #ddd; color: #333; }
         .btn-danger { background: #ff4444; color: white; }
         .btn-admin { background: #ffc107; color: black; }
+        .btn-link { background: none; border: none; color: var(--dark); text-decoration: underline; padding: 5px; margin-top: 5px; font-size: 14px; }
+        
         .card { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
@@ -41,33 +54,52 @@
         <button type="button" class="menu-btn" onclick="toggleMenu()">☰ Menu</button>
         <div class="menu-popup" id="menuPopup">
             <div id="dynamicMenu"></div>
-            <a id="adminLinkBtn" href="https://wa.me/6285161990373?text=Hai%20Admin%20kirimWA,%20mau%20minta%20info%20ya" target="_blank" class="menu-item" style="display:none;">Hubungi Admin</a>
+            <a id="adminLinkBtn" href="#" target="_blank" class="menu-item" style="display:none;">Hubungi Admin</a>
             <span class="menu-item logout" onclick="logout()">Logout</span>
         </div>
     </div>
 
+    <!-- LOGIN -->
     <div class="screen active" id="screenLogin">
         <div class="card" style="margin-top:50px; text-align:center;">
             <h2>Login</h2>
             <input type="email" id="loginEmail" placeholder="Email">
-            <input type="password" id="loginPass" placeholder="Password">
+            
+            <!-- Password dengan Ikon Mata -->
+            <div class="pass-wrapper">
+                <input type="password" id="loginPass" placeholder="Password">
+                <span class="toggle-pass" onclick="togglePassword('loginPass')">👁️</span>
+            </div>
+
             <button type="button" class="btn-primary" onclick="handleLogin()">Login</button>
+            
+            <!-- Tombol Lupa Password -->
+            <button type="button" class="btn-link" onclick="forgotPassword()">Lupa Password?</button>
+            
             <p>Belum punya akun? <a href="#" onclick="showScreen('screenRegister'); return false;">Register di sini</a></p>
         </div>
     </div>
 
+    <!-- REGISTER -->
     <div class="screen" id="screenRegister">
         <div class="card" style="margin-top:50px; text-align:center;">
             <h2>Register</h2>
             <input type="text" id="regUser" placeholder="Username">
             <input type="email" id="regEmail" placeholder="Email">
             <input type="text" id="regWa" placeholder="Nomor WA (cth: 62812...)">
-            <input type="password" id="regPass" placeholder="Password">
+            
+            <!-- Password dengan Ikon Mata -->
+            <div class="pass-wrapper">
+                <input type="password" id="regPass" placeholder="Password">
+                <span class="toggle-pass" onclick="togglePassword('regPass')">👁️</span>
+            </div>
+
             <button type="button" class="btn-primary" onclick="handleRegister()">Register Sekarang</button>
             <p>Sudah punya akun? <a href="#" onclick="showScreen('screenLogin'); return false;">Login</a></p>
         </div>
     </div>
 
+    <!-- AKUN -->
     <div class="screen" id="screenAkun">
         <h2>Akun Saya</h2>
         <div class="card">
@@ -78,13 +110,20 @@
             <input type="text" id="editWa" placeholder="Nomor WA Baru">
             <button type="button" class="btn-secondary" onclick="updateProfile()">Simpan Nomor WA</button>
             <br><br>
-            <input type="password" id="editPass" placeholder="Password Baru">
+            
+            <!-- Password dengan Ikon Mata -->
+            <div class="pass-wrapper">
+                <input type="password" id="editPass" placeholder="Password Baru">
+                <span class="toggle-pass" onclick="togglePassword('editPass')">👁️</span>
+            </div>
+            
             <button type="button" class="btn-secondary" onclick="updatePassword()">Simpan Password</button>
             <br><br>
             <button type="button" class="btn-danger" onclick="deleteAccount()">Hapus Akun?</button>
         </div>
     </div>
 
+    <!-- KONTAK -->
     <div class="screen" id="screenKontak">
         <h2>Daftar Kontak</h2>
         <div class="card">
@@ -102,6 +141,7 @@
         </div>
     </div>
 
+    <!-- KIRIM PESAN -->
     <div class="screen" id="screenKirim">
         <h2>Kirim Pesan</h2>
         <div class="card">
@@ -120,6 +160,7 @@
         </div>
     </div>
 
+    <!-- ADMIN -->
     <div class="screen" id="screenAdmin">
         <h2 style="color:#ffc107;">Admin Dashboard</h2>
         <div class="card">
@@ -136,6 +177,7 @@
         </div>
     </div>
 
+    <!-- MODAL EDIT -->
     <div class="modal" id="editModal">
         <div class="modal-content">
             <h3>Edit Kontak</h3>
@@ -152,6 +194,8 @@
         // --- KONFIGURASI SUPABASE ---
         const SUPABASE_URL = 'https://whlyxdcsrvrpxmdsfdjz.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndobHl4ZGNzcnZycHhtZHNmZGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzODY3OTYsImV4cCI6MjA4ODk2Mjc5Nn0.A4SFdoE72-xNn99ez9Ug5R1fndrcTu4GhYy9Mpe1Zfk';
+        
+        // --- LINK ADMIN BARU ---
         const ADMIN_LINK = 'https://wa.me/6285161990373?text=Hai%20Admin%20kirimWA,%20mau%20minta%20info%20ya'; 
 
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -161,6 +205,7 @@
         let allContacts = [];
         let sendList = []; 
 
+        // --- FUNGSI UI ---
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -180,6 +225,17 @@
         
         function closeModal() { document.getElementById('editModal').classList.remove('active'); }
 
+        // Fungsi Toggle Password (Ikon Mata)
+        function togglePassword(inputId) {
+            const x = document.getElementById(inputId);
+            if (x.type === "password") {
+                x.type = "text";
+            } else {
+                x.type = "password";
+            }
+        }
+
+        // --- FUNGSI AUTH ---
         async function handleRegister() {
             const email = document.getElementById('regEmail').value;
             const pass = document.getElementById('regPass').value;
@@ -214,7 +270,6 @@
                 const { data, error } = await _supabase.auth.signInWithPassword({ email, password: pass });
                 if (error) { alert("Login Gagal: " + error.message); return; }
                 
-                // Login berhasil, lalu cek profile
                 currentUser = data.user;
                 
                 const { data: profile, error: profileError } = await _supabase
@@ -223,15 +278,13 @@
                     .eq('id', currentUser.id)
                     .single();
 
-                // Jika tabel profiles error (misal kolom hilang)
                 if (profileError) {
                     console.error("Profile Error:", profileError);
-                    alert("Error: Tabel profile belum siap. Jalankan SQL di Supabase atau hubungi Admin.");
+                    alert("Error: Data profile tidak ditemukan. Hubungi Admin.");
                     await _supabase.auth.signOut();
                     return;
                 }
 
-                // Cek blokir
                 if (profile && profile.is_active === false) {
                     await _supabase.auth.signOut();
                     alert("Akun Anda DIBLOKIR Admin.");
@@ -246,6 +299,22 @@
             }
         }
 
+        // FITUR LUPA PASSWORD
+        async function forgotPassword() {
+            const email = document.getElementById('loginEmail').value;
+            if(!email) {
+                alert("Silakan masukkan Email Anda di kolom Email terlebih dahulu, lalu klik Lupa Password lagi.");
+                return;
+            }
+            
+            const { error } = await _supabase.auth.resetPasswordForEmail(email);
+            if(!error) {
+                alert("Link reset password telah dikirim ke email Anda. Cek folder Inbox atau Spam.");
+            } else {
+                alert("Gagal mengirim link: " + error.message);
+            }
+        }
+
         async function logout() {
             await _supabase.auth.signOut();
             currentUser = null; currentRole = 'user';
@@ -253,7 +322,6 @@
         }
 
         _supabase.auth.onAuthStateChange((event, session) => {
-            // Hanya auto-login jika ada session dan state di memori belum ada
             if (session && session.user && !currentUser) {
                 checkSession();
             } else if (!session) {
@@ -273,9 +341,8 @@
                     .single();
 
                 if (profileError) {
-                    // Jika error, jangan logout otomatis, tapi tampilkan error di konsol
                     console.error("Session Check Error:", profileError);
-                    logout(); // Biar aman, kembalikan ke login kalau struktur tabel salah
+                    logout(); 
                     return;
                 }
 
@@ -327,8 +394,9 @@
 
         async function updatePassword() {
             const pass = document.getElementById('editPass').value;
+            if(!pass) return alert("Masukkan password baru!");
             const { error } = await _supabase.auth.updateUser({ password: pass });
-            alert(error ? "Gagal ganti password" : "Password berhasil diubah!");
+            alert(error ? "Gagal ganti password: "+error.message : "Password berhasil diubah!");
         }
 
         async function deleteAccount() {
@@ -338,6 +406,7 @@
             alert("Data terhapus."); logout();
         }
 
+        // --- LOGIC KONTAK ---
         async function loadContacts() {
             const { data } = await _supabase.from('contacts').select('*').eq('user_id', currentUser.id);
             allContacts = data || [];
@@ -386,6 +455,7 @@
             }
         }
 
+        // --- LOGIC KIRIM PESAN ---
         function searchContactForSend() {
             const q = document.getElementById('searchSend').value.toLowerCase();
             const filtered = allContacts.filter(c => c.name.toLowerCase().includes(q) && q.length > 0);
@@ -430,6 +500,7 @@
             alert("Selesai membuka jendela.");
         }
 
+        // --- LOGIC ADMIN ---
         async function loadAdminData() {
             const { data: users } = await _supabase.from('profiles').select('id, username, email, is_active');
             const tbody = document.getElementById('adminUserList');
