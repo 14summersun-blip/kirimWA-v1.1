@@ -44,6 +44,7 @@
         
         .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         
+        /* --- CARD ITEM STYLE --- */
         .contact-item { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .contact-item .c-name { font-weight: bold; font-size: 16px; color: #333; margin-bottom: 4px; }
         .contact-item .c-phone { color: var(--dark); font-size: 14px; margin-bottom: 2px; }
@@ -69,6 +70,8 @@
         
         .counter-badge { background: #eee; padding: 5px 10px; border-radius: 20px; font-size: 14px; display: inline-block; margin-bottom: 10px; }
         .label-small { font-size: 11px; color: #666; margin-bottom: 2px; display: block; }
+        
+        /* Warning Banner */
         .warning-banner { background: #fff3cd; color: #856404; padding: 10px; text-align: center; font-size: 13px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ffeeba; }
     </style>
 </head>
@@ -120,8 +123,9 @@
     <!-- AKUN -->
     <div class="screen" id="screenAkun">
         <h2>Akun Saya</h2>
+        <!-- Warning untuk Non-Aktif User -->
         <div class="warning-banner" id="inactiveWarning" style="display:none;">
-            ⚠️ <strong>AKUN BELUM AKTIF.</strong><br>Fitur Kirim terkunci. Hubungi Admin via Menu untuk aktivasi.
+            ⚠️ <strong>AKUN BELUM AKTIF.</strong><br>Silakan hubungi Admin via Menu untuk aktivasi agar bisa mengirim pesan.
         </div>
 
         <div class="card">
@@ -158,6 +162,7 @@
             <input type="text" id="searchContact" placeholder="Nama / No HP" onkeyup="renderContacts()">
             <input type="text" id="searchLocation" placeholder="Lokasi" onkeyup="renderContacts()">
         </div>
+
         <div id="contactListContainer"></div>
     </div>
 
@@ -246,7 +251,7 @@
 
         let currentUser = null;
         let currentRole = 'user';
-        let isActive = false; // Default aman: false
+        let isActive = false; // Default: Non-Aktif (Safe Default)
         let allContacts = [];
         let sendList = []; 
 
@@ -279,49 +284,50 @@
             const user = document.getElementById('regUser').value;
             const wa = document.getElementById('regWa').value;
 
-            if(!email || !pass || !user) { alert("Harap isi semua field!"); return; }
+            if(!email || !pass || !user) { alert("Harap isi Email, Password, dan Username!"); return; }
             const { data, error } = await _supabase.auth.signUp({
                 email: email, password: pass,
                 options: { data: { username: user, wa_number: wa } }
             });
             if (error) alert("Error: " + error.message);
-            else { alert("Registrasi berhasil! Akun Anda NON-AKTIF. Hubungi Admin untuk aktivasi."); showScreen('screenLogin'); }
+            else { alert("Registrasi berhasil!\nAkun Anda perlu DISETUJUI ADMIN sebelum bisa digunakan.\nSilakan login dan hubungi Admin."); showScreen('screenLogin'); }
         }
 
         async function handleLogin() {
             const email = document.getElementById('loginEmail').value;
             const pass = document.getElementById('loginPass').value;
             
-            const { data, error } = await _supabase.auth.signInWithPassword({ email, password: pass });
-            if (error) { alert("Login Gagal: " + error.message); return; }
-            
-            currentUser = data.user;
+            try {
+                const { data, error } = await _supabase.auth.signInWithPassword({ email, password: pass });
+                if (error) { alert("Login Gagal: " + error.message); return; }
+                
+                currentUser = data.user;
+                
+                // Ambil profil
+                const { data: profile, error: profileError } = await _supabase.from('profiles').select('is_active, role').eq('id', currentUser.id).single();
+                
+                if (profileError) {
+                    console.error("Profile Fetch Error", profileError);
+                    alert("Gagal mengambil data profil. Coba lagi.");
+                    logout();
+                    return;
+                }
 
-            // Ambil profile (Gunakan maybeSingle untuk menghindari error jika kosong)
-            const { data: profile, error: profileError } = await _supabase.from('profiles').select('is_active, role').eq('id', currentUser.id).maybeSingle();
-            
-            if (profileError) {
-                console.error("Profile Error", profileError);
-                alert("Error membaca data user. Cek konsol.");
-                return;
+                // Set status global dengan aman
+                currentRole = profile?.role || 'user';
+                // Jika is_active null atau undefined, anggap FALSE (Non-Aktif)
+                isActive = (profile?.is_active === true) ? true : false; 
+
+                // Logika Peringatan
+                if (currentRole !== 'admin' && !isActive) {
+                    alert("PERHATIAN: Akun Anda BELUM AKTIF.\n\nFitur 'Kirim Pesan' dikunci.\nSilakan hubungi Admin via Menu.");
+                }
+
+                setupUI();
+            } catch (err) {
+                console.error(err);
+                alert("Terjadi kesalahan sistem.");
             }
-
-            // Tetapkan nilai default jika data kosong (untuk menghindari bug)
-            if(profile) {
-                currentRole = profile.role || 'user';
-                isActive = profile.is_active ?? false;
-            } else {
-                // Jika profile tidak ditemukan (misal trigger gagal), buat dummy
-                currentRole = 'user';
-                isActive = false;
-            }
-
-            // Notifikasi
-            if (currentRole !== 'admin' && !isActive) {
-                alert("Login Berhasil. Status: NON-AKTIF. Hubungi Admin.");
-            }
-
-            setupUI();
         }
 
         async function forgotPassword() {
@@ -332,52 +338,66 @@
             else alert("Gagal: " + error.message);
         }
 
-        async function logout() { await _supabase.auth.signOut(); currentUser = null; showScreen('screenLogin'); }
+        async function logout() { 
+            await _supabase.auth.signOut(); 
+            currentUser = null; 
+            isActive = false;
+            currentRole = 'user';
+            showScreen('screenLogin'); 
+        }
 
+        // Listener Otomatis (untuk refresh halaman)
         _supabase.auth.onAuthStateChange((event, session) => {
-            if (session && session.user && !currentUser) checkSession();
-            else if (!session) showScreen('screenLogin');
+            if (event === 'SIGNED_IN' && session && session.user) {
+                if(!currentUser) checkSession(); // Cek sesi jika belum ada user
+            } else if (event === 'SIGNED_OUT') {
+                currentUser = null;
+                showScreen('screenLogin');
+            }
         });
 
         async function checkSession() {
-            const { data: { user } } = await _supabase.auth.getUser();
-            if (user) {
-                currentUser = user;
-                const { data: profile } = await _supabase.from('profiles').select('is_active, role').eq('id', user.id).maybeSingle();
-                
-                if(profile) {
-                    currentRole = profile.role || 'user';
-                    isActive = profile.is_active ?? false;
-                } else {
-                    currentRole = 'user';
-                    isActive = false;
+            try {
+                const { data: { user } } = await _supabase.auth.getUser();
+                if (user) {
+                    currentUser = user;
+                    const { data: profile } = await _supabase.from('profiles').select('is_active, role').eq('id', user.id).single();
+                    if (profile) {
+                        currentRole = profile.role || 'user';
+                        isActive = (profile.is_active === true);
+                    }
+                    setupUI();
                 }
-                setupUI();
-            }
+            } catch(e) { console.error(e); }
         }
 
         function setupUI() {
             const menuDiv = document.getElementById('dynamicMenu');
             const adminLinkBtn = document.getElementById('adminLinkBtn');
             adminLinkBtn.href = ADMIN_LINK;
+            
+            // Tampilkan warning di Jendela Akun
             const warning = document.getElementById('inactiveWarning');
             
             if (currentRole === 'admin') {
-                menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'admin\')">Admin Dashboard</span><span class="menu-item" onclick="navigateTo(\'kirim\')">Jendela Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Jendela Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Jendela Akun</span>';
+                menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'admin\')">Admin</span><span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
                 adminLinkBtn.style.display = 'none';
                 warning.style.display = 'none';
                 navigateTo('admin');
             } else {
+                // Jika USER NON-AKTIF
                 if (!isActive) {
-                    menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'kontak\')">Jendela Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Jendela Akun</span>';
-                    adminLinkBtn.style.display = 'block'; 
-                    adminLinkBtn.className = 'menu-item highlight';
-                    warning.style.display = 'block';
-                    navigateTo('akun');
+                    // Sembunyikan menu Kirim, Tampilkan Hubungi Admin
+                    menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
+                    adminLinkBtn.style.display = 'block'; // Paksa tampil
+                    adminLinkBtn.className = 'menu-item highlight'; // Highlight kuning
+                    warning.style.display = 'block'; // Tampilkan warning
+                    navigateTo('akun'); // Langsung arahkan ke akun
                 } else {
-                    menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'kirim\')">Jendela Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Jendela Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Jendela Akun</span>';
+                    // USER AKTIF
+                    menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
                     adminLinkBtn.style.display = 'block';
-                    adminLinkBtn.className = 'menu-item';
+                    adminLinkBtn.className = 'menu-item'; // Style biasa
                     warning.style.display = 'none';
                     navigateTo('kirim');
                 }
@@ -387,6 +407,8 @@
         function navigateTo(page) {
             const map = { 'akun': 'screenAkun', 'kirim': 'screenKirim', 'kontak': 'screenKontak', 'admin': 'screenAdmin' };
             showScreen(map[page]);
+            
+            // Update status di profile
             if(page === 'akun') {
                 loadProfile();
                 document.getElementById('profStatus').innerText = isActive ? "AKTIF" : "NON-AKTIF";
@@ -398,24 +420,37 @@
         }
 
         async function loadProfile() {
-            const { data } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).maybeSingle();
-            if (!data) return;
-            document.getElementById('profUsername').innerText = data.username || '-';
-            document.getElementById('profEmail').innerText = currentUser.email;
-            document.getElementById('editWa').value = data.wa_number || '';
+            try {
+                const { data, error } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+                
+                if (error || !data) {
+                    console.error("Load Profile Error:", error);
+                    // Jika error, tampilkan placeholder
+                    document.getElementById('profUsername').innerText = "Error Data";
+                    document.getElementById('profEmail').innerText = currentUser.email; // Ambil dari auth
+                    document.getElementById('editWa').value = '';
+                    return;
+                }
+
+                document.getElementById('profUsername').innerText = data.username || '-';
+                document.getElementById('profEmail').innerText = currentUser.email;
+                document.getElementById('editWa').value = data.wa_number || '';
+            } catch(e) {
+                console.error(e);
+            }
         }
 
         async function updateProfile() {
             const wa = document.getElementById('editWa').value;
             const { error } = await _supabase.from('profiles').update({ wa_number: wa }).eq('id', currentUser.id);
-            alert(error ? "Gagal update" : "WA diupdate!");
+            alert(error ? "Gagal" : "WA diupdate!");
         }
 
         async function updatePassword() {
             const pass = document.getElementById('editPass').value;
             if(!pass) return;
             const { error } = await _supabase.auth.updateUser({ password: pass });
-            alert(error ? "Gagal ganti password" : "Password diubah!");
+            alert(error ? "Gagal" : "Password diubah!");
         }
 
         async function deleteAccount() {
@@ -444,6 +479,7 @@
             });
 
             const container = document.getElementById('contactListContainer');
+            
             container.innerHTML = filtered.map(c => `
                 <div class="contact-item">
                     <div class="c-name">${c.name}</div>
@@ -632,7 +668,7 @@
         }
         
         async function adminDeleteUser(userId) {
-            if(!confirm("Hapus user ini?")) return;
+            if(!confirm("Hapus user ini dari aplikasi?")) return;
             await _supabase.from('contacts').delete().eq('user_id', userId);
             await _supabase.from('profiles').delete().eq('id', userId);
             loadAdminData();
