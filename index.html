@@ -5,35 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>kirimWA</title>
 
-    <!-- Meta Pixel Code -->
-<script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '1379361620875155');
-fbq('track', 'PageView');
-</script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=1379361620875155&ev=PageView&noscript=1"
-/></noscript>
-<!-- End Meta Pixel Code -->
+    <!-- =========== META PIXEL CODE =========== -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1379361620875155');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1379361620875155&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
 
+    <!-- =========== GOOGLE ANALYTIC CODE =========== -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ED0ZKSR99T"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-ED0ZKSR99T');
+    </script>
+    <!-- End Google Analytic Code -->
 
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-ED0ZKSR99T"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-ED0ZKSR99T');
-</script>
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
@@ -138,13 +137,25 @@ src="https://www.facebook.com/tr?id=1379361620875155&ev=PageView&noscript=1"
         </div>
     </div>
 
+    <!-- RESET PASSWORD (BARU) -->
+    <div class="screen" id="screenReset">
+        <div class="card" style="margin-top:50px; text-align:center;">
+            <h2>Reset Password</h2>
+            <p>Masukkan password baru Anda di bawah ini.</p>
+            <div class="pass-wrapper">
+                <input type="password" id="newPass" placeholder="Password Baru">
+                <span class="toggle-pass" onclick="togglePassword('newPass')">👁️</span>
+            </div>
+            <button type="button" class="btn-primary" onclick="updateNewPassword()">Simpan Password Baru</button>
+        </div>
+    </div>
+
     <!-- AKUN -->
     <div class="screen" id="screenAkun">
         <h2>Akun Saya</h2>
         <div class="warning-banner" id="inactiveWarning" style="display:none;">
             ⚠️ <strong>AKUN BELUM AKTIF.</strong><br>Silakan hubungi Admin via Menu untuk aktivasi agar bisa mengirim pesan.
         </div>
-
         <div class="card">
             <p><strong>Username:</strong> <span id="profUsername">-</span></p>
             <p><strong>Email:</strong> <span id="profEmail">-</span></p>
@@ -269,7 +280,7 @@ src="https://www.facebook.com/tr?id=1379361620875155&ev=PageView&noscript=1"
         function showScreen(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            if(id === 'screenLogin' || id === 'screenRegister') document.getElementById('mainHeader').style.display = 'none';
+            if(id === 'screenLogin' || id === 'screenRegister' || id === 'screenReset') document.getElementById('mainHeader').style.display = 'none';
             else document.getElementById('mainHeader').style.display = 'flex';
             toggleMenu(false);
         }
@@ -299,7 +310,13 @@ src="https://www.facebook.com/tr?id=1379361620875155&ev=PageView&noscript=1"
                 options: { data: { username: user, wa_number: wa } }
             });
             if (error) alert("Error: " + error.message);
-            else { alert("Registrasi berhasil!\nAkun Anda perlu DISETUJUI ADMIN.\nSilakan hubungi Admin via Menu."); showScreen('screenLogin'); }
+            else { 
+                // Track Event Registration
+                if(typeof fbq === 'function') fbq('track', 'CompleteRegistration');
+                if(typeof gtag === 'function') gtag('event', 'sign_up');
+                alert("Registrasi berhasil!\nAkun Anda perlu DISETUJUI ADMIN.\nSilakan hubungi Admin via Menu."); 
+                showScreen('screenLogin'); 
+            }
         }
 
         async function handleLogin() {
@@ -311,32 +328,14 @@ src="https://www.facebook.com/tr?id=1379361620875155&ev=PageView&noscript=1"
                 if (error) { alert("Login Gagal: " + error.message); return; }
                 
                 currentUser = data.user;
-                
-                // Ambil profil dengan aman
                 const { data: profile, error: profileError } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single();
                 
-                // Jika profil tidak ada (kasus langka), coba buat manual
                 if (profileError || !profile) {
-                    console.warn("Profil tidak ditemukan, mencoba sinkronisasi...");
-                    // Coba insert manual (fallback)
-                    await _supabase.from('profiles').insert({
-                        id: currentUser.id,
-                        username: currentUser.user_metadata?.username || email,
-                        email: currentUser.email,
-                        wa_number: currentUser.user_metadata?.wa_number || '',
-                        role: 'user',
-                        is_active: false
-                    });
-                    // Ambil lagi
-                     const { data: newProfile } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single();
-                     if(newProfile) {
-                         currentRole = newProfile.role || 'user';
-                         isActive = (newProfile.is_active === true);
-                     } else {
-                         alert("Gagal membuat profil. Hubungi Admin.");
-                         logout();
-                         return;
-                     }
+                    console.warn("Fallback profile creation");
+                    await _supabase.from('profiles').insert({ id: currentUser.id, username: currentUser.email, email: currentUser.email, role: 'user', is_active: false });
+                    const { data: newProfile } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single();
+                    if(newProfile) { currentRole = 'user'; isActive = false; }
+                    else { alert("Gagal membuat profil. Hubungi Admin."); logout(); return; }
                 } else {
                     currentRole = profile.role || 'user';
                     isActive = (profile.is_active === true);
@@ -345,6 +344,11 @@ src="https://www.facebook.com/tr?id=1379361620875155&ev=PageView&noscript=1"
                 if (currentRole !== 'admin' && !isActive) {
                     alert("PERHATIAN: Akun Anda BELUM AKTIF.\n\nFitur 'Kirim Pesan' dikunci.\nSilakan hubungi Admin via Menu.");
                 }
+                
+                // Track Event Login
+                if(typeof fbq === 'function') fbq('track', 'Login');
+                if(typeof gtag === 'function') gtag('event', 'login');
+
                 setupUI();
             } catch (err) {
                 console.error(err);
@@ -360,16 +364,30 @@ src="https://www.facebook.com/tr?id=1379361620875155&ev=PageView&noscript=1"
             else alert("Gagal: " + error.message);
         }
 
+        // FUNGSI BARU: UPDATE PASSWORD BARU
+        async function updateNewPassword() {
+            const pass = document.getElementById('newPass').value;
+            if(!pass) return alert("Masukkan password baru!");
+            const { error } = await _supabase.auth.updateUser({ password: pass });
+            if(error) alert("Gagal update: " + error.message);
+            else {
+                alert("Password berhasil diubah! Silakan login.");
+                logout();
+            }
+        }
+
         async function logout() { 
             await _supabase.auth.signOut(); 
-            currentUser = null; 
-            isActive = false;
-            currentRole = 'user';
+            currentUser = null; isActive = false; currentRole = 'user';
             showScreen('screenLogin'); 
         }
 
+        // Listener untuk deteksi Link Reset Password
         _supabase.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_IN' && session && session.user) {
+            if (event === 'PASSWORD_RECOVERY') {
+                showScreen('screenReset');
+            }
+            else if (event === 'SIGNED_IN' && session && session.user) {
                 if(!currentUser) checkSession();
             } else if (event === 'SIGNED_OUT') {
                 currentUser = null;
@@ -400,22 +418,17 @@ src="https://www.facebook.com/tr?id=1379361620875155&ev=PageView&noscript=1"
             
             if (currentRole === 'admin') {
                 menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'admin\')">Admin</span><span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
-                adminLinkBtn.style.display = 'none';
-                warning.style.display = 'none';
+                adminLinkBtn.style.display = 'none'; warning.style.display = 'none';
                 navigateTo('admin');
             } else {
                 if (!isActive) {
                     menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
-                    adminLinkBtn.style.display = 'block';
-                    adminLinkBtn.className = 'menu-item highlight';
-                    warning.style.display = 'block';
-                    navigateTo('akun');
+                    adminLinkBtn.style.display = 'block'; adminLinkBtn.className = 'menu-item highlight';
+                    warning.style.display = 'block'; navigateTo('akun');
                 } else {
                     menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
-                    adminLinkBtn.style.display = 'block';
-                    adminLinkBtn.className = 'menu-item';
-                    warning.style.display = 'none';
-                    navigateTo('kirim');
+                    adminLinkBtn.style.display = 'block'; adminLinkBtn.className = 'menu-item';
+                    warning.style.display = 'none'; navigateTo('kirim');
                 }
             }
         }
@@ -436,12 +449,7 @@ src="https://www.facebook.com/tr?id=1379361620875155&ev=PageView&noscript=1"
         async function loadProfile() {
             try {
                 const { data, error } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single();
-                if (error || !data) {
-                    document.getElementById('profUsername').innerText = "Error Data";
-                    document.getElementById('profEmail').innerText = currentUser.email;
-                    document.getElementById('editWa').value = '';
-                    return;
-                }
+                if (error || !data) { document.getElementById('profUsername').innerText = "Error"; document.getElementById('profEmail').innerText = currentUser.email; return; }
                 document.getElementById('profUsername').innerText = data.username || '-';
                 document.getElementById('profEmail').innerText = data.email || currentUser.email;
                 document.getElementById('editWa').value = data.wa_number || '';
@@ -463,218 +471,29 @@ src="https://www.facebook.com/tr?id=1379361620875155&ev=PageView&noscript=1"
 
         async function deleteAccount() {
             if(!confirm("Hapus akun?")) return;
-            // On Delete Cascade akan hapus kontak otomatis
             await _supabase.from('profiles').delete().eq('id', currentUser.id);
             logout();
         }
 
         // --- LOGIC KONTAK & KIRIM (Sama seperti sebelumnya) ---
-        async function loadContacts() {
-            const { data } = await _supabase.from('contacts').select('*').eq('user_id', currentUser.id);
-            allContacts = data || [];
-            renderContacts();
-            renderAvailableContacts(); 
-        }
-
-        function renderContacts() {
-            const q = document.getElementById('searchContact').value.toLowerCase();
-            const l = document.getElementById('searchLocation').value.toLowerCase();
-            const filtered = allContacts.filter(c => {
-                const matchMain = c.name.toLowerCase().includes(q) || c.phone.includes(q);
-                const matchLoc = (c.location || '').toLowerCase().includes(l);
-                return matchMain && matchLoc;
-            });
-            const container = document.getElementById('contactListContainer');
-            container.innerHTML = filtered.map(c => `
-                <div class="contact-item">
-                    <div class="c-name">${c.name}</div>
-                    <div class="c-phone">📱 ${c.phone}</div>
-                    <div class="c-loc">📍 ${c.location || '-'}</div>
-                    <div class="c-actions">
-                        <button type="button" class="btn-secondary" onclick="editContact('${c.id}', '${c.name}', '${c.phone}', '${c.location || ''}')">Edit</button>
-                        <button type="button" class="btn-danger" onclick="deleteContact('${c.id}')">Hapus</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        async function addContact() {
-            const name = document.getElementById('cName').value;
-            const phone = document.getElementById('cPhone').value;
-            const loc = document.getElementById('cLocation').value;
-            if(!name || !phone) return alert("Nama & No HP wajib!");
-            await _supabase.from('contacts').insert({ user_id: currentUser.id, name, phone, location: loc });
-            document.getElementById('cName').value = ''; document.getElementById('cPhone').value = ''; document.getElementById('cLocation').value = '';
-            loadContacts();
-        }
-
-        function editContact(id, name, phone, loc) {
-            document.getElementById('editId').value = id;
-            document.getElementById('editName').value = name;
-            document.getElementById('editPhone').value = phone;
-            document.getElementById('editLocation').value = loc;
-            document.getElementById('editModal').classList.add('active');
-        }
-
-        async function saveEditContact() {
-            const id = document.getElementById('editId').value;
-            const name = document.getElementById('editName').value;
-            const phone = document.getElementById('editPhone').value;
-            const loc = document.getElementById('editLocation').value;
-            await _supabase.from('contacts').update({ name, phone, location: loc }).eq('id', id);
-            closeModal(); loadContacts();
-        }
-
-        async function deleteContact(id) {
-            if(confirm("Hapus kontak ini?")) {
-                await _supabase.from('contacts').delete().eq('id', id);
-                loadContacts();
-            }
-        }
-
-        function renderAvailableContacts() {
-            const nameQ = document.getElementById('filterName').value.toLowerCase();
-            const locQ = document.getElementById('filterLoc').value.toLowerCase();
-            const filtered = allContacts.filter(c => {
-                const matchName = c.name.toLowerCase().includes(nameQ);
-                const matchLoc = (c.location || '').toLowerCase().includes(locQ);
-                return matchName && matchLoc;
-            });
-            const container = document.getElementById('availableContactsList');
-            if(filtered.length === 0) { container.innerHTML = '<p style="text-align:center; color:#999; padding:10px;">Tidak ada kontak.</p>'; return; }
-            container.innerHTML = filtered.map(c => `
-                <div class="contact-item contact-select-item" onclick="addToSendList('${c.id}')">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <div>
-                            <div class="c-name">${c.name}</div>
-                            <div class="c-phone">📱 ${c.phone}</div>
-                            <div class="c-loc">📍 ${c.location || '-'}</div>
-                        </div>
-                        <button type="button" class="btn-add-contact">+ Pilih</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function addToSendList(id) {
-            const contact = allContacts.find(c => c.id == id);
-            if(sendList.find(s => s.id == id)) return alert("Sudah ada di list!");
-            sendList.push(contact);
-            renderSendList();
-        }
-
-        function removeFromSendList(id) {
-            sendList = sendList.filter(c => c.id != id);
-            renderSendList();
-        }
-
-        function renderSendList() {
-            document.getElementById('countSend').innerText = sendList.length;
-            const btnSendNext = document.getElementById('btnSendNext');
-            if(sendList.length > 0) btnSendNext.style.display = 'block';
-            else btnSendNext.style.display = 'none';
-            const div = document.getElementById('sendListDisplay');
-            div.innerHTML = sendList.map((c, index) => `
-                <div class="contact-item queue-card" style="padding:10px; margin-bottom:5px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <div style="text-align:left;">
-                            <div style="font-weight:bold;">${index + 1}. ${c.name}</div>
-                            <div style="font-size:12px; color:#666;">${c.phone}</div>
-                        </div>
-                        <div style="display:flex; gap:5px;">
-                            <button type="button" class="btn-send-single" onclick="sendSingle(${index})">Kirim</button>
-                            <button type="button" class="btn-danger" style="width:auto; padding:5px 10px;" onclick="removeFromSendList('${c.id}')">X</button>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function sendNextInQueue() {
-            if(sendList.length === 0) return;
-            sendSingle(0);
-        }
-
-        async function sendSingle(index) {
-            const msg = document.getElementById('messageText').value;
-            if(!msg) return alert("Pesan kosong!");
-            const c = sendList[index];
-            let phone = c.phone.replace(/[^0-9]/g, '');
-            let text = encodeURIComponent(msg);
-            window.open('https://wa.me/'+phone+'?text='+text, '_blank');
-            sendList.splice(index, 1);
-            renderSendList();
-        }
+        async function loadContacts() { const { data } = await _supabase.from('contacts').select('*').eq('user_id', currentUser.id); allContacts = data || []; renderContacts(); renderAvailableContacts(); }
+        function renderContacts() { const q = document.getElementById('searchContact').value.toLowerCase(); const l = document.getElementById('searchLocation').value.toLowerCase(); const filtered = allContacts.filter(c => { const m = c.name.toLowerCase().includes(q) || c.phone.includes(q); const lM = (c.location || '').toLowerCase().includes(l); return m && lM; }); const c = document.getElementById('contactListContainer'); c.innerHTML = filtered.map(c => `<div class="contact-item"><div class="c-name">${c.name}</div><div class="c-phone">📱 ${c.phone}</div><div class="c-loc">📍 ${c.location || '-'}</div><div class="c-actions"><button class="btn-secondary" onclick="editContact('${c.id}', '${c.name}', '${c.phone}', '${c.location || ''}')">Edit</button><button class="btn-danger" onclick="deleteContact('${c.id}')">Hapus</button></div></div>`).join(''); }
+        async function addContact() { const name = document.getElementById('cName').value; const phone = document.getElementById('cPhone').value; const loc = document.getElementById('cLocation').value; if(!name || !phone) return alert("Nama & No HP wajib!"); await _supabase.from('contacts').insert({ user_id: currentUser.id, name, phone, location: loc }); document.getElementById('cName').value = ''; document.getElementById('cPhone').value = ''; document.getElementById('cLocation').value = ''; loadContacts(); }
+        function editContact(id, name, phone, loc) { document.getElementById('editId').value = id; document.getElementById('editName').value = name; document.getElementById('editPhone').value = phone; document.getElementById('editLocation').value = loc; document.getElementById('editModal').classList.add('active'); }
+        async function saveEditContact() { const id = document.getElementById('editId').value; const name = document.getElementById('editName').value; const phone = document.getElementById('editPhone').value; const loc = document.getElementById('editLocation').value; await _supabase.from('contacts').update({ name, phone, location: loc }).eq('id', id); closeModal(); loadContacts(); }
+        async function deleteContact(id) { if(confirm("Hapus?")) { await _supabase.from('contacts').delete().eq('id', id); loadContacts(); } }
+        function renderAvailableContacts() { const nameQ = document.getElementById('filterName').value.toLowerCase(); const locQ = document.getElementById('filterLoc').value.toLowerCase(); const filtered = allContacts.filter(c => { return c.name.toLowerCase().includes(nameQ) && (c.location || '').toLowerCase().includes(locQ); }); const c = document.getElementById('availableContactsList'); if(filtered.length === 0) { c.innerHTML = '<p style="text-align:center;color:#999;padding:10px;">Tidak ada.</p>'; return; } c.innerHTML = filtered.map(c => `<div class="contact-item contact-select-item" onclick="addToSendList('${c.id}')"><div style="display:flex;justify-content:space-between;align-items:center;"><div><div class="c-name">${c.name}</div><div class="c-phone">📱 ${c.phone}</div><div class="c-loc">📍 ${c.location || '-'}</div></div><button class="btn-add-contact">+ Pilih</button></div></div>`).join(''); }
+        function addToSendList(id) { const contact = allContacts.find(c => c.id == id); if(sendList.find(s => s.id == id)) return alert("Sudah ada!"); sendList.push(contact); renderSendList(); }
+        function removeFromSendList(id) { sendList = sendList.filter(c => c.id != id); renderSendList(); }
+        function renderSendList() { document.getElementById('countSend').innerText = sendList.length; const btn = document.getElementById('btnSendNext'); if(sendList.length > 0) btn.style.display = 'block'; else btn.style.display = 'none'; const div = document.getElementById('sendListDisplay'); div.innerHTML = sendList.map((c, i) => `<div class="contact-item queue-card" style="padding:10px;margin-bottom:5px;"><div style="display:flex;justify-content:space-between;align-items:center;"><div style="text-align:left;"><div style="font-weight:bold;">${i + 1}. ${c.name}</div><div style="font-size:12px;color:#666;">${c.phone}</div></div><div style="display:flex;gap:5px;"><button class="btn-send-single" onclick="sendSingle(${i})">Kirim</button><button class="btn-danger" style="width:auto;padding:5px 10px;" onclick="removeFromSendList('${c.id}')">X</button></div></div></div>`).join(''); }
+        function sendNextInQueue() { if(sendList.length === 0) return; sendSingle(0); }
+        async function sendSingle(index) { const msg = document.getElementById('messageText').value; if(!msg) return alert("Pesan kosong!"); const c = sendList[index]; let phone = c.phone.replace(/[^0-9]/g, ''); let text = encodeURIComponent(msg); window.open('https://wa.me/'+phone+'?text='+text, '_blank'); sendList.splice(index, 1); renderSendList(); }
 
         // --- LOGIC ADMIN ---
-        async function loadAdminData() {
-            try {
-                const fStart = document.getElementById('adminFilterStart').value;
-                const fEnd = document.getElementById('adminFilterEnd').value;
-                const fName = document.getElementById('adminFilterName').value.toLowerCase();
-                const fEmail = document.getElementById('adminFilterEmail').value.toLowerCase();
-                const fWa = document.getElementById('adminFilterWa').value.toLowerCase();
-
-                let query = _supabase.from('profiles').select('id, username, email, wa_number, is_active, created_at', { count: 'exact' });
-                if(fStart) query = query.gte('created_at', fStart + 'T00:00:00');
-                if(fEnd) query = query.lte('created_at', fEnd + 'T23:59:59');
-                if(fName) query = query.ilike('username', '%'+fName+'%');
-                if(fEmail) query = query.ilike('email', '%'+fEmail+'%');
-                if(fWa) query = query.ilike('wa_number', '%'+fWa+'%');
-
-                const { data, error, count } = await query;
-                if (error) throw error;
-
-                document.getElementById('adminCount').innerText = "Total User: " + (count !== null ? count : 0);
-                const container = document.getElementById('adminUserList');
-                if (!data || data.length === 0) {
-                    container.innerHTML = '<p style="text-align:center; color:#999;">Tidak ada user.</p>';
-                    return;
-                }
-                container.innerHTML = data.map(u => {
-                    const btnText = u.is_active ? 'Non-Aktifkan' : 'Aktifkan';
-                    const btnClass = u.is_active ? 'btn-danger' : 'btn-primary';
-                    return `
-                    <div class="contact-item">
-                        <div class="c-name">${u.email}</div>
-                        <div class="c-phone">${u.username} | WA: ${u.wa_number || '-'}</div>
-                        <div class="c-loc">📅 ${u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID') : 'N/A'}</div>
-                        <div class="c-actions">
-                            <button type="button" class="${btnClass}" onclick="toggleUserStatus('${u.id}', ${u.is_active})">${btnText}</button>
-                            <button type="button" class="btn-secondary" onclick="adminDeleteUser('${u.id}')">Hapus</button>
-                        </div>
-                    </div>
-                `}).join('');
-            } catch (err) {
-                console.error(err);
-                document.getElementById('adminUserList').innerHTML = '<p style="color:red; text-align:center;">Error loading data.</p>';
-            }
-        }
-
-        async function toggleUserStatus(userId, currentStatus) {
-            const newStatus = !currentStatus;
-            await _supabase.from('profiles').update({ is_active: newStatus }).eq('id', userId);
-            loadAdminData();
-        }
-        
-        async function adminDeleteUser(userId) {
-            if(!confirm("Hapus user ini? Kontaknya juga akan terhapus otomatis.")) return;
-            // Cascade akan hapus kontak
-            await _supabase.from('profiles').delete().eq('id', userId);
-            loadAdminData();
-        }
-
-        async function downloadAllContacts() {
-            const { data } = await _supabase.from('contacts').select('name, phone, location, profiles(email)');
-            if(!data) return;
-            let csv = "Nama,No HP,Lokasi,Email\n";
-            data.forEach(r => { csv += r.name+','+r.phone+','+r.location+','+(r.profiles?.email||'')+'\n'; });
-            var a = document.createElement('a');
-            a.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
-            a.target = '_blank';
-            a.download = 'data_kontak.csv';
-            a.click();
-        }
+        async function loadAdminData() { try { const fStart = document.getElementById('adminFilterStart').value; const fEnd = document.getElementById('adminFilterEnd').value; const fName = document.getElementById('adminFilterName').value.toLowerCase(); const fEmail = document.getElementById('adminFilterEmail').value.toLowerCase(); const fWa = document.getElementById('adminFilterWa').value.toLowerCase(); let query = _supabase.from('profiles').select('id, username, email, wa_number, is_active, created_at', { count: 'exact' }); if(fStart) query = query.gte('created_at', fStart + 'T00:00:00'); if(fEnd) query = query.lte('created_at', fEnd + 'T23:59:59'); if(fName) query = query.ilike('username', '%'+fName+'%'); if(fEmail) query = query.ilike('email', '%'+fEmail+'%'); if(fWa) query = query.ilike('wa_number', '%'+fWa+'%'); const { data, error, count } = await query; if (error) throw error; document.getElementById('adminCount').innerText = "Total User: " + (count || 0); const c = document.getElementById('adminUserList'); if (!data || data.length === 0) { c.innerHTML = '<p style="text-align:center;color:#999;">Tidak ada user.</p>'; return; } c.innerHTML = data.map(u => { const t = u.is_active ? 'Non-Aktifkan' : 'Aktifkan'; const cl = u.is_active ? 'btn-danger' : 'btn-primary'; return `<div class="contact-item"><div class="c-name">${u.email}</div><div class="c-phone">${u.username} | WA: ${u.wa_number || '-'}</div><div class="c-loc">📅 ${u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID') : 'N/A'}</div><div class="c-actions"><button class="${cl}" onclick="toggleUserStatus('${u.id}', ${u.is_active})">${t}</button><button class="btn-secondary" onclick="adminDeleteUser('${u.id}')">Hapus</button></div></div>`}).join(''); } catch (err) { console.error(err); } }
+        async function toggleUserStatus(userId, currentStatus) { const newStatus = !currentStatus; await _supabase.from('profiles').update({ is_active: newStatus }).eq('id', userId); loadAdminData(); }
+        async function adminDeleteUser(userId) { if(!confirm("Hapus?")) return; await _supabase.from('profiles').delete().eq('id', userId); loadAdminData(); }
+        async function downloadAllContacts() { const { data } = await _supabase.from('contacts').select('name, phone, location, profiles(email)'); if(!data) return; let csv = "Nama,No HP,Lokasi,Email\n"; data.forEach(r => { csv += r.name+','+r.phone+','+r.location+','+(r.profiles?.email||'')+'\n'; }); var a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv); a.target = '_blank'; a.download = 'data_kontak.csv'; a.click(); }
     </script>
 </body>
 </html>
