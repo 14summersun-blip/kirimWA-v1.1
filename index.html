@@ -4,27 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>kirimWA Ekosistem</title>
-
-    <!-- PIXEL & ANALYTICS -->
-    <script>
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', '1379361620875155');
-      fbq('track', 'PageView');
-    </script>
+    <!-- PIXEL & ANALYTICS (Tetap sama) -->
+    <script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init', '1379361620875155');fbq('track', 'PageView');</script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-ED0ZKSR99T"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-ED0ZKSR99T');
-    </script>
+    <script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-ED0ZKSR99T');</script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,7 +22,7 @@
         /* HEADER */
         .header { background: var(--primary); color: white; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
         .menu-btn { background: none; border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 18px; margin-left: -5px; }
-        .header-title { white-space: nowrap; text-align: right; line-height: 1.2; }
+        .header-title { white-space: nowrap; text-align: right; line-height: 1.2; cursor: pointer; }
         .title-main { font-weight: 700; font-style: italic; font-size: 18px; }
         .title-version { font-weight: 400; font-style: italic; font-size: 12px; }
         
@@ -49,7 +32,6 @@
         .menu-item { display: block; padding: 15px 20px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; cursor: pointer; font-size: 14px; }
         .menu-item:hover { background: #f1f1f1; }
         .menu-item.logout { color: red; }
-        .menu-item.highlight { background: #fff3cd; color: #856404; font-weight: bold; }
         
         /* FORMS */
         input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; font-family: 'Poppins', sans-serif; }
@@ -60,10 +42,9 @@
         .btn-primary { background: var(--primary); color: white; }
         .btn-secondary { background: #ddd; color: #333; }
         .btn-danger { background: #ff4444; color: white; }
-        .btn-admin { background: #ffc107; color: black; }
         .btn-link { background: none; border: none; color: var(--dark); text-decoration: underline; padding: 5px; margin-top: 5px; font-size: 14px; }
         
-        /* CARDS & ITEMS */
+        /* CARDS */
         .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .contact-item { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .contact-item .c-name { font-weight: bold; font-size: 16px; color: #333; margin-bottom: 4px; }
@@ -75,7 +56,6 @@
         /* UTILITIES */
         .scroll-list-container { max-height: 400px; overflow-y: auto; border: 1px solid #eee; padding: 10px; border-radius: 8px; background: #fafafa; }
         .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .filter-row { display: flex; gap: 10px; margin-bottom: 10px; }
         .status-active { color: green; font-weight: bold; }
         .status-banned { color: red; font-weight: bold; }
         .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 200; }
@@ -85,7 +65,7 @@
         .label-small { font-size: 11px; color: #666; margin-bottom: 2px; display: block; }
         .warning-banner { background: #fff3cd; color: #856404; padding: 10px; text-align: center; font-size: 13px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ffeeba; }
 
-        /* NIAGA (FEED & TOKO) STYLES */
+        /* NIAGA STYLES */
         .niaga-header { background: var(--blue); }
         .niaga-header .menu-btn, .niaga-header .header-title { color: white; }
         
@@ -111,24 +91,36 @@
         /* CAROUSEL */
         .carousel-container { position: relative; overflow: hidden; }
         .carousel-slide { display: flex; transition: transform 0.5s ease; }
-        .carousel-btn {
-            position: absolute; top: 50%; transform: translateY(-50%);
-            background: rgba(255,255,255,0.8); border-radius: 50%;
-            width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; font-size: 12px; font-weight: bold; color: #333;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+        .carousel-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.8); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 12px; font-weight: bold; color: #333; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .carousel-btn:hover { background: #fff; }
         .carousel-btn.prev { left: 5px; }
         .carousel-btn.next { right: 5px; }
+
+        /* FAB (Floating Action Button) - REVISI */
+        .fab-post {
+            position: fixed; bottom: 80px; right: 20px;
+            width: 50px; height: 50px;
+            background-color: var(--blue);
+            color: white;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            display: none; /* Hidden by default */
+            align-items: center; justify-content: center;
+            font-size: 28px; font-weight: 700; /* Bold */
+            cursor: pointer;
+            z-index: 50;
+            border: none;
+            transition: transform 0.2s;
+        }
+        .fab-post:hover { transform: scale(1.1); }
     </style>
 </head>
 <body>
 
-    <!-- MAIN HEADER (Warna Dinamis) -->
+    <!-- MAIN HEADER -->
     <div class="header" id="mainHeader" style="display:none;">
         <button type="button" class="menu-btn" onclick="toggleMenu()">☰ Menu</button>
-        <div class="header-title">
+        <div class="header-title" onclick="navigateHome()">
             <span class="title-main" id="headerTitle">kirimWA</span><span class="title-version"> v2.0</span>
         </div>
         <div class="menu-popup" id="menuPopup">
@@ -141,10 +133,7 @@
     <!-- LOGIN SCREEN -->
     <div class="screen active" id="screenLogin">
         <div class="card" style="margin-top:20px; overflow:hidden; padding:0;">
-            <!-- IMAGE TOP -->
-            <div style="background:#f0f0f0; text-align:center;">
-                <img src="https://placehold.co/600x200/25D366/white?text=Selamat+Datang" style="width:100%; display:block;">
-            </div>
+            <div style="background:#f0f0f0; text-align:center;"><img src="https://placehold.co/600x200/25D366/white?text=Selamat+Datang" style="width:100%; display:block;"></div>
             <div style="padding:20px;">
                 <h2 style="text-align:center; margin-top:0;">Login</h2>
                 <input type="email" id="loginEmail" placeholder="Email">
@@ -156,20 +145,14 @@
                 <button type="button" class="btn-link" onclick="contactAdminReset()">Lupa Password?</button>
                 <p style="text-align:center; margin-top:15px;">Belum punya akun? <a href="#" onclick="showScreen('screenRegister'); return false;">Register di sini</a></p>
             </div>
-            <!-- IMAGE BOTTOM -->
-            <div style="background:#fafafa; text-align:center; padding:10px;">
-                <img src="https://placehold.co/600x100/ffffff/666666?text=Aman+dan+Mudah" style="width:100%; max-width:300px;">
-            </div>
+            <div style="background:#fafafa; text-align:center; padding:10px;"><img src="https://placehold.co/600x100/ffffff/666666?text=Aman+dan+Mudah" style="width:100%; max-width:300px;"></div>
         </div>
     </div>
 
     <!-- REGISTER SCREEN -->
     <div class="screen" id="screenRegister">
         <div class="card" style="margin-top:20px; overflow:hidden; padding:0;">
-             <!-- IMAGE TOP -->
-            <div style="background:#f0f0f0; text-align:center;">
-                <img src="https://placehold.co/600x200/128C7E/white?text=Bergabung+Bersama+Kami" style="width:100%; display:block;">
-            </div>
+            <div style="background:#f0f0f0; text-align:center;"><img src="https://placehold.co/600x200/128C7E/white?text=Bergabung+Bersama+Kami" style="width:100%; display:block;"></div>
             <div style="padding:20px;">
                 <h2 style="text-align:center; margin-top:0;">Register</h2>
                 <input type="text" id="regUser" placeholder="Username">
@@ -186,122 +169,41 @@
     </div>
 
     <!-- RESET PASSWORD -->
-    <div class="screen" id="screenReset">
-        <div class="card" style="margin-top:50px; text-align:center;">
-            <h2>Reset Password</h2>
-            <p>Silakan masukkan password baru Anda.</p>
-            <div class="pass-wrapper">
-                <input type="password" id="newPass" placeholder="Password Baru">
-                <span class="toggle-pass" onclick="togglePassword('newPass')">👁️</span>
-            </div>
-            <button type="button" class="btn-primary" onclick="updateNewPassword()">Simpan Password Baru</button>
-        </div>
-    </div>
+    <div class="screen" id="screenReset"><div class="card" style="margin-top:50px; text-align:center;"><h2>Reset Password</h2><p>Silakan masukkan password baru Anda.</p><div class="pass-wrapper"><input type="password" id="newPass" placeholder="Password Baru"><span class="toggle-pass" onclick="togglePassword('newPass')">👁️</span></div><button type="button" class="btn-primary" onclick="updateNewPassword()">Simpan Password Baru</button></div></div>
 
     <!-- AKUN -->
-    <div class="screen" id="screenAkun">
-        <h2>Akun Saya</h2>
-        <div class="warning-banner" id="inactiveWarning" style="display:none;">⚠️ <strong>AKUN BELUM AKTIF.</strong><br>Silakan hubungi Admin via Menu.</div>
-        <div class="card">
-            <p><strong>Username:</strong> <span id="profUsername">-</span></p>
-            <p><strong>Email:</strong> <span id="profEmail">-</span></p>
-            <p><strong>Status:</strong> <span id="profStatus">-</span></p>
-            <hr>
-            <h3>Edit Data</h3>
-            <input type="text" id="editWa" placeholder="Nomor WA Baru">
-            <button type="button" class="btn-secondary" onclick="updateProfile()">Simpan Nomor WA</button>
-            <br><br>
-            <div class="pass-wrapper">
-                <input type="password" id="editPass" placeholder="Password Baru">
-                <span class="toggle-pass" onclick="togglePassword('editPass')">👁️</span>
-            </div>
-            <button type="button" class="btn-secondary" onclick="updatePassword()">Simpan Password</button>
-            <br><br>
-            <button type="button" class="btn-danger" onclick="deleteAccount()">Hapus Akun?</button>
-        </div>
-    </div>
+    <div class="screen" id="screenAkun"><h2>Akun Saya</h2><div class="warning-banner" id="inactiveWarning" style="display:none;">⚠️ <strong>AKUN BELUM AKTIF.</strong><br>Silakan hubungi Admin via Menu.</div><div class="card"><p><strong>Username:</strong> <span id="profUsername">-</span></p><p><strong>Email:</strong> <span id="profEmail">-</span></p><p><strong>Status:</strong> <span id="profStatus">-</span></p><hr><h3>Edit Data</h3><input type="text" id="editWa" placeholder="Nomor WA Baru"><button type="button" class="btn-secondary" onclick="updateProfile()">Simpan Nomor WA</button><br><br><div class="pass-wrapper"><input type="password" id="editPass" placeholder="Password Baru"><span class="toggle-pass" onclick="togglePassword('editPass')">👁️</span></div><button type="button" class="btn-secondary" onclick="updatePassword()">Simpan Password</button><br><br><button type="button" class="btn-danger" onclick="deleteAccount()">Hapus Akun?</button></div></div>
 
     <!-- KONTAK -->
-    <div class="screen" id="screenKontak">
-        <h2>Daftar Kontak</h2>
-        <div class="card">
-            <h3>Tambah Kontak Baru</h3>
-            <input type="text" id="cName" placeholder="Nama">
-            <input type="text" id="cPhone" placeholder="Nomor HP">
-            <input type="text" id="cLocation" placeholder="Lokasi">
-            <button type="button" class="btn-primary" onclick="addContact()">Simpan Kontak</button>
-        </div>
-        <div class="filter-row">
-            <input type="text" id="searchContact" placeholder="Nama / No HP" onkeyup="renderContacts()">
-            <input type="text" id="searchLocation" placeholder="Lokasi" onkeyup="renderContacts()">
-        </div>
-        <div id="contactListContainer"></div>
-    </div>
+    <div class="screen" id="screenKontak"><h2>Daftar Kontak</h2><div class="card"><h3>Tambah Kontak Baru</h3><input type="text" id="cName" placeholder="Nama"><input type="text" id="cPhone" placeholder="Nomor HP"><input type="text" id="cLocation" placeholder="Lokasi"><button type="button" class="btn-primary" onclick="addContact()">Simpan Kontak</button></div><div class="filter-row"><input type="text" id="searchContact" placeholder="Nama / No HP" onkeyup="renderContacts()"><input type="text" id="searchLocation" placeholder="Lokasi" onkeyup="renderContacts()"></div><div id="contactListContainer"></div></div>
 
     <!-- KIRIM PESAN -->
-    <div class="screen" id="screenKirim">
-        <h2>Kirim Pesan</h2>
-        <div class="card">
-            <h3>Tulis Pesan</h3>
-            <textarea id="messageText" rows="3" placeholder="Tulis pesan di sini..."></textarea>
-        </div>
-        <div class="card">
-            <h3>Pilih Kontak Penerima</h3>
-            <div style="display:flex; gap:10px; margin-bottom:10px;">
-                <input type="text" id="filterName" placeholder="Filter Nama" onkeyup="renderAvailableContacts()" style="margin:0">
-                <input type="text" id="filterLoc" placeholder="Filter Lokasi" onkeyup="renderAvailableContacts()" style="margin:0">
-            </div>
-            <div id="availableContactsList"></div>
-        </div>
-        <div class="card">
-            <h3>List Pengiriman (<span id="countSend">0</span>)</h3>
-            <div id="sendListDisplay" style="margin-bottom:15px;"></div>
-            <button type="button" class="btn-primary" id="btnSendNext" onclick="sendNextInQueue()" style="display:none;">🚀 Kirim ke Nomor Teratas</button>
-            <p style="font-size:12px; color:#666; margin-top:10px; text-align:center;">Klik tombol di atas -> Kirim di WA -> Kembali ke sini.</p>
-        </div>
-    </div>
+    <div class="screen" id="screenKirim"><h2>Kirim Pesan</h2><div class="card"><h3>Tulis Pesan</h3><textarea id="messageText" rows="3" placeholder="Tulis pesan di sini..."></textarea></div><div class="card"><h3>Pilih Kontak Penerima</h3><div style="display:flex; gap:10px; margin-bottom:10px;"><input type="text" id="filterName" placeholder="Filter Nama" onkeyup="renderAvailableContacts()" style="margin:0"><input type="text" id="filterLoc" placeholder="Filter Lokasi" onkeyup="renderAvailableContacts()" style="margin:0"></div><div id="availableContactsList"></div></div><div class="card"><h3>List Pengiriman (<span id="countSend">0</span>)</h3><div id="sendListDisplay" style="margin-bottom:15px;"></div><button type="button" class="btn-primary" id="btnSendNext" onclick="sendNextInQueue()" style="display:none;">🚀 Kirim ke Nomor Teratas</button><p style="font-size:12px; color:#666; margin-top:10px; text-align:center;">Klik tombol di atas -> Kirim di WA -> Kembali ke sini.</p></div></div>
 
     <!-- INFO NIAGA (FEED) -->
     <div class="screen" id="screenNiaga">
         <div class="bg-white shadow-sm py-3 px-4 mb-2 border-b">
             <div class="mb-2 text-sm font-semibold text-gray-600">Filter Lokasi:</div>
             <div class="grid grid-cols-3 gap-2 mb-2">
-                <select id="filterProvinsi" onchange="loadKabupaten()" class="border rounded px-2 py-2 text-xs w-full bg-white">
-                    <option value="">Semua Provinsi</option>
-                </select>
-                <select id="filterKabupaten" onchange="loadKecamatan()" class="border rounded px-2 py-2 text-xs w-full bg-white" disabled>
-                    <option value="">Semua Kabupaten</option>
-                </select>
-                <select id="filterKecamatan" class="border rounded px-2 py-2 text-xs w-full bg-white" disabled>
-                    <option value="">Semua Kecamatan</option>
-                </select>
+                <select id="filterProvinsi" onchange="loadKabupaten()" class="border rounded px-2 py-2 text-xs w-full bg-white"><option value="">Semua Provinsi</option></select>
+                <select id="filterKabupaten" onchange="loadKecamatan()" class="border rounded px-2 py-2 text-xs w-full bg-white" disabled><option value="">Semua Kabupaten</option></select>
+                <select id="filterKecamatan" class="border rounded px-2 py-2 text-xs w-full bg-white" disabled><option value="">Semua Kecamatan</option></select>
             </div>
             <button onclick="applyFilter()" class="w-full bg-blue-500 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-600 transition">Terapkan Filter</button>
         </div>
         <div id="feedContainer"></div>
-        <button onclick="showPostModal()" id="fabPost" class="fixed bottom-20 right-4 bg-blue-600 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-3xl hover:bg-blue-700 transition z-40" style="display:none;">+</button>
     </div>
 
     <!-- TOKO SAYA -->
     <div class="screen" id="screenToko">
         <div class="bg-white shadow-sm">
-            <div class="store-header-bg relative">
-                <div class="store-avatar" id="storeAvatar">T</div>
-            </div>
+            <div class="store-header-bg relative"><div class="store-avatar" id="storeAvatar">T</div></div>
             <div class="pt-12 px-4 pb-4">
                 <h2 id="storeName" class="text-xl font-bold text-gray-800">Nama Toko</h2>
-                <p id="storeAddress" class="text-sm text-gray-500 flex items-center gap-1 mt-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    <span>Alamat Toko</span>
-                </p>
+                <p id="storeAddress" class="text-sm text-gray-500 flex items-center gap-1 mt-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg><span>Alamat Toko</span></p>
                 <div class="mt-3 flex gap-2">
-                    <a id="storeMapLink" href="#" target="_blank" class="flex-1 text-center bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>
-                        Lihat Peta
-                    </a>
-                    <button id="storeWaBtn" class="flex-1 bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-green-600 transition flex items-center justify-center gap-2">
-                        Chat Toko
-                    </button>
+                    <a id="storeMapLink" href="#" target="_blank" class="flex-1 text-center bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition flex items-center justify-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>Lihat Lokasi</a>
+                    <button id="storeWaBtn" class="flex-1 bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-green-600 transition flex items-center justify-center gap-2">Chat Toko</button>
                 </div>
             </div>
         </div>
@@ -311,44 +213,44 @@
         </div>
     </div>
 
-    <!-- ADMIN -->
+    <!-- ADMIN DASHBOARD -->
     <div class="screen" id="screenAdmin">
         <h2 style="color:#ffc107;">Admin Dashboard</h2>
+        
+        <!-- METRICS SECTION -->
+        <div class="card bg-gradient-to-r from-blue-50 to-green-50">
+            <h3 class="font-bold text-gray-700 mb-2">📊 Statistik Ekosistem</h3>
+            <div class="grid grid-cols-3 gap-2 text-center">
+                <div class="bg-white p-2 rounded shadow-sm">
+                    <div class="text-2xl font-bold text-green-600" id="metricFeedWa">0</div>
+                    <div class="text-xs text-gray-500">Klik WA (Feed)</div>
+                </div>
+                <div class="bg-white p-2 rounded shadow-sm">
+                    <div class="text-2xl font-bold text-blue-600" id="metricStore">0</div>
+                    <div class="text-xs text-gray-500">Klik Toko</div>
+                </div>
+                <div class="bg-white p-2 rounded shadow-sm">
+                    <div class="text-2xl font-bold text-purple-600" id="metricProd">0</div>
+                    <div class="text-xs text-gray-500">Klik Produk</div>
+                </div>
+            </div>
+        </div>
+
         <div class="card">
             <h3>Filter User</h3>
-            <div class="filter-grid">
-                <div><span class="label-small">Dari Tanggal</span><input type="date" id="adminFilterStart" onchange="loadAdminData()" style="margin:0"></div>
-                <div><span class="label-small">Sampai Tanggal</span><input type="date" id="adminFilterEnd" onchange="loadAdminData()" style="margin:0"></div>
-            </div>
-            <input type="text" id="adminFilterName" placeholder="Nama User" onkeyup="loadAdminData()" style="margin-top:5px;">
-            <input type="text" id="adminFilterEmail" placeholder="Email" onkeyup="loadAdminData()">
-            <input type="text" id="adminFilterWa" placeholder="No WA" onkeyup="loadAdminData()">
+            <div class="filter-grid"><div><span class="label-small">Dari Tanggal</span><input type="date" id="adminFilterStart" onchange="loadAdminData()" style="margin:0"></div><div><span class="label-small">Sampai Tanggal</span><input type="date" id="adminFilterEnd" onchange="loadAdminData()" style="margin:0"></div></div>
+            <input type="text" id="adminFilterName" placeholder="Nama User" onkeyup="loadAdminData()" style="margin-top:5px;"><input type="text" id="adminFilterEmail" placeholder="Email" onkeyup="loadAdminData()"><input type="text" id="adminFilterWa" placeholder="No WA" onkeyup="loadAdminData()">
             <div class="counter-badge" id="adminCount" style="margin-top:10px;">Total User: 0</div>
         </div>
         <div class="card">
             <h3>Daftar User</h3>
             <div class="scroll-list-container" id="adminUserList"></div>
         </div>
-        <div class="card">
-            <h3>Data Global</h3>
-            <button type="button" class="btn-admin" onclick="downloadAllContacts()">Download Semua Kontak (CSV)</button>
-        </div>
+        <div class="card"><h3>Data Global</h3><button type="button" class="btn-admin" onclick="downloadAllContacts()">Download Semua Kontak (CSV)</button></div>
     </div>
 
-    <!-- MODAL EDIT KONTAK -->
-    <div class="modal" id="editModal">
-        <div class="modal-content">
-            <h3>Edit Kontak</h3>
-            <input type="hidden" id="editId">
-            <input type="text" id="editName" placeholder="Nama">
-            <input type="text" id="editPhone" placeholder="No HP">
-            <input type="text" id="editLocation" placeholder="Lokasi">
-            <button type="button" class="btn-primary" onclick="saveEditContact()">Simpan</button>
-            <button type="button" class="btn-secondary" onclick="closeModal()">Batal</button>
-        </div>
-    </div>
-
-    <!-- MODAL POSTING NIAGA -->
+    <!-- MODALS -->
+    <div class="modal" id="editModal"><div class="modal-content"><h3>Edit Kontak</h3><input type="hidden" id="editId"><input type="text" id="editName" placeholder="Nama"><input type="text" id="editPhone" placeholder="No HP"><input type="text" id="editLocation" placeholder="Lokasi"><button type="button" class="btn-primary" onclick="saveEditContact()">Simpan</button><button type="button" class="btn-secondary" onclick="closeModal()">Batal</button></div></div>
     <div id="postModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
             <div class="p-4 border-b flex justify-between items-center">
@@ -356,31 +258,20 @@
                 <button onclick="closePostModal()" class="text-gray-500 text-2xl">&times;</button>
             </div>
             <div class="p-4 space-y-3">
-                <div>
-                    <label class="text-sm font-medium text-gray-700">Judul / Nama</label>
-                    <input type="text" id="inputTitle" class="w-full border rounded-lg px-3 py-2 mt-1" placeholder="Judul Iklan / Nama Produk">
-                </div>
-                <div id="inputPrice" class="hidden">
-                    <label class="text-sm font-medium text-gray-700">Harga (Opsional)</label>
-                    <input type="text" class="w-full border rounded-lg px-3 py-2 mt-1" placeholder="Contoh: Rp 50.000">
-                </div>
-                <div>
-                    <label class="text-sm font-medium text-gray-700">Deskripsi</label>
-                    <textarea id="inputDesc" rows="3" class="w-full border rounded-lg px-3 py-2 mt-1" placeholder="Deskripsi singkat..."></textarea>
-                </div>
-                <div>
-                    <label class="text-sm font-medium text-gray-700">Upload Gambar (Max 3)</label>
-                    <input type="file" id="inputImages" multiple accept="image/*" class="w-full border rounded-lg px-3 py-2 mt-1 text-sm">
-                </div>
+                <div><label class="text-sm font-medium text-gray-700">Judul</label><input type="text" id="inputTitle" class="w-full border rounded-lg px-3 py-2 mt-1" placeholder="Judul Iklan"></div>
+                <div><label class="text-sm font-medium text-gray-700">Deskripsi</label><textarea id="inputDesc" rows="3" class="w-full border rounded-lg px-3 py-2 mt-1" placeholder="Deskripsi singkat..."></textarea></div>
+                <div><label class="text-sm font-medium text-gray-700">Upload Gambar (Max 3)</label><input type="file" id="inputImages" multiple accept="image/*" class="w-full border rounded-lg px-3 py-2 mt-1 text-sm"></div>
+                <div id="inputPrice" class="hidden"><label class="text-sm font-medium text-gray-700">Harga</label><input type="text" class="w-full border rounded-lg px-3 py-2 mt-1" placeholder="Harga (Khusus Produk)"></div>
                 <button id="btnSubmit" onclick="submitPost()" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700">Posting Sekarang</button>
             </div>
         </div>
     </div>
 
+    <!-- FAB (Floating Button) -->
+    <button id="fabPost" class="fab-post" onclick="showPostModal()">+</button>
+
     <!-- FLOATING BANNER -->
-    <div id="bannerFooter" class="fixed bottom-0 left-0 w-full bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-30 overflow-hidden hidden">
-        <div class="banner-track p-2 gap-4" id="bannerTrack"></div>
-    </div>
+    <div id="bannerFooter" class="fixed bottom-0 left-0 w-full bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-30 overflow-hidden hidden"><div class="banner-track p-2 gap-4" id="bannerTrack"></div></div>
 
     <!-- SCRIPT -->
     <script>
@@ -405,8 +296,7 @@
             const fab = document.getElementById('fabPost');
             const banner = document.getElementById('bannerFooter');
 
-            // Default state
-            header.className = 'header'; // Reset to green
+            header.className = 'header'; 
             fab.style.display = 'none';
             banner.classList.add('hidden');
 
@@ -415,118 +305,28 @@
             } else {
                 header.style.display = 'flex';
                 if(id === 'screenNiaga' || id === 'screenToko') {
-                    header.className = 'header niaga-header'; // Blue header
-                    loadBanners(); // Show banner
+                    header.className = 'header niaga-header';
+                    loadBanners(); 
                 }
                 if(id === 'screenNiaga') {
-                    fab.style.display = 'flex';
+                    fab.style.display = 'flex'; // Tampilkan FAB hanya di Info Niaga
                 }
             }
             toggleMenu(false);
         }
 
-        function toggleMenu(state) {
-            const popup = document.getElementById('menuPopup');
-            if(state === undefined) popup.classList.toggle('active');
-            else state ? popup.classList.add('active') : popup.classList.remove('active');
-        }
-        
+        function toggleMenu(state) { const popup = document.getElementById('menuPopup'); if(state === undefined) popup.classList.toggle('active'); else state ? popup.classList.add('active') : popup.classList.remove('active'); }
         function closeModal() { document.getElementById('editModal').classList.remove('active'); }
-        function closePostModal() { 
-            document.getElementById('postModal').classList.add('hidden'); 
-            document.getElementById('inputTitle').value = ''; 
-            document.getElementById('inputDesc').value = '';
-            document.getElementById('inputPrice').value = '';
-            document.getElementById('inputImages').value = '';
-        }
-        function togglePassword(inputId) {
-            const x = document.getElementById(inputId);
-            x.type = x.type === "password" ? "text" : "password";
-        }
+        function closePostModal() { document.getElementById('postModal').classList.add('hidden'); document.getElementById('inputTitle').value = ''; document.getElementById('inputDesc').value = ''; document.getElementById('inputPrice').value = ''; document.getElementById('inputImages').value = ''; }
+        function togglePassword(inputId) { const x = document.getElementById(inputId); x.type = x.type === "password" ? "text" : "password"; }
 
         // --- FUNGSI AUTH ---
-        async function handleRegister() {
-            const email = document.getElementById('regEmail').value;
-            const pass = document.getElementById('regPass').value;
-            const user = document.getElementById('regUser').value;
-            const wa = document.getElementById('regWa').value;
-
-            if(!email || !pass || !user) { alert("Harap isi Email, Password, dan Username!"); return; }
-            const { data, error } = await _supabase.auth.signUp({
-                email: email, password: pass,
-                options: { data: { username: user, wa_number: wa } }
-            });
-            if (error) alert("Error: " + error.message);
-            else { 
-                if(typeof fbq === 'function') fbq('track', 'CompleteRegistration');
-                if(typeof gtag === 'function') gtag('event', 'sign_up');
-                alert("Registrasi berhasil!\nAkun Anda perlu DISETUJUI ADMIN.\nSilakan hubungi Admin via Menu."); 
-                showScreen('screenLogin'); 
-            }
-        }
-
-        async function handleLogin() {
-            const email = document.getElementById('loginEmail').value;
-            const pass = document.getElementById('loginPass').value;
-            
-            try {
-                const { data, error } = await _supabase.auth.signInWithPassword({ email, password: pass });
-                if (error) { alert("Login Gagal: " + error.message); return; }
-                
-                currentUser = data.user;
-                const { data: profile, error: profileError } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single();
-                
-                if (profileError || !profile) {
-                    await _supabase.from('profiles').insert({ id: currentUser.id, username: currentUser.email, email: currentUser.email, role: 'user', is_active: false });
-                    const { data: newProfile } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single();
-                    if(newProfile) { currentRole = 'user'; isActive = false; }
-                    else { alert("Gagal membuat profil. Hubungi Admin."); logout(); return; }
-                } else {
-                    currentRole = profile.role || 'user';
-                    isActive = (profile.is_active === true);
-                }
-
-                if (currentRole !== 'admin' && !isActive) {
-                    alert("PERHATIAN: Akun Anda BELUM AKTIF.\n\nFitur 'Kirim Pesan' dikunci.\nSilakan hubungi Admin via Menu.");
-                }
-                
-                if(typeof fbq === 'function') fbq('track', 'Login');
-                if(typeof gtag === 'function') gtag('event', 'login');
-
-                setupUI();
-            } catch (err) {
-                console.error(err);
-                alert("Terjadi kesalahan sistem.");
-            }
-        }
-
-        function contactAdminReset() {
-            const email = document.getElementById('loginEmail').value;
-            let message = `Hai Admin kirimWA, saya lupa password saya.`;
-            if(email) message += ` Email saya: ${email}`;
-            const link = `https://wa.me/6285161990373?text=${encodeURIComponent(message)}`;
-            window.open(link, '_blank');
-        }
-
-        async function updateNewPassword() {
-            const pass = document.getElementById('newPass').value;
-            if(!pass) return alert("Masukkan password baru!");
-            const { error } = await _supabase.auth.updateUser({ password: pass });
-            if(error) alert("Gagal update: " + error.message);
-            else {
-                alert("Password berhasil diubah! Silakan login dengan password baru.");
-                logout();
-            }
-        }
-
-        async function logout() { 
-            await _supabase.auth.signOut(); 
-            currentUser = null; isActive = false; currentRole = 'user';
-            showScreen('screenLogin'); 
-        }
-
+        async function handleRegister() { const email = document.getElementById('regEmail').value; const pass = document.getElementById('regPass').value; const user = document.getElementById('regUser').value; const wa = document.getElementById('regWa').value; if(!email || !pass || !user) { alert("Harap isi Email, Password, dan Username!"); return; } const { data, error } = await _supabase.auth.signUp({ email: email, password: pass, options: { data: { username: user, wa_number: wa } } }); if (error) alert("Error: " + error.message); else { if(typeof fbq === 'function') fbq('track', 'CompleteRegistration'); alert("Registrasi berhasil!\nAkun Anda perlu DISETUJUI ADMIN."); showScreen('screenLogin'); } }
+        async function handleLogin() { const email = document.getElementById('loginEmail').value; const pass = document.getElementById('loginPass').value; try { const { data, error } = await _supabase.auth.signInWithPassword({ email, password: pass }); if (error) { alert("Login Gagal: " + error.message); return; } currentUser = data.user; const { data: profile, error: profileError } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single(); if (profileError || !profile) { await _supabase.from('profiles').insert({ id: currentUser.id, username: currentUser.email, email: currentUser.email, role: 'user', is_active: false }); const { data: newProfile } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single(); if(newProfile) { currentRole = 'user'; isActive = false; } else { alert("Gagal membuat profil."); logout(); return; } } else { currentRole = profile.role || 'user'; isActive = (profile.is_active === true); } if (currentRole !== 'admin' && !isActive) alert("PERHATIAN: Akun Anda BELUM AKTIF."); setupUI(); } catch (err) { console.error(err); alert("Terjadi kesalahan sistem."); } }
+        function contactAdminReset() { const email = document.getElementById('loginEmail').value; let message = `Hai Admin kirimWA, saya lupa password saya.`; if(email) message += ` Email saya: ${email}`; window.open(`https://wa.me/6285161990373?text=${encodeURIComponent(message)}`, '_blank'); }
+        async function updateNewPassword() { const pass = document.getElementById('newPass').value; if(!pass) return alert("Masukkan password baru!"); const { error } = await _supabase.auth.updateUser({ password: pass }); if(error) alert("Gagal update: " + error.message); else { alert("Password berhasil diubah!"); logout(); } }
+        async function logout() { await _supabase.auth.signOut(); currentUser = null; isActive = false; currentRole = 'user'; showScreen('screenLogin'); }
         _supabase.auth.onAuthStateChange((event, session) => { if (event === 'PASSWORD_RECOVERY') showScreen('screenReset'); else if (event === 'SIGNED_IN' && session && session.user) { if(!currentUser) checkSession(); } else if (event === 'SIGNED_OUT') { currentUser = null; showScreen('screenLogin'); } });
-
         async function checkSession() { try { const { data: { user } } = await _supabase.auth.getUser(); if (user) { currentUser = user; const { data: profile } = await _supabase.from('profiles').select('*').eq('id', user.id).single(); if (profile) { currentRole = profile.role || 'user'; isActive = (profile.is_active === true); } setupUI(); } } catch(e) { console.error(e); } }
 
         function setupUI() {
@@ -534,33 +334,21 @@
             const adminLinkBtn = document.getElementById('adminLinkBtn');
             adminLinkBtn.href = ADMIN_LINK;
             const warning = document.getElementById('inactiveWarning');
-            
             let menuHTML = '';
 
             if (currentRole === 'admin') {
-                menuHTML = '<span class="menu-item" onclick="navigateTo(\'admin\')">Admin</span>';
-                menuHTML += '<span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span>';
-                menuHTML += '<span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span>';
-                menuHTML += '<span class="menu-item" onclick="navigateTo(\'niaga\')">Info Niaga</span>';
-                menuHTML += '<span class="menu-item" onclick="navigateTo(\'toko\')">Toko Saya</span>';
-                menuHTML += '<span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
-                adminLinkBtn.style.display = 'none'; 
-                warning.style.display = 'none';
+                menuHTML = '<span class="menu-item" onclick="navigateTo(\'admin\')">Admin</span><span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'niaga\')">Info Niaga</span><span class="menu-item" onclick="navigateTo(\'toko\')">Toko Saya</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
+                adminLinkBtn.style.display = 'none'; warning.style.display = 'none';
                 navigateTo('admin');
             } else {
                 menuHTML = '<span class="menu-item" onclick="navigateTo(\'niaga\')">Info Niaga</span>';
                 if (!isActive) {
-                    menuHTML += '<span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span>';
-                    menuHTML += '<span class="menu-item" onclick="navigateTo(\'toko\')">Toko Saya</span>';
-                    adminLinkBtn.style.display = 'block'; adminLinkBtn.className = 'menu-item highlight';
-                    warning.style.display = 'block';
+                    menuHTML += '<span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'toko\')">Toko Saya</span>';
+                    adminLinkBtn.style.display = 'block'; adminLinkBtn.className = 'menu-item highlight'; warning.style.display = 'block';
                     navigateTo('niaga');
                 } else {
-                    menuHTML += '<span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span>';
-                    menuHTML += '<span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span>';
-                    menuHTML += '<span class="menu-item" onclick="navigateTo(\'toko\')">Toko Saya</span>';
-                    adminLinkBtn.style.display = 'block'; adminLinkBtn.className = 'menu-item';
-                    warning.style.display = 'none';
+                    menuHTML += '<span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'toko\')">Toko Saya</span>';
+                    adminLinkBtn.style.display = 'block'; adminLinkBtn.className = 'menu-item'; warning.style.display = 'none';
                     navigateTo('niaga');
                 }
                 menuHTML += '<span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
@@ -574,11 +362,13 @@
             document.getElementById('headerTitle').innerText = page.charAt(0).toUpperCase() + page.slice(1);
             if(page === 'akun') { loadProfile(); document.getElementById('profStatus').innerText = isActive ? "AKTIF" : "NON-AKTIF"; document.getElementById('profStatus').className = isActive ? "status-active" : "status-banned"; }
             if(page === 'kontak') loadContacts();
-            if(page === 'admin') loadAdminData();
+            if(page === 'admin') { loadAdminData(); loadAdminMetrics(); }
             if(page === 'kirim') { loadContacts(); renderAvailableContacts(); }
             if(page === 'niaga') loadFeed();
             if(page === 'toko') loadMyStore();
         }
+        
+        function navigateHome() { if(currentRole === 'admin') navigateTo('admin'); else if(isActive) navigateTo('kirim'); else navigateTo('niaga'); }
 
         async function loadProfile() { try { const { data, error } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single(); if (error || !data) { document.getElementById('profUsername').innerText = "Error"; document.getElementById('profEmail').innerText = currentUser.email; return; } document.getElementById('profUsername').innerText = data.username || '-'; document.getElementById('profEmail').innerText = data.email || currentUser.email; document.getElementById('editWa').value = data.wa_number || ''; } catch(e) { console.error(e); } }
         async function updateProfile() { const wa = document.getElementById('editWa').value; const { error } = await _supabase.from('profiles').update({ wa_number: wa }).eq('id', currentUser.id); alert(error ? "Gagal" : "WA diupdate!"); }
@@ -600,43 +390,29 @@
         async function sendSingle(index) { const msg = document.getElementById('messageText').value; if(!msg) return alert("Pesan kosong!"); const c = sendList[index]; let phone = c.phone.replace(/[^0-9]/g, ''); let text = encodeURIComponent(msg); window.open('https://wa.me/'+phone+'?text='+text, '_blank'); sendList.splice(index, 1); renderSendList(); }
 
         // --- LOGIC ADMIN ---
-        async function loadAdminData() { try { const fStart = document.getElementById('adminFilterStart').value; const fEnd = document.getElementById('adminFilterEnd').value; const fName = document.getElementById('adminFilterName').value.toLowerCase(); const fEmail = document.getElementById('adminFilterEmail').value.toLowerCase(); const fWa = document.getElementById('adminFilterWa').value.toLowerCase(); let query = _supabase.from('profiles').select('id, username, email, wa_number, is_active, created_at', { count: 'exact' }); if(fStart) query = query.gte('created_at', fStart + 'T00:00:00'); if(fEnd) query = query.lte('created_at', fEnd + 'T23:59:59'); if(fName) query = query.ilike('username', '%'+fName+'%'); if(fEmail) query = query.ilike('email', '%'+fEmail+'%'); if(fWa) query = query.ilike('wa_number', '%'+fWa+'%'); const { data, error, count } = await query; if (error) throw error; document.getElementById('adminCount').innerText = "Total User: " + (count || 0); const c = document.getElementById('adminUserList'); if (!data || data.length === 0) { c.innerHTML = '<p style="text-align:center;color:#999;">Tidak ada user.</p>'; return; } c.innerHTML = data.map(u => { const t = u.is_active ? 'Non-Aktifkan' : 'Aktifkan'; const cl = u.is_active ? 'btn-danger' : 'btn-primary'; return `<div class="contact-item"><div class="c-name">${u.email}</div><div class="c-phone">${u.username} | WA: ${u.wa_number || '-'}</div><div class="c-loc">📅 ${u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID') : 'N/A'}</div><div class="c-actions"><button class="${cl}" onclick="toggleUserStatus('${u.id}', ${u.is_active})">${t}</button><button class="btn-secondary" onclick="adminDeleteUser('${u.id}')">Hapus</button></div></div>`}).join(''); } catch (err) { console.error(err); } }
+        async function loadAdminMetrics() {
+            // Load Feed WA Clicks
+            const { data: feedData } = await _supabase.from('feed_posts').select('wa_click_count, store_click_count');
+            let waTotal = 0; let storeTotal = 0;
+            if (feedData) { feedData.forEach(p => { waTotal += p.wa_click_count || 0; storeTotal += p.store_click_count || 0; }); }
+            document.getElementById('metricFeedWa').innerText = waTotal;
+            document.getElementById('metricStore').innerText = storeTotal;
+
+            // Load Product WA Clicks
+            const { data: prodData } = await _supabase.from('store_products').select('wa_click_count');
+            let prodTotal = 0;
+            if (prodData) { prodData.forEach(p => { prodTotal += p.wa_click_count || 0; }); }
+            document.getElementById('metricProd').innerText = prodTotal;
+        }
+
+        async function loadAdminData() { try { const fStart = document.getElementById('adminFilterStart').value; const fEnd = document.getElementById('adminFilterEnd').value; const fName = document.getElementById('adminFilterName').value.toLowerCase(); const fEmail = document.getElementById('adminFilterEmail').value.toLowerCase(); const fWa = document.getElementById('adminFilterWa').value.toLowerCase(); let query = _supabase.from('profiles').select('id, username, email, wa_number, is_active, is_store_active, created_at', { count: 'exact' }); if(fStart) query = query.gte('created_at', fStart + 'T00:00:00'); if(fEnd) query = query.lte('created_at', fEnd + 'T23:59:59'); if(fName) query = query.ilike('username', '%'+fName+'%'); if(fEmail) query = query.ilike('email', '%'+fEmail+'%'); if(fWa) query = query.ilike('wa_number', '%'+fWa+'%'); const { data, error, count } = await query; if (error) throw error; document.getElementById('adminCount').innerText = "Total User: " + (count || 0); const c = document.getElementById('adminUserList'); if (!data || data.length === 0) { c.innerHTML = '<p style="text-align:center;color:#999;">Tidak ada user.</p>'; return; } c.innerHTML = data.map(u => { const t = u.is_active ? 'Non-Aktifkan' : 'Aktifkan'; const cl = u.is_active ? 'btn-danger' : 'btn-primary'; const ts = u.is_store_active ? 'Toko Non-Aktifkan' : 'Aktivasi Toko'; const cls = u.is_store_active ? 'btn-danger' : 'btn-secondary'; return `<div class="contact-item"><div class="c-name">${u.email}</div><div class="c-phone">${u.username} | WA: ${u.wa_number || '-'}</div><div class="c-loc">📅 ${u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID') : 'N/A'}</div><div style="font-size:11px; margin-bottom:5px;"><span style="color:${u.is_active ? 'green' : 'red'}">Akun: ${u.is_active ? 'AKTIF' : 'NONAKTIF'}</span> | <span style="color:${u.is_store_active ? 'green' : 'orange'}">Toko: ${u.is_store_active ? 'AKTIF' : 'NONAKTIF'}</span></div><div class="c-actions"><button class="${cl}" onclick="toggleUserStatus('${u.id}', ${u.is_active})">${t}</button><button class="${cls}" onclick="toggleStoreStatus('${u.id}', ${u.is_store_active})">${ts}</button></div></div>`}).join(''); } catch (err) { console.error(err); } }
         async function toggleUserStatus(userId, currentStatus) { const newStatus = !currentStatus; await _supabase.from('profiles').update({ is_active: newStatus }).eq('id', userId); loadAdminData(); }
-        async function adminDeleteUser(userId) { if(!confirm("Hapus?")) return; await _supabase.from('profiles').delete().eq('id', userId); loadAdminData(); }
+        async function toggleStoreStatus(userId, currentStatus) { const newStatus = !currentStatus; await _supabase.from('profiles').update({ is_store_active: newStatus }).eq('id', userId); loadAdminData(); }
         async function downloadAllContacts() { const { data } = await _supabase.from('contacts').select('name, phone, location, profiles(email)'); if(!data) return; let csv = "Nama,No HP,Lokasi,Email\n"; data.forEach(r => { csv += r.name+','+r.phone+','+r.location+','+(r.profiles?.email||'')+'\n'; }); var a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv); a.target = '_blank'; a.download = 'data_kontak.csv'; a.click(); }
 
         // --- LOGIC NIAGA (FEED & TOKO) ---
-        async function loadMyStore() {
-            if (!currentUser) return;
-            const { data: profile } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single();
-            if (!profile.is_store_active) {
-                alert("Anda belum aktivasi Akun Toko.");
-                navigateTo('niaga');
-                return;
-            }
-            document.getElementById('storeName').innerText = profile.store_name || "Toko Saya";
-            document.getElementById('storeAddress').innerText = profile.store_address || "-";
-            document.getElementById('storeAvatar').innerText = profile.store_name ? profile.store_name.charAt(0).toUpperCase() : "T";
-            document.getElementById('storeWaBtn').onclick = () => window.open(`https://wa.me/${profile.phone}`, '_blank');
-            if (profile.gmaps_link) { document.getElementById('storeMapLink').href = profile.gmaps_link; document.getElementById('storeMapLink').classList.remove('hidden'); } else { document.getElementById('storeMapLink').classList.add('hidden'); }
-            loadProducts(currentUser.id, true);
-        }
-
-        async function loadProducts(userId, isOwner = false) {
-            const container = document.getElementById('productContainer');
-            container.innerHTML = '<div class="col-span-2 text-center text-gray-500 py-4">Memuat...</div>';
-            const { data: products, error } = await _supabase.from('store_products').select('*').eq('user_id', userId);
-            let htmlContent = isOwner ? `<div class="col-span-2 mb-2"><button onclick="showProductModal()" class="w-full bg-blue-100 text-blue-700 py-2 rounded-lg font-semibold border border-dashed border-blue-300 hover:bg-blue-200">+ Tambah Produk</button></div>` : '';
-            if (error || products.length === 0) { container.innerHTML = htmlContent + '<div class="col-span-2 text-center text-gray-400 py-6">Belum ada produk.</div>'; return; }
-            container.innerHTML = htmlContent;
-            products.forEach(p => {
-                const card = document.createElement('div');
-                card.className = 'bg-white rounded-lg shadow overflow-hidden';
-                card.innerHTML = `<img src="${p.image_url || 'https://via.placeholder.com/150'}" class="w-full h-24 object-cover"><div class="p-2"><h4 class="font-semibold text-sm truncate">${p.product_name}</h4><p class="text-green-600 font-bold text-xs">${p.price || ''}</p><button onclick="handleProductWa('${p.id}', '${userId}')" class="mt-2 w-full bg-green-500 text-white text-xs py-1 rounded hover:bg-green-600">WhatsApp</button></div>`;
-                container.appendChild(card);
-            });
-        }
-        
+        async function loadMyStore() { if (!currentUser) return; const { data: profile } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single(); if (!profile.is_store_active) { alert("Anda belum aktivasi Akun Toko."); navigateTo('niaga'); return; } document.getElementById('storeName').innerText = profile.store_name || "Toko Saya"; document.getElementById('storeAddress').innerText = profile.store_address || "-"; document.getElementById('storeAvatar').innerText = profile.store_name ? profile.store_name.charAt(0).toUpperCase() : "T"; document.getElementById('storeWaBtn').onclick = () => window.open(`https://wa.me/${profile.phone}`, '_blank'); if (profile.gmaps_link) { document.getElementById('storeMapLink').href = profile.gmaps_link; document.getElementById('storeMapLink').classList.remove('hidden'); } else { document.getElementById('storeMapLink').classList.add('hidden'); } loadProducts(currentUser.id, true); }
+        async function loadProducts(userId, isOwner = false) { const container = document.getElementById('productContainer'); container.innerHTML = '<div class="col-span-2 text-center text-gray-500 py-4">Memuat...</div>'; const { data: products, error } = await _supabase.from('store_products').select('*').eq('user_id', userId); let htmlContent = isOwner ? `<div class="col-span-2 mb-2"><button onclick="showProductModal()" class="w-full bg-blue-100 text-blue-700 py-2 rounded-lg font-semibold border border-dashed border-blue-300 hover:bg-blue-200">+ Tambah Produk</button></div>` : ''; if (error || products.length === 0) { container.innerHTML = htmlContent + '<div class="col-span-2 text-center text-gray-400 py-6">Belum ada produk.</div>'; return; } container.innerHTML = htmlContent; products.forEach(p => { const card = document.createElement('div'); card.className = 'bg-white rounded-lg shadow overflow-hidden'; card.innerHTML = `<img src="${p.image_url || 'https://via.placeholder.com/150'}" class="w-full h-24 object-cover"><div class="p-2"><h4 class="font-semibold text-sm truncate">${p.product_name}</h4><p class="text-green-600 font-bold text-xs">${p.price || ''}</p><button onclick="handleProductWa('${p.id}', '${userId}')" class="mt-2 w-full bg-green-500 text-white text-xs py-1 rounded hover:bg-green-600">WhatsApp</button></div>`; container.appendChild(card); }); }
         window.handleProductWa = async (prodId, userId) => { await _supabase.rpc('increment_product_counter', { prod_id: prodId }); const { data } = await _supabase.from('profiles').select('phone').eq('id', userId).single(); if (data) window.open(`https://wa.me/${data.phone}`, '_blank'); };
 
         async function loadProvinsi() { try { const response = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json'); const data = await response.json(); const select = document.getElementById('filterProvinsi'); data.forEach(p => { const opt = document.createElement('option'); opt.value = p.name; opt.textContent = p.name; select.appendChild(opt); }); } catch (e) { console.error("Gagal load provinsi", e); } }
@@ -665,28 +441,14 @@
             });
         }
 
-        window.viewOtherStore = async function(userId) { 
-            if(userId === currentUser.id) { navigateTo('toko'); return; }
-            // Load other store logic
-            const { data: profile } = await _supabase.from('profiles').select('*').eq('id', userId).single();
-            if (!profile) return alert("Toko tidak ditemukan");
-            document.getElementById('storeName').innerText = profile.store_name;
-            document.getElementById('storeAddress').innerText = profile.store_address;
-            document.getElementById('storeAvatar').innerText = profile.store_name ? profile.store_name.charAt(0).toUpperCase() : "T";
-            document.getElementById('storeWaBtn').onclick = () => window.open(`https://wa.me/${profile.phone}`, '_blank');
-            if (profile.gmaps_link) { document.getElementById('storeMapLink').href = profile.gmaps_link; document.getElementById('storeMapLink').classList.remove('hidden'); } else { document.getElementById('storeMapLink').classList.add('hidden'); }
-            loadProducts(userId, false);
-            showScreen('screenToko');
-            document.getElementById('headerTitle').innerText = profile.store_name || "Toko";
-        };
-
+        window.viewOtherStore = async function(userId) { if(userId === currentUser.id) { navigateTo('toko'); return; } const { data: profile } = await _supabase.from('profiles').select('*').eq('id', userId).single(); if (!profile) return alert("Toko tidak ditemukan"); document.getElementById('storeName').innerText = profile.store_name; document.getElementById('storeAddress').innerText = profile.store_address; document.getElementById('storeAvatar').innerText = profile.store_name ? profile.store_name.charAt(0).toUpperCase() : "T"; document.getElementById('storeWaBtn').onclick = () => window.open(`https://wa.me/${profile.phone}`, '_blank'); if (profile.gmaps_link) { document.getElementById('storeMapLink').href = profile.gmaps_link; document.getElementById('storeMapLink').classList.remove('hidden'); } else { document.getElementById('storeMapLink').classList.add('hidden'); } loadProducts(userId, false); showScreen('screenToko'); document.getElementById('headerTitle').innerText = profile.store_name || "Toko"; };
         window.handleFeedWa = async (postId, phone, title) => { await _supabase.rpc('increment_feed_counter', { post_id: postId, column_name: 'wa' }); window.open(`https://wa.me/${phone}?text=${encodeURIComponent('Halo, saya tertarik dengan: ' + title)}`, '_blank'); };
 
         async function loadBanners() { const { data: settings } = await _supabase.from('site_settings').select('*'); const bannerSetting = settings?.find(s => s.key === 'banner_enabled'); if (bannerSetting?.value === 'true') { const { data: banners } = await _supabase.from('banners').select('*').eq('is_active', true).order('order_index'); if (banners?.length > 0) { const footer = document.getElementById('bannerFooter'); const track = document.getElementById('bannerTrack'); footer.classList.remove('hidden'); track.innerHTML = banners.map(b => `<img src="${b.image_url}" class="h-14 object-contain rounded cursor-pointer" onclick="window.open('${b.target_url}')">`).join(''); track.innerHTML += track.innerHTML; track.classList.add('banner-animate'); } } }
 
-        // --- MODAL POST LOGIC ---
-        window.showPostModal = function() { if(!currentUser) return alert("Login dulu"); document.getElementById('modalTitle').innerText = "Posting Info Niaga"; document.getElementById('inputPrice').classList.add('hidden'); document.getElementById('btnSubmit').innerText = "Posting"; document.getElementById('btnSubmit').setAttribute('onclick', 'submitPost()'); document.getElementById('postModal').classList.remove('hidden'); };
-        window.showProductModal = function() { document.getElementById('modalTitle').innerText = "Tambah Produk"; document.getElementById('inputPrice').classList.remove('hidden'); document.getElementById('btnSubmit').innerText = "Simpan Produk"; document.getElementById('btnSubmit').setAttribute('onclick', 'submitProduct()'); document.getElementById('postModal').classList.remove('hidden'); };
+        // --- MODAL LOGIC ---
+        window.showPostModal = function() { if(!currentUser) return alert("Login dulu"); document.getElementById('modalTitle').innerText = "Posting Baru"; document.getElementById('inputPrice').classList.add('hidden'); document.getElementById('btnSubmit').innerText = "Posting"; document.getElementById('btnSubmit').setAttribute('onclick', 'submitPost()'); document.getElementById('postModal').classList.remove('hidden'); };
+        window.showProductModal = function() { document.getElementById('modalTitle').innerText = "Tambah Produk"; document.getElementById('inputPrice').classList.remove('hidden'); document.getElementById('btnSubmit').innerText = "Simpan"; document.getElementById('btnSubmit').setAttribute('onclick', 'submitProduct()'); document.getElementById('postModal').classList.remove('hidden'); };
 
         window.submitProduct = async function() { const name = document.getElementById('inputTitle').value; const price = document.getElementById('inputPrice').value; const file = document.getElementById('inputImages').files[0]; if (!name) return alert("Nama produk harus diisi!"); let imageUrl = ''; if (file) { const fileName = `prod_${Date.now()}_${file.name}`; const { data, error } = await _supabase.storage.from('product-images').upload(fileName, file); if (data) imageUrl = _supabase.storage.from('product-images').getPublicUrl(data.path).data.publicUrl; } const { error } = await _supabase.from('store_products').insert({ user_id: currentUser.id, product_name: name, price: price, image_url: imageUrl }); if (error) { alert("Gagal simpan produk: " + error.message); } else { closePostModal(); loadProducts(currentUser.id, true); } };
         window.submitPost = async function() { const title = document.getElementById('inputTitle').value; const desc = document.getElementById('inputDesc').value; const files = document.getElementById('inputImages').files; if (!title) return alert("Judul harus diisi!"); let imageUrls = []; if (files.length > 0) { for (let i = 0; i < Math.min(files.length, 3); i++) { const file = files[i]; const fileName = `${Date.now()}_${file.name}`; const { data, error } = await _supabase.storage.from('product-images').upload(fileName, file); if (data) { const publicUrl = _supabase.storage.from('product-images').getPublicUrl(data.path).data.publicUrl; imageUrls.push(publicUrl); } } } const { error } = await _supabase.from('feed_posts').insert({ user_id: currentUser.id, title: title, description: desc, images: imageUrls }); if (error) { alert("Gagal posting: " + error.message); } else { closePostModal(); loadFeed(); } };
