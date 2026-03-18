@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>kirimWA Ekosistem</title>
-    <!-- PIXEL & ANALYTICS (Tetap sama) -->
+    <!-- PIXEL & ANALYTICS -->
     <script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init', '1379361620875155');fbq('track', 'PageView');</script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-ED0ZKSR99T"></script>
     <script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-ED0ZKSR99T');</script>
@@ -32,9 +32,10 @@
         .menu-item { display: block; padding: 15px 20px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; cursor: pointer; font-size: 14px; }
         .menu-item:hover { background: #f1f1f1; }
         .menu-item.logout { color: red; }
+        .menu-item.highlight { background: #fff3cd; color: #856404; font-weight: bold; }
         
         /* FORMS */
-        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; font-family: 'Poppins', sans-serif; }
+        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; font-family: 'Poppins', sans-serif; background: #fff; }
         .pass-wrapper { position: relative; width: 100%; }
         .pass-wrapper input { padding-right: 45px; } 
         .pass-wrapper .toggle-pass { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #666; font-size: 18px; user-select: none; }
@@ -42,9 +43,9 @@
         .btn-primary { background: var(--primary); color: white; }
         .btn-secondary { background: #ddd; color: #333; }
         .btn-danger { background: #ff4444; color: white; }
-        .btn-link { background: none; border: none; color: var(--dark); text-decoration: underline; padding: 5px; margin-top: 5px; font-size: 14px; }
+        .btn-link { background: none; border: none; color: var(--dark); text-decoration: underline; padding: 5px; margin-top: 5px; font-size: 14px; cursor: pointer; }
         
-        /* CARDS */
+        /* CARDS & ITEMS */
         .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .contact-item { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .contact-item .c-name { font-weight: bold; font-size: 16px; color: #333; margin-bottom: 4px; }
@@ -96,7 +97,7 @@
         .carousel-btn.prev { left: 5px; }
         .carousel-btn.next { right: 5px; }
 
-        /* FAB (Floating Action Button) - REVISI */
+        /* FAB (Floating Action Button) */
         .fab-post {
             position: fixed; bottom: 80px; right: 20px;
             width: 50px; height: 50px;
@@ -168,17 +169,10 @@
         </div>
     </div>
 
-    <!-- RESET PASSWORD -->
-    <div class="screen" id="screenReset"><div class="card" style="margin-top:50px; text-align:center;"><h2>Reset Password</h2><p>Silakan masukkan password baru Anda.</p><div class="pass-wrapper"><input type="password" id="newPass" placeholder="Password Baru"><span class="toggle-pass" onclick="togglePassword('newPass')">👁️</span></div><button type="button" class="btn-primary" onclick="updateNewPassword()">Simpan Password Baru</button></div></div>
-
-    <!-- AKUN -->
-    <div class="screen" id="screenAkun"><h2>Akun Saya</h2><div class="warning-banner" id="inactiveWarning" style="display:none;">⚠️ <strong>AKUN BELUM AKTIF.</strong><br>Silakan hubungi Admin via Menu.</div><div class="card"><p><strong>Username:</strong> <span id="profUsername">-</span></p><p><strong>Email:</strong> <span id="profEmail">-</span></p><p><strong>Status:</strong> <span id="profStatus">-</span></p><hr><h3>Edit Data</h3><input type="text" id="editWa" placeholder="Nomor WA Baru"><button type="button" class="btn-secondary" onclick="updateProfile()">Simpan Nomor WA</button><br><br><div class="pass-wrapper"><input type="password" id="editPass" placeholder="Password Baru"><span class="toggle-pass" onclick="togglePassword('editPass')">👁️</span></div><button type="button" class="btn-secondary" onclick="updatePassword()">Simpan Password</button><br><br><button type="button" class="btn-danger" onclick="deleteAccount()">Hapus Akun?</button></div></div>
-
-    <!-- KONTAK -->
-    <div class="screen" id="screenKontak"><h2>Daftar Kontak</h2><div class="card"><h3>Tambah Kontak Baru</h3><input type="text" id="cName" placeholder="Nama"><input type="text" id="cPhone" placeholder="Nomor HP"><input type="text" id="cLocation" placeholder="Lokasi"><button type="button" class="btn-primary" onclick="addContact()">Simpan Kontak</button></div><div class="filter-row"><input type="text" id="searchContact" placeholder="Nama / No HP" onkeyup="renderContacts()"><input type="text" id="searchLocation" placeholder="Lokasi" onkeyup="renderContacts()"></div><div id="contactListContainer"></div></div>
-
-    <!-- KIRIM PESAN -->
-    <div class="screen" id="screenKirim"><h2>Kirim Pesan</h2><div class="card"><h3>Tulis Pesan</h3><textarea id="messageText" rows="3" placeholder="Tulis pesan di sini..."></textarea></div><div class="card"><h3>Pilih Kontak Penerima</h3><div style="display:flex; gap:10px; margin-bottom:10px;"><input type="text" id="filterName" placeholder="Filter Nama" onkeyup="renderAvailableContacts()" style="margin:0"><input type="text" id="filterLoc" placeholder="Filter Lokasi" onkeyup="renderAvailableContacts()" style="margin:0"></div><div id="availableContactsList"></div></div><div class="card"><h3>List Pengiriman (<span id="countSend">0</span>)</h3><div id="sendListDisplay" style="margin-bottom:15px;"></div><button type="button" class="btn-primary" id="btnSendNext" onclick="sendNextInQueue()" style="display:none;">🚀 Kirim ke Nomor Teratas</button><p style="font-size:12px; color:#666; margin-top:10px; text-align:center;">Klik tombol di atas -> Kirim di WA -> Kembali ke sini.</p></div></div>
+    <!-- RESET PASSWORD --><div class="screen" id="screenReset"><div class="card" style="margin-top:50px; text-align:center;"><h2>Reset Password</h2><p>Silakan masukkan password baru Anda.</p><div class="pass-wrapper"><input type="password" id="newPass" placeholder="Password Baru"><span class="toggle-pass" onclick="togglePassword('newPass')">👁️</span></div><button type="button" class="btn-primary" onclick="updateNewPassword()">Simpan Password Baru</button></div></div>
+    <!-- AKUN --><div class="screen" id="screenAkun"><h2>Akun Saya</h2><div class="warning-banner" id="inactiveWarning" style="display:none;">⚠️ <strong>AKUN BELUM AKTIF.</strong><br>Silakan hubungi Admin via Menu.</div><div class="card"><p><strong>Username:</strong> <span id="profUsername">-</span></p><p><strong>Email:</strong> <span id="profEmail">-</span></p><p><strong>Status:</strong> <span id="profStatus">-</span></p><hr><h3>Edit Data</h3><input type="text" id="editWa" placeholder="Nomor WA Baru"><button type="button" class="btn-secondary" onclick="updateProfile()">Simpan Nomor WA</button><br><br><div class="pass-wrapper"><input type="password" id="editPass" placeholder="Password Baru"><span class="toggle-pass" onclick="togglePassword('editPass')">👁️</span></div><button type="button" class="btn-secondary" onclick="updatePassword()">Simpan Password</button><br><br><button type="button" class="btn-danger" onclick="deleteAccount()">Hapus Akun?</button></div></div>
+    <!-- KONTAK --><div class="screen" id="screenKontak"><h2>Daftar Kontak</h2><div class="card"><h3>Tambah Kontak Baru</h3><input type="text" id="cName" placeholder="Nama"><input type="text" id="cPhone" placeholder="Nomor HP"><input type="text" id="cLocation" placeholder="Lokasi"><button type="button" class="btn-primary" onclick="addContact()">Simpan Kontak</button></div><div class="filter-row"><input type="text" id="searchContact" placeholder="Nama / No HP" onkeyup="renderContacts()"><input type="text" id="searchLocation" placeholder="Lokasi" onkeyup="renderContacts()"></div><div id="contactListContainer"></div></div>
+    <!-- KIRIM PESAN --><div class="screen" id="screenKirim"><h2>Kirim Pesan</h2><div class="card"><h3>Tulis Pesan</h3><textarea id="messageText" rows="3" placeholder="Tulis pesan di sini..."></textarea></div><div class="card"><h3>Pilih Kontak Penerima</h3><div style="display:flex; gap:10px; margin-bottom:10px;"><input type="text" id="filterName" placeholder="Filter Nama" onkeyup="renderAvailableContacts()" style="margin:0"><input type="text" id="filterLoc" placeholder="Filter Lokasi" onkeyup="renderAvailableContacts()" style="margin:0"></div><div id="availableContactsList"></div></div><div class="card"><h3>List Pengiriman (<span id="countSend">0</span>)</h3><div id="sendListDisplay" style="margin-bottom:15px;"></div><button type="button" class="btn-primary" id="btnSendNext" onclick="sendNextInQueue()" style="display:none;">🚀 Kirim ke Nomor Teratas</button><p style="font-size:12px; color:#666; margin-top:10px; text-align:center;">Klik tombol di atas -> Kirim di WA -> Kembali ke sini.</p></div></div>
 
     <!-- INFO NIAGA (FEED) -->
     <div class="screen" id="screenNiaga">
@@ -221,18 +215,9 @@
         <div class="card bg-gradient-to-r from-blue-50 to-green-50">
             <h3 class="font-bold text-gray-700 mb-2">📊 Statistik Ekosistem</h3>
             <div class="grid grid-cols-3 gap-2 text-center">
-                <div class="bg-white p-2 rounded shadow-sm">
-                    <div class="text-2xl font-bold text-green-600" id="metricFeedWa">0</div>
-                    <div class="text-xs text-gray-500">Klik WA (Feed)</div>
-                </div>
-                <div class="bg-white p-2 rounded shadow-sm">
-                    <div class="text-2xl font-bold text-blue-600" id="metricStore">0</div>
-                    <div class="text-xs text-gray-500">Klik Toko</div>
-                </div>
-                <div class="bg-white p-2 rounded shadow-sm">
-                    <div class="text-2xl font-bold text-purple-600" id="metricProd">0</div>
-                    <div class="text-xs text-gray-500">Klik Produk</div>
-                </div>
+                <div class="bg-white p-2 rounded shadow-sm"><div class="text-2xl font-bold text-green-600" id="metricFeedWa">0</div><div class="text-xs text-gray-500">Klik WA (Feed)</div></div>
+                <div class="bg-white p-2 rounded shadow-sm"><div class="text-2xl font-bold text-blue-600" id="metricStore">0</div><div class="text-xs text-gray-500">Klik Toko</div></div>
+                <div class="bg-white p-2 rounded shadow-sm"><div class="text-2xl font-bold text-purple-600" id="metricProd">0</div><div class="text-xs text-gray-500">Klik Produk</div></div>
             </div>
         </div>
 
@@ -242,31 +227,29 @@
             <input type="text" id="adminFilterName" placeholder="Nama User" onkeyup="loadAdminData()" style="margin-top:5px;"><input type="text" id="adminFilterEmail" placeholder="Email" onkeyup="loadAdminData()"><input type="text" id="adminFilterWa" placeholder="No WA" onkeyup="loadAdminData()">
             <div class="counter-badge" id="adminCount" style="margin-top:10px;">Total User: 0</div>
         </div>
-        <div class="card">
-            <h3>Daftar User</h3>
-            <div class="scroll-list-container" id="adminUserList"></div>
-        </div>
+        <div class="card"><h3>Daftar User</h3><div class="scroll-list-container" id="adminUserList"></div></div>
         <div class="card"><h3>Data Global</h3><button type="button" class="btn-admin" onclick="downloadAllContacts()">Download Semua Kontak (CSV)</button></div>
     </div>
 
     <!-- MODALS -->
     <div class="modal" id="editModal"><div class="modal-content"><h3>Edit Kontak</h3><input type="hidden" id="editId"><input type="text" id="editName" placeholder="Nama"><input type="text" id="editPhone" placeholder="No HP"><input type="text" id="editLocation" placeholder="Lokasi"><button type="button" class="btn-primary" onclick="saveEditContact()">Simpan</button><button type="button" class="btn-secondary" onclick="closeModal()">Batal</button></div></div>
-    <!-- MODAL POSTING (Pop Up) - SUDAH DIPERBAIKI -->
-<div id="postModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4" style="display: none;">
-    <div class="bg-white rounded-xl w-full max-w-md max-h-[90vh] overflow-y-auto relative">
-        <div class="p-4 border-b flex justify-between items-center">
-            <h3 id="modalTitle" class="font-bold text-lg">Judul Modal</h3>
-            <button onclick="closePostModal()" class="text-gray-500 text-2xl absolute right-4 top-4">&times;</button>
-        </div>
-        <div class="p-4 space-y-3">
-            <div><label class="text-sm font-medium text-gray-700">Judul</label><input type="text" id="inputTitle" class="w-full border rounded-lg px-3 py-2 mt-1" placeholder="Judul"></div>
-            <div><label class="text-sm font-medium text-gray-700">Deskripsi</label><textarea id="inputDesc" rows="3" class="w-full border rounded-lg px-3 py-2 mt-1" placeholder="Deskripsi singkat..."></textarea></div>
-            <div><label class="text-sm font-medium text-gray-700">Upload Gambar (Max 3)</label><input type="file" id="inputImages" multiple accept="image/*" class="w-full border rounded-lg px-3 py-2 mt-1 text-sm"></div>
-            <div id="inputPrice" class="hidden"><label class="text-sm font-medium text-gray-700">Harga</label><input type="text" class="w-full border rounded-lg px-3 py-2 mt-1" placeholder="Harga (Khusus Produk)"></div>
-            <button id="btnSubmit" onclick="submitPost()" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700">Submit</button>
+    
+    <!-- MODAL POSTING (PERBAIKAN TOTAL) -->
+    <div id="postModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4" style="display: none;">
+        <div class="bg-white rounded-xl w-full max-w-md max-h-[90vh] overflow-y-auto relative">
+            <div class="p-4 border-b flex justify-between items-center">
+                <h3 id="modalTitle" class="font-bold text-lg">Judul Modal</h3>
+                <button onclick="closePostModal()" class="text-gray-500 text-2xl absolute right-4 top-4">&times;</button>
+            </div>
+            <div class="p-4 space-y-3">
+                <div><label class="text-sm font-medium text-gray-700">Judul</label><input type="text" id="inputTitle" class="w-full border rounded-lg px-3 py-2 mt-1" placeholder="Judul"></div>
+                <div><label class="text-sm font-medium text-gray-700">Deskripsi</label><textarea id="inputDesc" rows="3" class="w-full border rounded-lg px-3 py-2 mt-1" placeholder="Deskripsi singkat..."></textarea></div>
+                <div><label class="text-sm font-medium text-gray-700">Upload Gambar (Max 3)</label><input type="file" id="inputImages" multiple accept="image/*" class="w-full border rounded-lg px-3 py-2 mt-1 text-sm"></div>
+                <div id="inputPrice" class="hidden"><label class="text-sm font-medium text-gray-700">Harga</label><input type="text" class="w-full border rounded-lg px-3 py-2 mt-1" placeholder="Harga"></div>
+                <button id="btnSubmit" onclick="submitPost()" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700">Submit</button>
+            </div>
         </div>
     </div>
-</div>
 
     <!-- FAB (Floating Button) -->
     <button id="fabPost" class="fab-post" onclick="showPostModal()">+</button>
@@ -318,7 +301,19 @@
 
         function toggleMenu(state) { const popup = document.getElementById('menuPopup'); if(state === undefined) popup.classList.toggle('active'); else state ? popup.classList.add('active') : popup.classList.remove('active'); }
         function closeModal() { document.getElementById('editModal').classList.remove('active'); }
-        function closePostModal() { document.getElementById('postModal').classList.add('hidden'); document.getElementById('inputTitle').value = ''; document.getElementById('inputDesc').value = ''; document.getElementById('inputPrice').value = ''; document.getElementById('inputImages').value = ''; }
+        
+        // PERBAIKAN: closePostModal
+        function closePostModal() { 
+            const modal = document.getElementById('postModal');
+            modal.classList.add('hidden'); 
+            modal.classList.remove('flex');
+            modal.style.display = 'none'; // Paksasembunyi
+            document.getElementById('inputTitle').value = ''; 
+            document.getElementById('inputDesc').value = ''; 
+            document.getElementById('inputPrice').value = ''; 
+            document.getElementById('inputImages').value = ''; 
+        }
+
         function togglePassword(inputId) { const x = document.getElementById(inputId); x.type = x.type === "password" ? "text" : "password"; }
 
         // --- FUNGSI AUTH ---
@@ -391,21 +386,7 @@
         async function sendSingle(index) { const msg = document.getElementById('messageText').value; if(!msg) return alert("Pesan kosong!"); const c = sendList[index]; let phone = c.phone.replace(/[^0-9]/g, ''); let text = encodeURIComponent(msg); window.open('https://wa.me/'+phone+'?text='+text, '_blank'); sendList.splice(index, 1); renderSendList(); }
 
         // --- LOGIC ADMIN ---
-        async function loadAdminMetrics() {
-            // Load Feed WA Clicks
-            const { data: feedData } = await _supabase.from('feed_posts').select('wa_click_count, store_click_count');
-            let waTotal = 0; let storeTotal = 0;
-            if (feedData) { feedData.forEach(p => { waTotal += p.wa_click_count || 0; storeTotal += p.store_click_count || 0; }); }
-            document.getElementById('metricFeedWa').innerText = waTotal;
-            document.getElementById('metricStore').innerText = storeTotal;
-
-            // Load Product WA Clicks
-            const { data: prodData } = await _supabase.from('store_products').select('wa_click_count');
-            let prodTotal = 0;
-            if (prodData) { prodData.forEach(p => { prodTotal += p.wa_click_count || 0; }); }
-            document.getElementById('metricProd').innerText = prodTotal;
-        }
-
+        async function loadAdminMetrics() { const { data: feedData } = await _supabase.from('feed_posts').select('wa_click_count, store_click_count'); let waTotal = 0; let storeTotal = 0; if (feedData) { feedData.forEach(p => { waTotal += p.wa_click_count || 0; storeTotal += p.store_click_count || 0; }); } document.getElementById('metricFeedWa').innerText = waTotal; document.getElementById('metricStore').innerText = storeTotal; const { data: prodData } = await _supabase.from('store_products').select('wa_click_count'); let prodTotal = 0; if (prodData) { prodData.forEach(p => { prodTotal += p.wa_click_count || 0; }); } document.getElementById('metricProd').innerText = prodTotal; }
         async function loadAdminData() { try { const fStart = document.getElementById('adminFilterStart').value; const fEnd = document.getElementById('adminFilterEnd').value; const fName = document.getElementById('adminFilterName').value.toLowerCase(); const fEmail = document.getElementById('adminFilterEmail').value.toLowerCase(); const fWa = document.getElementById('adminFilterWa').value.toLowerCase(); let query = _supabase.from('profiles').select('id, username, email, wa_number, is_active, is_store_active, created_at', { count: 'exact' }); if(fStart) query = query.gte('created_at', fStart + 'T00:00:00'); if(fEnd) query = query.lte('created_at', fEnd + 'T23:59:59'); if(fName) query = query.ilike('username', '%'+fName+'%'); if(fEmail) query = query.ilike('email', '%'+fEmail+'%'); if(fWa) query = query.ilike('wa_number', '%'+fWa+'%'); const { data, error, count } = await query; if (error) throw error; document.getElementById('adminCount').innerText = "Total User: " + (count || 0); const c = document.getElementById('adminUserList'); if (!data || data.length === 0) { c.innerHTML = '<p style="text-align:center;color:#999;">Tidak ada user.</p>'; return; } c.innerHTML = data.map(u => { const t = u.is_active ? 'Non-Aktifkan' : 'Aktifkan'; const cl = u.is_active ? 'btn-danger' : 'btn-primary'; const ts = u.is_store_active ? 'Toko Non-Aktifkan' : 'Aktivasi Toko'; const cls = u.is_store_active ? 'btn-danger' : 'btn-secondary'; return `<div class="contact-item"><div class="c-name">${u.email}</div><div class="c-phone">${u.username} | WA: ${u.wa_number || '-'}</div><div class="c-loc">📅 ${u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID') : 'N/A'}</div><div style="font-size:11px; margin-bottom:5px;"><span style="color:${u.is_active ? 'green' : 'red'}">Akun: ${u.is_active ? 'AKTIF' : 'NONAKTIF'}</span> | <span style="color:${u.is_store_active ? 'green' : 'orange'}">Toko: ${u.is_store_active ? 'AKTIF' : 'NONAKTIF'}</span></div><div class="c-actions"><button class="${cl}" onclick="toggleUserStatus('${u.id}', ${u.is_active})">${t}</button><button class="${cls}" onclick="toggleStoreStatus('${u.id}', ${u.is_store_active})">${ts}</button></div></div>`}).join(''); } catch (err) { console.error(err); } }
         async function toggleUserStatus(userId, currentStatus) { const newStatus = !currentStatus; await _supabase.from('profiles').update({ is_active: newStatus }).eq('id', userId); loadAdminData(); }
         async function toggleStoreStatus(userId, currentStatus) { const newStatus = !currentStatus; await _supabase.from('profiles').update({ is_store_active: newStatus }).eq('id', userId); loadAdminData(); }
@@ -447,9 +428,39 @@
 
         async function loadBanners() { const { data: settings } = await _supabase.from('site_settings').select('*'); const bannerSetting = settings?.find(s => s.key === 'banner_enabled'); if (bannerSetting?.value === 'true') { const { data: banners } = await _supabase.from('banners').select('*').eq('is_active', true).order('order_index'); if (banners?.length > 0) { const footer = document.getElementById('bannerFooter'); const track = document.getElementById('bannerTrack'); footer.classList.remove('hidden'); track.innerHTML = banners.map(b => `<img src="${b.image_url}" class="h-14 object-contain rounded cursor-pointer" onclick="window.open('${b.target_url}')">`).join(''); track.innerHTML += track.innerHTML; track.classList.add('banner-animate'); } } }
 
-        // --- MODAL LOGIC ---
-        window.showPostModal = function() { if(!currentUser) return alert("Login dulu"); document.getElementById('modalTitle').innerText = "Posting Baru"; document.getElementById('inputPrice').classList.add('hidden'); document.getElementById('btnSubmit').innerText = "Posting"; document.getElementById('btnSubmit').setAttribute('onclick', 'submitPost()'); document.getElementById('postModal').classList.remove('hidden'); };
-        window.showProductModal = function() { document.getElementById('modalTitle').innerText = "Tambah Produk"; document.getElementById('inputPrice').classList.remove('hidden'); document.getElementById('btnSubmit').innerText = "Simpan"; document.getElementById('btnSubmit').setAttribute('onclick', 'submitProduct()'); document.getElementById('postModal').classList.remove('hidden'); };
+        // --- MODAL LOGIC (FIXED) ---
+        window.showPostModal = function() { 
+            if(!currentUser) return alert("Login dulu"); 
+            
+            // Reset Form
+            document.getElementById('inputTitle').value = ''; 
+            document.getElementById('inputDesc').value = ''; 
+            document.getElementById('inputImages').value = '';
+            
+            document.getElementById('modalTitle').innerText = "Posting Baru"; 
+            document.getElementById('inputPrice').classList.add('hidden'); 
+            document.getElementById('btnSubmit').innerText = "Posting"; 
+            document.getElementById('btnSubmit').setAttribute('onclick', 'submitPost()'); 
+            
+            // Tampilkan Modal
+            const modal = document.getElementById('postModal');
+            modal.classList.remove('hidden'); 
+            modal.classList.add('flex'); 
+            modal.style.display = 'flex';
+        };
+
+        window.showProductModal = function() { 
+            document.getElementById('modalTitle').innerText = "Tambah Produk"; 
+            document.getElementById('inputPrice').classList.remove('hidden'); 
+            document.getElementById('btnSubmit').innerText = "Simpan"; 
+            document.getElementById('btnSubmit').setAttribute('onclick', 'submitProduct()'); 
+            
+            // Tampilkan Modal
+            const modal = document.getElementById('postModal');
+            modal.classList.remove('hidden'); 
+            modal.classList.add('flex'); 
+            modal.style.display = 'flex';
+        };
 
         window.submitProduct = async function() { const name = document.getElementById('inputTitle').value; const price = document.getElementById('inputPrice').value; const file = document.getElementById('inputImages').files[0]; if (!name) return alert("Nama produk harus diisi!"); let imageUrl = ''; if (file) { const fileName = `prod_${Date.now()}_${file.name}`; const { data, error } = await _supabase.storage.from('product-images').upload(fileName, file); if (data) imageUrl = _supabase.storage.from('product-images').getPublicUrl(data.path).data.publicUrl; } const { error } = await _supabase.from('store_products').insert({ user_id: currentUser.id, product_name: name, price: price, image_url: imageUrl }); if (error) { alert("Gagal simpan produk: " + error.message); } else { closePostModal(); loadProducts(currentUser.id, true); } };
         window.submitPost = async function() { const title = document.getElementById('inputTitle').value; const desc = document.getElementById('inputDesc').value; const files = document.getElementById('inputImages').files; if (!title) return alert("Judul harus diisi!"); let imageUrls = []; if (files.length > 0) { for (let i = 0; i < Math.min(files.length, 3); i++) { const file = files[i]; const fileName = `${Date.now()}_${file.name}`; const { data, error } = await _supabase.storage.from('product-images').upload(fileName, file); if (data) { const publicUrl = _supabase.storage.from('product-images').getPublicUrl(data.path).data.publicUrl; imageUrls.push(publicUrl); } } } const { error } = await _supabase.from('feed_posts').insert({ user_id: currentUser.id, title: title, description: desc, images: imageUrls }); if (error) { alert("Gagal posting: " + error.message); } else { closePostModal(); loadFeed(); } };
