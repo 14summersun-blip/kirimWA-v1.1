@@ -130,7 +130,7 @@
         </div>
     </div>
 
-    <!-- RESET PASSWORD (JENDELA BARU) -->
+    <!-- RESET PASSWORD -->
     <div class="screen" id="screenReset">
         <div class="card" style="margin-top:50px; text-align:center;">
             <h2>Reset Password</h2>
@@ -244,10 +244,11 @@
     </div>
 
     <script>
-        // --- KONFIGURASI SUPABASE ---
+        // --- KONFIGURASI ---
         const SUPABASE_URL = 'https://whlyxdcsrvrpxmdsfdjz.supabase.co'; 
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndobHl4ZGNzcnZycHhtZHNmZGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzODY3OTYsImV4cCI6MjA4ODk2Mjc5Nn0.A4SFdoE72-xNn99ez9Ug5R1fndrcTu4GhYy9Mpe1Zfk'; // PASTIKAN INI BENAR
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndobHl4ZGNzcnZycHhtZHNmZGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzODY3OTYsImV4cCI6MjA4ODk2Mjc5Nn0.A4SFdoE72-xNn99ez9Ug5R1fndrcTu4GhYy9Mpe1Zfk';
         const ADMIN_LINK = 'https://wa.me/6285161990373?text=Hai%20Admin%20kirimWA,%20mau%20minta%20info%20ya'; 
+        const NIAGA_URL = 'https://14summersun-blip.github.io/niaga-app/'; // URL Web App Niaga
 
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -347,7 +348,6 @@
             window.open(link, '_blank');
         }
 
-        // FUNGSI BARU: UPDATE PASSWORD BARU
         async function updateNewPassword() {
             const pass = document.getElementById('newPass').value;
             if(!pass) return alert("Masukkan password baru!");
@@ -365,12 +365,10 @@
             showScreen('screenLogin'); 
         }
 
-        // LISTENER UTAMA (FIX ERROR)
         _supabase.auth.onAuthStateChange((event, session) => {
             console.log("Auth Event:", event);
             
             if (event === 'PASSWORD_RECOVERY') {
-                // Jika ini link reset password, langsung tampilkan layar reset
                 showScreen('screenReset');
             }
             else if (event === 'SIGNED_IN' && session && session.user) {
@@ -402,19 +400,48 @@
             adminLinkBtn.href = ADMIN_LINK;
             const warning = document.getElementById('inactiveWarning');
             
+            // --- 1. SETTING MENU (TERMASUK INFO NIAGA) ---
+            // Tambahkan link Info Niaga di semua role
+            const niagaLink = `<a href="${NIAGA_URL}" class="menu-item" target="_blank">🛒 Info Niaga</a>`;
+
             if (currentRole === 'admin') {
-                menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'admin\')">Admin</span><span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
-                adminLinkBtn.style.display = 'none'; warning.style.display = 'none';
+                menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'admin\')">Admin</span><span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>' + niagaLink;
+                adminLinkBtn.style.display = 'none'; 
+                warning.style.display = 'none';
+            } else {
+                if (!isActive) {
+                    menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>' + niagaLink;
+                    adminLinkBtn.style.display = 'block'; adminLinkBtn.className = 'menu-item highlight';
+                    warning.style.display = 'block';
+                } else {
+                    menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>' + niagaLink;
+                    adminLinkBtn.style.display = 'block'; adminLinkBtn.className = 'menu-item';
+                    warning.style.display = 'none';
+                }
+            }
+
+            // --- 2. LOGIKA NAVIGASI AWAL (DEEP LINK CHECK) ---
+            // Cek apakah ada perintah dari Niaga-App (Hash)
+            const hash = window.location.hash.replace('#', '');
+            
+            // Prioritas 1: Cek Hash
+            if (hash === 'contacts') {
+                navigateTo('kontak');
+                return; // Stop di sini
+            }
+            if (hash === 'account') {
+                navigateTo('akun');
+                return; // Stop di sini
+            }
+
+            // Prioritas 2: Default Behavior
+            if (currentRole === 'admin') {
                 navigateTo('admin');
             } else {
                 if (!isActive) {
-                    menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
-                    adminLinkBtn.style.display = 'block'; adminLinkBtn.className = 'menu-item highlight';
-                    warning.style.display = 'block'; navigateTo('akun');
+                    navigateTo('akun');
                 } else {
-                    menuDiv.innerHTML = '<span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
-                    adminLinkBtn.style.display = 'block'; adminLinkBtn.className = 'menu-item';
-                    warning.style.display = 'none'; navigateTo('kirim');
+                    navigateTo('kirim');
                 }
             }
         }
@@ -461,7 +488,7 @@
             logout();
         }
 
-        // --- LOGIC KONTAK & KIRIM (Sama) ---
+        // --- LOGIC KONTAK & KIRIM ---
         async function loadContacts() { const { data } = await _supabase.from('contacts').select('*').eq('user_id', currentUser.id); allContacts = data || []; renderContacts(); renderAvailableContacts(); }
         function renderContacts() { const q = document.getElementById('searchContact').value.toLowerCase(); const l = document.getElementById('searchLocation').value.toLowerCase(); const filtered = allContacts.filter(c => { const m = c.name.toLowerCase().includes(q) || c.phone.includes(q); const lM = (c.location || '').toLowerCase().includes(l); return m && lM; }); const c = document.getElementById('contactListContainer'); c.innerHTML = filtered.map(c => `<div class="contact-item"><div class="c-name">${c.name}</div><div class="c-phone">📱 ${c.phone}</div><div class="c-loc">📍 ${c.location || '-'}</div><div class="c-actions"><button class="btn-secondary" onclick="editContact('${c.id}', '${c.name}', '${c.phone}', '${c.location || ''}')">Edit</button><button class="btn-danger" onclick="deleteContact('${c.id}')">Hapus</button></div></div>`).join(''); }
         async function addContact() { const name = document.getElementById('cName').value; const phone = document.getElementById('cPhone').value; const loc = document.getElementById('cLocation').value; if(!name || !phone) return alert("Nama & No HP wajib!"); await _supabase.from('contacts').insert({ user_id: currentUser.id, name, phone, location: loc }); document.getElementById('cName').value = ''; document.getElementById('cPhone').value = ''; document.getElementById('cLocation').value = ''; loadContacts(); }
@@ -475,7 +502,7 @@
         function sendNextInQueue() { if(sendList.length === 0) return; sendSingle(0); }
         async function sendSingle(index) { const msg = document.getElementById('messageText').value; if(!msg) return alert("Pesan kosong!"); const c = sendList[index]; let phone = c.phone.replace(/[^0-9]/g, ''); let text = encodeURIComponent(msg); window.open('https://wa.me/'+phone+'?text='+text, '_blank'); sendList.splice(index, 1); renderSendList(); }
 
-        // --- LOGIC ADMIN (Sama) ---
+        // --- LOGIC ADMIN ---
         async function loadAdminData() { try { const fStart = document.getElementById('adminFilterStart').value; const fEnd = document.getElementById('adminFilterEnd').value; const fName = document.getElementById('adminFilterName').value.toLowerCase(); const fEmail = document.getElementById('adminFilterEmail').value.toLowerCase(); const fWa = document.getElementById('adminFilterWa').value.toLowerCase(); let query = _supabase.from('profiles').select('id, username, email, wa_number, is_active, created_at', { count: 'exact' }); if(fStart) query = query.gte('created_at', fStart + 'T00:00:00'); if(fEnd) query = query.lte('created_at', fEnd + 'T23:59:59'); if(fName) query = query.ilike('username', '%'+fName+'%'); if(fEmail) query = query.ilike('email', '%'+fEmail+'%'); if(fWa) query = query.ilike('wa_number', '%'+fWa+'%'); const { data, error, count } = await query; if (error) throw error; document.getElementById('adminCount').innerText = "Total User: " + (count || 0); const c = document.getElementById('adminUserList'); if (!data || data.length === 0) { c.innerHTML = '<p style="text-align:center;color:#999;">Tidak ada user.</p>'; return; } c.innerHTML = data.map(u => { const t = u.is_active ? 'Non-Aktifkan' : 'Aktifkan'; const cl = u.is_active ? 'btn-danger' : 'btn-primary'; return `<div class="contact-item"><div class="c-name">${u.email}</div><div class="c-phone">${u.username} | WA: ${u.wa_number || '-'}</div><div class="c-loc">📅 ${u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID') : 'N/A'}</div><div class="c-actions"><button class="${cl}" onclick="toggleUserStatus('${u.id}', ${u.is_active})">${t}</button><button class="btn-secondary" onclick="adminDeleteUser('${u.id}')">Hapus</button></div></div>`}).join(''); } catch (err) { console.error(err); } }
         async function toggleUserStatus(userId, currentStatus) { const newStatus = !currentStatus; await _supabase.from('profiles').update({ is_active: newStatus }).eq('id', userId); loadAdminData(); }
         async function adminDeleteUser(userId) { if(!confirm("Hapus?")) return; await _supabase.from('profiles').delete().eq('id', userId); loadAdminData(); }
