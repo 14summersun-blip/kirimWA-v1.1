@@ -32,9 +32,7 @@
         .menu-item { display: block; padding: 15px 20px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; cursor: pointer; font-size: 14px; }
         .menu-item:hover { background: #f1f1f1; }
         .menu-item.logout { color: red; }
-        /* Style untuk tombol highlight (Kuning) */
         .menu-item.highlight { background: #fff3cd; color: #856404; font-weight: bold; }
-        /* Style BARU untuk tombol alert (Merah) -> Untuk Aktivasi Toko */
         .menu-item.alert { background: #ffebee; color: #d32f2f; font-weight: bold; }
         
         /* FORMS */
@@ -73,7 +71,6 @@
         .niaga-header { background: var(--blue); }
         .niaga-header .menu-btn, .niaga-header .header-title { color: white; }
         
-        /* FEED CARD (Aktifkan Style) */
         .feed-card { background: white; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 15px; border: 1px solid #f0f0f0; }
         .feed-header { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: flex-start; }
         .feed-location { font-size: 12px; color: #666; margin-top: 2px; }
@@ -238,7 +235,7 @@
     <!-- MODALS -->
     <div class="modal" id="editModal"><div class="modal-content"><h3>Edit Kontak</h3><input type="hidden" id="editId"><input type="text" id="editName" placeholder="Nama"><input type="text" id="editPhone" placeholder="No HP"><input type="text" id="editLocation" placeholder="Lokasi"><button type="button" class="btn-primary" onclick="saveEditContact()">Simpan</button><button type="button" class="btn-secondary" onclick="closeModal()">Batal</button></div></div>
     
-    <!-- MODAL POSTING (Card Input) - SUDAH DIPERBAIKI -->
+    <!-- MODAL POSTING -->
     <div id="postModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4" style="display: none;">
         <div class="bg-white rounded-xl w-full max-w-md max-h-[90vh] overflow-y-auto relative shadow-2xl">
             <div class="p-4 border-b flex justify-between items-center bg-blue-50">
@@ -273,7 +270,7 @@
         let currentUser = null;
         let currentRole = 'user';
         let isActive = false; 
-        let isStoreActive = false; // Tambahan global untuk status toko
+        let isStoreActive = false; 
         let allContacts = [];
         let sendList = []; 
 
@@ -307,7 +304,6 @@
         function toggleMenu(state) { const popup = document.getElementById('menuPopup'); if(state === undefined) popup.classList.toggle('active'); else state ? popup.classList.add('active') : popup.classList.remove('active'); }
         function closeModal() { document.getElementById('editModal').classList.remove('active'); }
         
-        // PERBAIKAN: closePostModal
         function closePostModal() { 
             const modal = document.getElementById('postModal');
             modal.classList.add('hidden'); 
@@ -337,13 +333,10 @@
             const warning = document.getElementById('inactiveWarning');
             let menuHTML = '';
 
-            // Logika Tombol Toko
             let tokoMenuItem = '';
             if (!isStoreActive) {
-                // Jika belum aktivasi: Tombol Merah "Aktifkan Toko"
                 tokoMenuItem = '<span class="menu-item alert" onclick="aktivasiToko(currentUser.email)">Aktifkan Toko</span>';
             } else {
-                // Jika sudah aktivasi: Tombol Biasa "Toko Saya"
                 tokoMenuItem = '<span class="menu-item" onclick="navigateTo(\'toko\')">Toko Saya</span>';
             }
 
@@ -354,15 +347,13 @@
             } else {
                 menuHTML = '<span class="menu-item" onclick="navigateTo(\'niaga\')">Info Niaga</span>';
                 if (!isActive) {
-                    // User Non-Aktif
                     menuHTML += '<span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span>';
-                    menuHTML += tokoMenuItem; // Tambah tombol toko
+                    menuHTML += tokoMenuItem; 
                     adminLinkBtn.style.display = 'block'; adminLinkBtn.className = 'menu-item highlight'; warning.style.display = 'block';
                     navigateTo('niaga');
                 } else {
-                    // User Aktif
                     menuHTML += '<span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span>';
-                    menuHTML += tokoMenuItem; // Tambah tombol toko
+                    menuHTML += tokoMenuItem; 
                     adminLinkBtn.style.display = 'block'; adminLinkBtn.className = 'menu-item'; warning.style.display = 'none';
                     navigateTo('niaga');
                 }
@@ -418,7 +409,25 @@
 
         // --- LOGIC NIAGA (FEED & TOKO) ---
         async function loadMyStore() { if (!currentUser) return; const { data: profile } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single(); if (!profile.is_store_active) { alert("Anda belum aktivasi Akun Toko."); navigateTo('niaga'); return; } document.getElementById('storeName').innerText = profile.store_name || "Toko Saya"; document.getElementById('storeAddress').innerText = profile.store_address || "-"; document.getElementById('storeAvatar').innerText = profile.store_name ? profile.store_name.charAt(0).toUpperCase() : "T"; document.getElementById('storeWaBtn').onclick = () => window.open(`https://wa.me/${profile.phone}`, '_blank'); if (profile.gmaps_link) { document.getElementById('storeMapLink').href = profile.gmaps_link; document.getElementById('storeMapLink').classList.remove('hidden'); } else { document.getElementById('storeMapLink').classList.add('hidden'); } loadProducts(currentUser.id, true); }
-        async function loadProducts(userId, isOwner = false) { const container = document.getElementById('productContainer'); container.innerHTML = '<div class="col-span-2 text-center text-gray-500 py-4">Memuat...</div>'; const { data: products, error } = await _supabase.from('store_products').select('*').eq('user_id', userId); let htmlContent = isOwner ? `<div class="col-span-2 mb-2"><button onclick="showProductModal()" class="w-full bg-blue-100 text-blue-700 py-2 rounded-lg font-semibold border border-dashed border-blue-300 hover:bg-blue-200">+ Tambah Produk</button></div>` : ''; if (error || products.length === 0) { container.innerHTML = htmlContent + '<div class="col-span-2 text-center text-gray-400 py-6">Belum ada produk.</div>'; return; } container.innerHTML = htmlContent; products.forEach(p => { const card = document.createElement('div'); card.className = 'bg-white rounded-lg shadow overflow-hidden'; card.innerHTML = `<img src="${p.image_url || 'https://via.placeholder.com/150'}" class="w-full h-24 object-cover"><div class="p-2"><h4 class="font-semibold text-sm truncate">${p.product_name}</h4><p class="text-green-600 font-bold text-xs">${p.price || ''}</p><button onclick="handleProductWa('${p.id}', '${userId}')" class="mt-2 w-full bg-green-500 text-white text-xs py-1 rounded hover:bg-green-600">WhatsApp</button></div>`; container.appendChild(card); }); }
+        
+        // PERBAIKAN: loadProducts sekarang membaca kolom 'images' (array)
+        async function loadProducts(userId, isOwner = false) { 
+            const container = document.getElementById('productContainer'); 
+            container.innerHTML = '<div class="col-span-2 text-center text-gray-500 py-4">Memuat...</div>'; 
+            const { data: products, error } = await _supabase.from('store_products').select('*').eq('user_id', userId); 
+            let htmlContent = isOwner ? `<div class="col-span-2 mb-2"><button onclick="showProductModal()" class="w-full bg-blue-100 text-blue-700 py-2 rounded-lg font-semibold border border-dashed border-blue-300 hover:bg-blue-200">+ Tambah Produk</button></div>` : ''; 
+            if (error || products.length === 0) { container.innerHTML = htmlContent + '<div class="col-span-2 text-center text-gray-400 py-6">Belum ada produk.</div>'; return; } 
+            container.innerHTML = htmlContent; 
+            products.forEach(p => { 
+                const card = document.createElement('div'); 
+                card.className = 'bg-white rounded-lg shadow overflow-hidden'; 
+                // Support 'images' array
+                const imgSrc = (p.images && p.images.length > 0) ? p.images[0] : 'https://via.placeholder.com/150';
+                card.innerHTML = `<img src="${imgSrc}" class="w-full h-24 object-cover"><div class="p-2"><h4 class="font-semibold text-sm truncate">${p.product_name}</h4><p class="text-green-600 font-bold text-xs">${p.price || ''}</p><button onclick="handleProductWa('${p.id}', '${userId}')" class="mt-2 w-full bg-green-500 text-white text-xs py-1 rounded hover:bg-green-600">WhatsApp</button></div>`; 
+                container.appendChild(card); 
+            }); 
+        }
+        
         window.handleProductWa = async (prodId, userId) => { await _supabase.rpc('increment_product_counter', { prod_id: prodId }); const { data } = await _supabase.from('profiles').select('phone').eq('id', userId).single(); if (data) window.open(`https://wa.me/${data.phone}`, '_blank'); };
 
         async function loadProvinsi() { try { const response = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json'); const data = await response.json(); const select = document.getElementById('filterProvinsi'); data.forEach(p => { const opt = document.createElement('option'); opt.value = p.name; opt.textContent = p.name; select.appendChild(opt); }); } catch (e) { console.error("Gagal load provinsi", e); } }
@@ -452,7 +461,7 @@
 
         async function loadBanners() { const { data: settings } = await _supabase.from('site_settings').select('*'); const bannerSetting = settings?.find(s => s.key === 'banner_enabled'); if (bannerSetting?.value === 'true') { const { data: banners } = await _supabase.from('banners').select('*').eq('is_active', true).order('order_index'); if (banners?.length > 0) { const footer = document.getElementById('bannerFooter'); const track = document.getElementById('bannerTrack'); footer.classList.remove('hidden'); track.innerHTML = banners.map(b => `<img src="${b.image_url}" class="h-14 object-contain rounded cursor-pointer" onclick="window.open('${b.target_url}')">`).join(''); track.innerHTML += track.innerHTML; track.classList.add('banner-animate'); } } }
 
-        // --- MODAL LOGIC (FIXED) ---
+        // --- MODAL LOGIC ---
         window.showPostModal = function() { 
             if(!currentUser) return alert("Login dulu"); 
             
@@ -486,7 +495,41 @@
             modal.style.display = 'flex';
         };
 
-        window.submitProduct = async function() { const name = document.getElementById('inputTitle').value; const price = document.getElementById('inputPrice').value; const file = document.getElementById('inputImages').files[0]; if (!name) return alert("Nama produk harus diisi!"); let imageUrl = ''; if (file) { const fileName = `prod_${Date.now()}_${file.name}`; const { data, error } = await _supabase.storage.from('product-images').upload(fileName, file); if (data) imageUrl = _supabase.storage.from('product-images').getPublicUrl(data.path).data.publicUrl; } const { error } = await _supabase.from('store_products').insert({ user_id: currentUser.id, product_name: name, price: price, image_url: imageUrl }); if (error) { alert("Gagal simpan produk: " + error.message); } else { closePostModal(); loadProducts(currentUser.id, true); } };
+        // PERBAIKAN: submitProduct sekarang loop untuk multiple images dan simpan ke kolom 'images'
+        window.submitProduct = async function() { 
+            const name = document.getElementById('inputTitle').value; 
+            const price = document.getElementById('inputPrice').value; 
+            const files = document.getElementById('inputImages').files; 
+            if (!name) return alert("Nama produk harus diisi!"); 
+            
+            let imageUrls = [];
+            if (files.length > 0) { 
+                for (let i = 0; i < Math.min(files.length, 3); i++) { 
+                    const file = files[i]; 
+                    const fileName = `prod_${Date.now()}_${file.name}`; 
+                    const { data, error } = await _supabase.storage.from('product-images').upload(fileName, file); 
+                    if (data) { 
+                        const publicUrl = _supabase.storage.from('product-images').getPublicUrl(data.path).data.publicUrl; 
+                        imageUrls.push(publicUrl); 
+                    } 
+                } 
+            } 
+            
+            // Insert ke tabel dengan kolom 'images'
+            const { error } = await _supabase.from('store_products').insert({ 
+                user_id: currentUser.id, 
+                product_name: name, 
+                price: price, 
+                images: imageUrls 
+            }); 
+            if (error) { 
+                alert("Gagal simpan produk: " + error.message); 
+            } else { 
+                closePostModal(); 
+                loadProducts(currentUser.id, true); 
+            } 
+        };
+
         window.submitPost = async function() { const title = document.getElementById('inputTitle').value; const desc = document.getElementById('inputDesc').value; const files = document.getElementById('inputImages').files; if (!title) return alert("Judul harus diisi!"); let imageUrls = []; if (files.length > 0) { for (let i = 0; i < Math.min(files.length, 3); i++) { const file = files[i]; const fileName = `${Date.now()}_${file.name}`; const { data, error } = await _supabase.storage.from('product-images').upload(fileName, file); if (data) { const publicUrl = _supabase.storage.from('product-images').getPublicUrl(data.path).data.publicUrl; imageUrls.push(publicUrl); } } } const { error } = await _supabase.from('feed_posts').insert({ user_id: currentUser.id, title: title, description: desc, images: imageUrls }); if (error) { alert("Gagal posting: " + error.message); } else { closePostModal(); loadFeed(); } };
 
         window.moveSlide = (id, dir) => { const slide = document.getElementById(`slide-${id}`); const width = slide.offsetWidth; const currentTransform = slide.style.transform ? parseInt(slide.style.transform.replace('translateX(', '').replace('px)', '')) : 0; let newTransform = currentTransform + (dir * -width); const maxTransform = -(slide.children.length - 1) * width; if (newTransform > 0) newTransform = maxTransform; if (newTransform < maxTransform) newTransform = 0; slide.style.transform = `translateX(${newTransform}px)`; };
