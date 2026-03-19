@@ -19,6 +19,20 @@
         .screen { display: none; padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 80px; }
         .screen.active { display: block; }
         
+        /* LOADING SCREEN (SOLUSI REFRESH) */
+        .loading-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg); z-index: 9999;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            font-family: 'Poppins', sans-serif;
+        }
+        .loading-spinner {
+            width: 50px; height: 50px; border: 5px solid #ccc; border-top-color: var(--primary);
+            border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
         /* HEADER */
         .header { background: var(--primary); color: white; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
         .menu-btn { background: none; border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 18px; margin-left: -5px; }
@@ -106,6 +120,12 @@
 </head>
 <body>
 
+    <!-- LOADING SCREEN (DITAMBAHKAN) -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-spinner"></div>
+        <p>Memuat...</p>
+    </div>
+
     <!-- MAIN HEADER -->
     <div class="header" id="mainHeader" style="display:none;">
         <button type="button" class="menu-btn" onclick="toggleMenu()">☰ Menu</button>
@@ -120,10 +140,10 @@
     </div>
 
     <!-- LOGIN SCREEN -->
-    <div class="screen active" id="screenLogin">
+    <!-- Class active DIHILANGKAN, akan diatur JS -->
+    <div class="screen" id="screenLogin">
         <div class="card" style="margin-top:20px; overflow:hidden; padding:0;">
             <div style="background:#f0f0f0;">
-                <!-- PERBAIKAN URL: Sesuai permintaan pakai .co.com -->
                 <img src="https://i.ibb.co.com/VWg4bJHp/Login-page-1.jpg" style="width: 100%; height: auto; display: block;" alt="Login Header">
             </div>
             <div style="padding:20px;">
@@ -140,7 +160,6 @@
                 <p style="text-align:center; margin-top:15px;">Belum punya akun? <a href="#" onclick="showScreen('screenRegister'); return false;">Register di sini</a></p>
             </div>
             <div style="background:#fafafa;">
-                <!-- PERBAIKAN URL: Sesuai permintaan pakai .co.com -->
                 <img src="https://i.ibb.co.com/KjP9hNp0/Login-page-2.jpg" style="width: 100%; height: auto; display: block;" alt="Login Footer">
             </div>
         </div>
@@ -270,6 +289,9 @@
 
         // --- FUNGSI UI ---
         function showScreen(id) {
+            // Sembunyikan loading screen saat pergantian layar
+            document.getElementById('loadingScreen').style.display = 'none';
+            
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             const header = document.getElementById('mainHeader');
@@ -339,6 +361,7 @@
             else if (event === 'SIGNED_OUT') { currentUser = null; showScreen('screenLogin'); } 
         });
         
+        // PERBAIKAN REFRESH: checkSession adalah gerbang utama
         async function checkSession() { 
             try { 
                 const { data: { user } } = await _supabase.auth.getUser(); 
@@ -348,10 +371,16 @@
                     if (profile) { currentRole = profile.role || 'user'; isActive = (profile.is_active === true); isStoreActive = (profile.is_store_active === true); } 
                     setupUI(); 
                 } else {
+                    // Jika tidak ada user, langsung login (tanpa loading lama)
+                    document.getElementById('loadingScreen').style.display = 'none';
                     document.getElementById('mainHeader').style.display = 'none';
-                    showScreen('screenLogin');
+                    document.getElementById('screenLogin').classList.add('active');
                 }
-            } catch(e) { console.error(e); showScreen('screenLogin'); } 
+            } catch(e) { 
+                console.error(e); 
+                document.getElementById('loadingScreen').style.display = 'none';
+                showScreen('screenLogin'); 
+            } 
         }
 
         function setupUI() {
@@ -465,7 +494,11 @@
             container.innerHTML = '<div class="col-span-full text-center py-10">Memuat data...</div>';
             const prov = document.getElementById('filterProvinsi').value; const kab = document.getElementById('filterKabupaten').value; const kec = document.getElementById('filterKecamatan').value;
             const { data: posts, error } = await _supabase.from('feed_posts').select(`id, title, description, images, created_at, wa_click_count, store_click_count, profiles ( id, username, raw_location, is_store_active, phone )`).eq('is_active', true).order('created_at', { ascending: false });
-            if (error) { container.innerHTML = `<div class="col-span-full text-center text-red-500">Gagal memuat data.</div>`; return; }
+            if (error) { 
+                console.error("Error Load Feed:", error);
+                container.innerHTML = `<div class="col-span-full text-center text-red-500">Gagal memuat data.<br><small style="font-size:10px">Pastikan tabel profiles bisa dibaca (RLS).</small></div>`; 
+                return; 
+            }
             let filteredPosts = posts;
             if (isFiltered) { filteredPosts = posts.filter(post => { if (!post.profiles.raw_location) return false; const loc = post.profiles.raw_location.toLowerCase(); let match = true; if (kec) match = loc.includes(kec.toLowerCase()); else if (kab) match = loc.includes(kab.toLowerCase()); else if (prov) match = loc.includes(prov.toLowerCase()); return match; }); }
             if (filteredPosts.length === 0) { container.innerHTML = `<div class="col-span-full text-center text-gray-400 py-10">Tidak ada postingan.</div>`; return; }
