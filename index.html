@@ -17,7 +17,6 @@
         :root { --primary: #25D366; --dark: #128C7E; --bg: #ece5dd; --blue: #2563EB; }
         body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; min-height: 100vh; font-size: 16px; }
         .screen { display: none; padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 80px; }
-        /* PENTING: Layar Login punya class active default agar tidak blank */
         .screen.active { display: block; }
         
         /* HEADER */
@@ -121,12 +120,11 @@
     </div>
 
     <!-- LOGIN SCREEN -->
-    <!-- PERBAIKAN: Ditambah class 'active' agar langsung tampil, mencegah blank -->
     <div class="screen active" id="screenLogin">
         <div class="card" style="margin-top:20px; overflow:hidden; padding:0;">
             <div style="background:#f0f0f0;">
-                <!-- Gambar Anda yang sudah benar -->
-                <img src="https://i.ibb.co/VWg4bJHp/Login-page-1.jpg" style="width: 100%; height: auto; display: block;">
+                <!-- PERBAIKAN URL: Sesuai permintaan pakai .co.com -->
+                <img src="https://i.ibb.co.com/VWg4bJHp/Login-page-1.jpg" style="width: 100%; height: auto; display: block;" alt="Login Header">
             </div>
             <div style="padding:20px;">
                 <h2 style="text-align:center; margin-top:0;">Login</h2>
@@ -142,8 +140,8 @@
                 <p style="text-align:center; margin-top:15px;">Belum punya akun? <a href="#" onclick="showScreen('screenRegister'); return false;">Register di sini</a></p>
             </div>
             <div style="background:#fafafa;">
-                <!-- Gambar Anda yang sudah benar -->
-                <img src="https://i.ibb.co/KjP9hNp0/Login-page-2.jpg" style="width: 100%; height: auto; display: block;">
+                <!-- PERBAIKAN URL: Sesuai permintaan pakai .co.com -->
+                <img src="https://i.ibb.co.com/KjP9hNp0/Login-page-2.jpg" style="width: 100%; height: auto; display: block;" alt="Login Footer">
             </div>
         </div>
     </div>
@@ -341,7 +339,6 @@
             else if (event === 'SIGNED_OUT') { currentUser = null; showScreen('screenLogin'); } 
         });
         
-        // PERBAIKAN: checkSession SEKARANG YANG MENENTUKAN TAMPILAN AWAL
         async function checkSession() { 
             try { 
                 const { data: { user } } = await _supabase.auth.getUser(); 
@@ -349,9 +346,8 @@
                     currentUser = user; 
                     const { data: profile } = await _supabase.from('profiles').select('*').eq('id', user.id).single(); 
                     if (profile) { currentRole = profile.role || 'user'; isActive = (profile.is_active === true); isStoreActive = (profile.is_store_active === true); } 
-                    setupUI(); // Jika sudah login, setupUI akan mengalihkan ke Dashboard/Akun
+                    setupUI(); 
                 } else {
-                    // Jika tidak ada user, pastikan header hilang & layar login aktif
                     document.getElementById('mainHeader').style.display = 'none';
                     showScreen('screenLogin');
                 }
