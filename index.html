@@ -32,7 +32,10 @@
         .menu-item { display: block; padding: 15px 20px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; cursor: pointer; font-size: 14px; }
         .menu-item:hover { background: #f1f1f1; }
         .menu-item.logout { color: red; }
+        /* Style untuk tombol highlight (Kuning) */
         .menu-item.highlight { background: #fff3cd; color: #856404; font-weight: bold; }
+        /* Style BARU untuk tombol alert (Merah) -> Untuk Aktivasi Toko */
+        .menu-item.alert { background: #ffebee; color: #d32f2f; font-weight: bold; }
         
         /* FORMS */
         input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; font-family: 'Poppins', sans-serif; background: #fff; }
@@ -70,7 +73,8 @@
         .niaga-header { background: var(--blue); }
         .niaga-header .menu-btn, .niaga-header .header-title { color: white; }
         
-        .feed-card { background: white; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 15px; }
+        /* FEED CARD (Aktifkan Style) */
+        .feed-card { background: white; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 15px; border: 1px solid #f0f0f0; }
         .feed-header { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: flex-start; }
         .feed-location { font-size: 12px; color: #666; margin-top: 2px; }
         .feed-time { font-size: 11px; color: #999; font-style: italic; }
@@ -105,9 +109,9 @@
             color: white;
             border-radius: 50%;
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            display: none; /* Hidden by default */
+            display: none; 
             align-items: center; justify-content: center;
-            font-size: 28px; font-weight: 700; /* Bold */
+            font-size: 28px; font-weight: 700; 
             cursor: pointer;
             z-index: 50;
             border: none;
@@ -234,19 +238,19 @@
     <!-- MODALS -->
     <div class="modal" id="editModal"><div class="modal-content"><h3>Edit Kontak</h3><input type="hidden" id="editId"><input type="text" id="editName" placeholder="Nama"><input type="text" id="editPhone" placeholder="No HP"><input type="text" id="editLocation" placeholder="Lokasi"><button type="button" class="btn-primary" onclick="saveEditContact()">Simpan</button><button type="button" class="btn-secondary" onclick="closeModal()">Batal</button></div></div>
     
-    <!-- MODAL POSTING (PERBAIKAN TOTAL) -->
+    <!-- MODAL POSTING (Card Input) - SUDAH DIPERBAIKI -->
     <div id="postModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4" style="display: none;">
-        <div class="bg-white rounded-xl w-full max-w-md max-h-[90vh] overflow-y-auto relative">
-            <div class="p-4 border-b flex justify-between items-center">
-                <h3 id="modalTitle" class="font-bold text-lg">Judul Modal</h3>
-                <button onclick="closePostModal()" class="text-gray-500 text-2xl absolute right-4 top-4">&times;</button>
+        <div class="bg-white rounded-xl w-full max-w-md max-h-[90vh] overflow-y-auto relative shadow-2xl">
+            <div class="p-4 border-b flex justify-between items-center bg-blue-50">
+                <h3 id="modalTitle" class="font-bold text-lg text-blue-800">Judul Modal</h3>
+                <button onclick="closePostModal()" class="text-gray-500 text-2xl absolute right-4 top-4 hover:text-red-500">&times;</button>
             </div>
             <div class="p-4 space-y-3">
-                <div><label class="text-sm font-medium text-gray-700">Judul</label><input type="text" id="inputTitle" class="w-full border rounded-lg px-3 py-2 mt-1" placeholder="Judul"></div>
-                <div><label class="text-sm font-medium text-gray-700">Deskripsi</label><textarea id="inputDesc" rows="3" class="w-full border rounded-lg px-3 py-2 mt-1" placeholder="Deskripsi singkat..."></textarea></div>
-                <div><label class="text-sm font-medium text-gray-700">Upload Gambar (Max 3)</label><input type="file" id="inputImages" multiple accept="image/*" class="w-full border rounded-lg px-3 py-2 mt-1 text-sm"></div>
-                <div id="inputPrice" class="hidden"><label class="text-sm font-medium text-gray-700">Harga</label><input type="text" class="w-full border rounded-lg px-3 py-2 mt-1" placeholder="Harga"></div>
-                <button id="btnSubmit" onclick="submitPost()" class="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700">Submit</button>
+                <div><label class="text-sm font-medium text-gray-700">Judul</label><input type="text" id="inputTitle" class="w-full border rounded-lg px-3 py-2 mt-1 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Judul Postingan"></div>
+                <div><label class="text-sm font-medium text-gray-700">Deskripsi</label><textarea id="inputDesc" rows="3" class="w-full border rounded-lg px-3 py-2 mt-1 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Deskripsi singkat..."></textarea></div>
+                <div><label class="text-sm font-medium text-gray-700">Upload Gambar (Max 3)</label><input type="file" id="inputImages" multiple accept="image/*" class="w-full border rounded-lg px-3 py-2 mt-1 text-sm file:mr-4 file:py-1 file:px-2 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"></div>
+                <div id="inputPrice" class="hidden"><label class="text-sm font-medium text-gray-700">Harga</label><input type="text" class="w-full border rounded-lg px-3 py-2 mt-1" placeholder="Harga (Khusus Produk)"></div>
+                <button id="btnSubmit" onclick="submitPost()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 shadow-lg transition duration-300">Submit</button>
             </div>
         </div>
     </div>
@@ -269,6 +273,7 @@
         let currentUser = null;
         let currentRole = 'user';
         let isActive = false; 
+        let isStoreActive = false; // Tambahan global untuk status toko
         let allContacts = [];
         let sendList = []; 
 
@@ -293,7 +298,7 @@
                     loadBanners(); 
                 }
                 if(id === 'screenNiaga') {
-                    fab.style.display = 'flex'; // Tampilkan FAB hanya di Info Niaga
+                    fab.style.display = 'flex'; 
                 }
             }
             toggleMenu(false);
@@ -307,7 +312,7 @@
             const modal = document.getElementById('postModal');
             modal.classList.add('hidden'); 
             modal.classList.remove('flex');
-            modal.style.display = 'none'; // Paksasembunyi
+            modal.style.display = 'none'; 
             document.getElementById('inputTitle').value = ''; 
             document.getElementById('inputDesc').value = ''; 
             document.getElementById('inputPrice').value = ''; 
@@ -318,12 +323,12 @@
 
         // --- FUNGSI AUTH ---
         async function handleRegister() { const email = document.getElementById('regEmail').value; const pass = document.getElementById('regPass').value; const user = document.getElementById('regUser').value; const wa = document.getElementById('regWa').value; if(!email || !pass || !user) { alert("Harap isi Email, Password, dan Username!"); return; } const { data, error } = await _supabase.auth.signUp({ email: email, password: pass, options: { data: { username: user, wa_number: wa } } }); if (error) alert("Error: " + error.message); else { if(typeof fbq === 'function') fbq('track', 'CompleteRegistration'); alert("Registrasi berhasil!\nAkun Anda perlu DISETUJUI ADMIN."); showScreen('screenLogin'); } }
-        async function handleLogin() { const email = document.getElementById('loginEmail').value; const pass = document.getElementById('loginPass').value; try { const { data, error } = await _supabase.auth.signInWithPassword({ email, password: pass }); if (error) { alert("Login Gagal: " + error.message); return; } currentUser = data.user; const { data: profile, error: profileError } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single(); if (profileError || !profile) { await _supabase.from('profiles').insert({ id: currentUser.id, username: currentUser.email, email: currentUser.email, role: 'user', is_active: false }); const { data: newProfile } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single(); if(newProfile) { currentRole = 'user'; isActive = false; } else { alert("Gagal membuat profil."); logout(); return; } } else { currentRole = profile.role || 'user'; isActive = (profile.is_active === true); } if (currentRole !== 'admin' && !isActive) alert("PERHATIAN: Akun Anda BELUM AKTIF."); setupUI(); } catch (err) { console.error(err); alert("Terjadi kesalahan sistem."); } }
+        async function handleLogin() { const email = document.getElementById('loginEmail').value; const pass = document.getElementById('loginPass').value; try { const { data, error } = await _supabase.auth.signInWithPassword({ email, password: pass }); if (error) { alert("Login Gagal: " + error.message); return; } currentUser = data.user; const { data: profile, error: profileError } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single(); if (profileError || !profile) { await _supabase.from('profiles').insert({ id: currentUser.id, username: currentUser.email, email: currentUser.email, role: 'user', is_active: false }); const { data: newProfile } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single(); if(newProfile) { currentRole = 'user'; isActive = false; isStoreActive = false; } else { alert("Gagal membuat profil."); logout(); return; } } else { currentRole = profile.role || 'user'; isActive = (profile.is_active === true); isStoreActive = (profile.is_store_active === true); } if (currentRole !== 'admin' && !isActive) alert("PERHATIAN: Akun Anda BELUM AKTIF."); setupUI(); } catch (err) { console.error(err); alert("Terjadi kesalahan sistem."); } }
         function contactAdminReset() { const email = document.getElementById('loginEmail').value; let message = `Hai Admin kirimWA, saya lupa password saya.`; if(email) message += ` Email saya: ${email}`; window.open(`https://wa.me/6285161990373?text=${encodeURIComponent(message)}`, '_blank'); }
         async function updateNewPassword() { const pass = document.getElementById('newPass').value; if(!pass) return alert("Masukkan password baru!"); const { error } = await _supabase.auth.updateUser({ password: pass }); if(error) alert("Gagal update: " + error.message); else { alert("Password berhasil diubah!"); logout(); } }
-        async function logout() { await _supabase.auth.signOut(); currentUser = null; isActive = false; currentRole = 'user'; showScreen('screenLogin'); }
+        async function logout() { await _supabase.auth.signOut(); currentUser = null; isActive = false; currentRole = 'user'; isStoreActive = false; showScreen('screenLogin'); }
         _supabase.auth.onAuthStateChange((event, session) => { if (event === 'PASSWORD_RECOVERY') showScreen('screenReset'); else if (event === 'SIGNED_IN' && session && session.user) { if(!currentUser) checkSession(); } else if (event === 'SIGNED_OUT') { currentUser = null; showScreen('screenLogin'); } });
-        async function checkSession() { try { const { data: { user } } = await _supabase.auth.getUser(); if (user) { currentUser = user; const { data: profile } = await _supabase.from('profiles').select('*').eq('id', user.id).single(); if (profile) { currentRole = profile.role || 'user'; isActive = (profile.is_active === true); } setupUI(); } } catch(e) { console.error(e); } }
+        async function checkSession() { try { const { data: { user } } = await _supabase.auth.getUser(); if (user) { currentUser = user; const { data: profile } = await _supabase.from('profiles').select('*').eq('id', user.id).single(); if (profile) { currentRole = profile.role || 'user'; isActive = (profile.is_active === true); isStoreActive = (profile.is_store_active === true); } setupUI(); } } catch(e) { console.error(e); } }
 
         function setupUI() {
             const menuDiv = document.getElementById('dynamicMenu');
@@ -332,6 +337,16 @@
             const warning = document.getElementById('inactiveWarning');
             let menuHTML = '';
 
+            // Logika Tombol Toko
+            let tokoMenuItem = '';
+            if (!isStoreActive) {
+                // Jika belum aktivasi: Tombol Merah "Aktifkan Toko"
+                tokoMenuItem = '<span class="menu-item alert" onclick="aktivasiToko(currentUser.email)">Aktifkan Toko</span>';
+            } else {
+                // Jika sudah aktivasi: Tombol Biasa "Toko Saya"
+                tokoMenuItem = '<span class="menu-item" onclick="navigateTo(\'toko\')">Toko Saya</span>';
+            }
+
             if (currentRole === 'admin') {
                 menuHTML = '<span class="menu-item" onclick="navigateTo(\'admin\')">Admin</span><span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'niaga\')">Info Niaga</span><span class="menu-item" onclick="navigateTo(\'toko\')">Toko Saya</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
                 adminLinkBtn.style.display = 'none'; warning.style.display = 'none';
@@ -339,17 +354,26 @@
             } else {
                 menuHTML = '<span class="menu-item" onclick="navigateTo(\'niaga\')">Info Niaga</span>';
                 if (!isActive) {
-                    menuHTML += '<span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'toko\')">Toko Saya</span>';
+                    // User Non-Aktif
+                    menuHTML += '<span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span>';
+                    menuHTML += tokoMenuItem; // Tambah tombol toko
                     adminLinkBtn.style.display = 'block'; adminLinkBtn.className = 'menu-item highlight'; warning.style.display = 'block';
                     navigateTo('niaga');
                 } else {
-                    menuHTML += '<span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'toko\')">Toko Saya</span>';
+                    // User Aktif
+                    menuHTML += '<span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span>';
+                    menuHTML += tokoMenuItem; // Tambah tombol toko
                     adminLinkBtn.style.display = 'block'; adminLinkBtn.className = 'menu-item'; warning.style.display = 'none';
                     navigateTo('niaga');
                 }
                 menuHTML += '<span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
             }
             menuDiv.innerHTML = menuHTML;
+        }
+
+        window.aktivasiToko = function(email) {
+            const message = `Hai Admin, saya mau Aktivasi Toko, email saya ${email}`;
+            window.open(`https://wa.me/6285161990373?text=${encodeURIComponent(message)}`, '_blank');
         }
 
         function navigateTo(page) {
