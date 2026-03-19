@@ -135,7 +135,7 @@
     <!-- LOGIN SCREEN -->
     <div class="screen active" id="screenLogin">
         <div class="card" style="margin-top:20px; overflow:hidden; padding:0;">
-            <div style="background:#f0f0f0; text-align:center;"><img src="https://placehold.co/600x200/25D366/white?text=Selamat+Datang" style="width:100%; display:block;"></div>
+            <div style="background:#f0f0f0; text-align:center;"><img src="https://ibb.co.com/6RHCGrvJ" style="width:100%; display:block;"></div>
             <div style="padding:20px;">
                 <h2 style="text-align:center; margin-top:0;">Login</h2>
                 <input type="email" id="loginEmail" placeholder="Email">
@@ -147,7 +147,7 @@
                 <button type="button" class="btn-link" onclick="contactAdminReset()">Lupa Password?</button>
                 <p style="text-align:center; margin-top:15px;">Belum punya akun? <a href="#" onclick="showScreen('screenRegister'); return false;">Register di sini</a></p>
             </div>
-            <div style="background:#fafafa; text-align:center; padding:10px;"><img src="https://placehold.co/600x100/ffffff/666666?text=Aman+dan+Mudah" style="width:100%; max-width:300px;"></div>
+            <div style="background:#fafafa; text-align:center; padding:10px;"><img src="https://ibb.co.com/LzFCRQXk" style="width:100%; max-width:300px;"></div>
         </div>
     </div>
 
@@ -410,7 +410,6 @@
         // --- LOGIC NIAGA (FEED & TOKO) ---
         async function loadMyStore() { if (!currentUser) return; const { data: profile } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single(); if (!profile.is_store_active) { alert("Anda belum aktivasi Akun Toko."); navigateTo('niaga'); return; } document.getElementById('storeName').innerText = profile.store_name || "Toko Saya"; document.getElementById('storeAddress').innerText = profile.store_address || "-"; document.getElementById('storeAvatar').innerText = profile.store_name ? profile.store_name.charAt(0).toUpperCase() : "T"; document.getElementById('storeWaBtn').onclick = () => window.open(`https://wa.me/${profile.phone}`, '_blank'); if (profile.gmaps_link) { document.getElementById('storeMapLink').href = profile.gmaps_link; document.getElementById('storeMapLink').classList.remove('hidden'); } else { document.getElementById('storeMapLink').classList.add('hidden'); } loadProducts(currentUser.id, true); }
         
-        // PERBAIKAN: loadProducts sekarang membaca kolom 'images' (array)
         async function loadProducts(userId, isOwner = false) { 
             const container = document.getElementById('productContainer'); 
             container.innerHTML = '<div class="col-span-2 text-center text-gray-500 py-4">Memuat...</div>'; 
@@ -421,7 +420,6 @@
             products.forEach(p => { 
                 const card = document.createElement('div'); 
                 card.className = 'bg-white rounded-lg shadow overflow-hidden'; 
-                // Support 'images' array
                 const imgSrc = (p.images && p.images.length > 0) ? p.images[0] : 'https://via.placeholder.com/150';
                 card.innerHTML = `<img src="${imgSrc}" class="w-full h-24 object-cover"><div class="p-2"><h4 class="font-semibold text-sm truncate">${p.product_name}</h4><p class="text-green-600 font-bold text-xs">${p.price || ''}</p><button onclick="handleProductWa('${p.id}', '${userId}')" class="mt-2 w-full bg-green-500 text-white text-xs py-1 rounded hover:bg-green-600">WhatsApp</button></div>`; 
                 container.appendChild(card); 
@@ -495,7 +493,6 @@
             modal.style.display = 'flex';
         };
 
-        // PERBAIKAN: submitProduct sekarang loop untuk multiple images dan simpan ke kolom 'images'
         window.submitProduct = async function() { 
             const name = document.getElementById('inputTitle').value; 
             const price = document.getElementById('inputPrice').value; 
@@ -515,7 +512,6 @@
                 } 
             } 
             
-            // Insert ke tabel dengan kolom 'images'
             const { error } = await _supabase.from('store_products').insert({ 
                 user_id: currentUser.id, 
                 product_name: name, 
@@ -530,7 +526,42 @@
             } 
         };
 
-        window.submitPost = async function() { const title = document.getElementById('inputTitle').value; const desc = document.getElementById('inputDesc').value; const files = document.getElementById('inputImages').files; if (!title) return alert("Judul harus diisi!"); let imageUrls = []; if (files.length > 0) { for (let i = 0; i < Math.min(files.length, 3); i++) { const file = files[i]; const fileName = `${Date.now()}_${file.name}`; const { data, error } = await _supabase.storage.from('product-images').upload(fileName, file); if (data) { const publicUrl = _supabase.storage.from('product-images').getPublicUrl(data.path).data.publicUrl; imageUrls.push(publicUrl); } } } const { error } = await _supabase.from('feed_posts').insert({ user_id: currentUser.id, title: title, description: desc, images: imageUrls }); if (error) { alert("Gagal posting: " + error.message); } else { closePostModal(); loadFeed(); } };
+        // PERBAIKAN: Tambahkan is_active: true
+        window.submitPost = async function() { 
+            const title = document.getElementById('inputTitle').value; 
+            const desc = document.getElementById('inputDesc').value; 
+            const files = document.getElementById('inputImages').files; 
+            if (!title) return alert("Judul harus diisi!"); 
+            
+            let imageUrls = []; 
+            if (files.length > 0) { 
+                for (let i = 0; i < Math.min(files.length, 3); i++) { 
+                    const file = files[i]; 
+                    const fileName = `${Date.now()}_${file.name}`; 
+                    const { data, error } = await _supabase.storage.from('product-images').upload(fileName, file); 
+                    if (data) { 
+                        const publicUrl = _supabase.storage.from('product-images').getPublicUrl(data.path).data.publicUrl; 
+                        imageUrls.push(publicUrl); 
+                    } 
+                } 
+            } 
+
+            // SIMPAN DENGAN STATUS AKTIF = TRUE
+            const { error } = await _supabase.from('feed_posts').insert({ 
+                user_id: currentUser.id, 
+                title: title, 
+                description: desc, 
+                images: imageUrls,
+                is_active: true // <--- INI DIA KUNCINYA
+            }); 
+            
+            if (error) { 
+                alert("Gagal posting: " + error.message); 
+            } else { 
+                closePostModal(); 
+                loadFeed(); 
+            } 
+        };
 
         window.moveSlide = (id, dir) => { const slide = document.getElementById(`slide-${id}`); const width = slide.offsetWidth; const currentTransform = slide.style.transform ? parseInt(slide.style.transform.replace('translateX(', '').replace('px)', '')) : 0; let newTransform = currentTransform + (dir * -width); const maxTransform = -(slide.children.length - 1) * width; if (newTransform > 0) newTransform = maxTransform; if (newTransform < maxTransform) newTransform = 0; slide.style.transform = `translateX(${newTransform}px)`; };
 
