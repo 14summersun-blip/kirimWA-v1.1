@@ -60,30 +60,16 @@
         .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .status-active { color: green; font-weight: bold; }
         .status-banned { color: red; font-weight: bold; }
-        /* Modal lama (edit kontak) */
         .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; }
         .modal.active { display: flex; }
         .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; }
         
-        /* POP UP POSTING BARU (FIXED CSS) */
-        .modal-overlay {
-            display: none; 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); z-index: 1050;
-            justify-content: center; align-items: center;
-        }
+        /* POP UP POSTING BARU */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1050; justify-content: center; align-items: center; }
         .modal-overlay.active { display: flex; }
-        .modal-box {
-            background: white; width: 90%; max-width: 450px;
-            border-radius: 15px; overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            animation: popIn 0.3s ease;
-        }
+        .modal-box { background: white; width: 90%; max-width: 450px; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.3); animation: popIn 0.3s ease; }
         @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .modal-header {
-            padding: 15px; border-bottom: 1px solid #eee;
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        .modal-header { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
         .modal-body { padding: 15px; }
 
         .counter-badge { background: #eee; padding: 5px 10px; border-radius: 20px; font-size: 14px; display: inline-block; margin-bottom: 10px; }
@@ -121,22 +107,8 @@
         .carousel-btn.prev { left: 5px; }
         .carousel-btn.next { right: 5px; }
 
-        /* FAB (Floating Action Button) */
-        .fab-post {
-            position: fixed; bottom: 80px; right: 20px;
-            width: 56px; height: 56px;
-            background-color: var(--blue);
-            color: white;
-            border-radius: 50%;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            display: none; 
-            align-items: center; justify-content: center;
-            font-size: 32px; font-weight: 700; 
-            cursor: pointer;
-            z-index: 50;
-            border: none;
-            transition: transform 0.2s;
-        }
+        /* FAB */
+        .fab-post { position: fixed; bottom: 80px; right: 20px; width: 56px; height: 56px; background-color: var(--blue); color: white; border-radius: 50%; box-shadow: 0 4px 8px rgba(0,0,0,0.3); display: none; align-items: center; justify-content: center; font-size: 32px; font-weight: 700; cursor: pointer; z-index: 50; border: none; transition: transform 0.2s; }
         .fab-post:hover { transform: scale(1.1); }
     </style>
 </head>
@@ -156,16 +128,15 @@
     </div>
 
     <!-- LOGIN SCREEN -->
-    <!-- PERBAIKAN: Class active dihapus, tapi akan ditampilkan via JS checkSession -->
     <div class="screen" id="screenLogin">
         <div class="card" style="margin-top:20px; overflow:hidden; padding:0;">
             <div style="background:#f0f0f0;">
-                <img src="https://i.ibb.co.com/VWg4bJHp/Login-page-1.jpg" style="width: 100%; height: auto; display: block;">
+                <!-- Gambar Atas -->
+                <img src="https://i.ibb.co/VWg4bJHp/Login-page-1.jpg" style="width: 100%; height: auto; display: block;">
             </div>
             <div style="padding:20px;">
                 <h2 style="text-align:center; margin-top:0;">Login</h2>
-                <!-- PERBAIKAN: Ditambah tag FORM untuk menangani Enter & Autofill -->
-                <form onsubmit="return handleLogin(event)">
+                <form onsubmit="event.preventDefault(); handleLogin();">
                     <input type="email" id="loginEmail" placeholder="Email" autocomplete="email">
                     <div class="pass-wrapper">
                         <input type="password" id="loginPass" placeholder="Password" autocomplete="current-password">
@@ -177,7 +148,8 @@
                 <p style="text-align:center; margin-top:15px;">Belum punya akun? <a href="#" onclick="showScreen('screenRegister'); return false;">Register di sini</a></p>
             </div>
             <div style="background:#fafafa;">
-                <img src="https://i.ibb.co.com/KjP9hNp0/Login-page-2.jpg" style="width: 100%; height: auto; display: block;">
+                <!-- Gambar Bawah -->
+                <img src="https://i.ibb.co/KjP9hNp0/Login-page-2.jpg" style="width: 100%; height: auto; display: block;">
             </div>
         </div>
     </div>
@@ -244,8 +216,6 @@
     <!-- ADMIN DASHBOARD -->
     <div class="screen" id="screenAdmin">
         <h2 style="color:#ffc107;">Admin Dashboard</h2>
-        
-        <!-- METRICS SECTION -->
         <div class="card bg-gradient-to-r from-blue-50 to-green-50">
             <h3 class="font-bold text-gray-700 mb-2">📊 Statistik Ekosistem</h3>
             <div class="grid grid-cols-3 gap-2 text-center">
@@ -254,7 +224,6 @@
                 <div class="bg-white p-2 rounded shadow-sm"><div class="text-2xl font-bold text-purple-600" id="metricProd">0</div><div class="text-xs text-gray-500">Klik Produk</div></div>
             </div>
         </div>
-
         <div class="card">
             <h3>Filter User</h3>
             <div class="filter-grid"><div><span class="label-small">Dari Tanggal</span><input type="date" id="adminFilterStart" onchange="loadAdminData()" style="margin:0"></div><div><span class="label-small">Sampai Tanggal</span><input type="date" id="adminFilterEnd" onchange="loadAdminData()" style="margin:0"></div></div>
@@ -268,7 +237,7 @@
     <!-- MODALS -->
     <div class="modal" id="editModal"><div class="modal-content"><h3>Edit Kontak</h3><input type="hidden" id="editId"><input type="text" id="editName" placeholder="Nama"><input type="text" id="editPhone" placeholder="No HP"><input type="text" id="editLocation" placeholder="Lokasi"><button type="button" class="btn-primary" onclick="saveEditContact()">Simpan</button><button type="button" class="btn-secondary" onclick="closeModal()">Batal</button></div></div>
     
-    <!-- MODAL POSTING (FIXED - Pure CSS) -->
+    <!-- MODAL POSTING -->
     <div id="postModal" class="modal-overlay">
         <div class="modal-box">
             <div class="modal-header">
@@ -279,14 +248,13 @@
                 <div style="margin-bottom:10px;"><label class="label-small">Judul</label><input type="text" id="inputTitle" placeholder="Judul"></div>
                 <div style="margin-bottom:10px;"><label class="label-small">Deskripsi</label><textarea id="inputDesc" rows="3" placeholder="Deskripsi..."></textarea></div>
                 <div style="margin-bottom:10px;"><label class="label-small">Upload Gambar (Max 3)</label><input type="file" id="inputImages" multiple accept="image/*"></div>
-                <!-- Harga disembunyikan untuk Feed Post -->
                 <div id="inputPrice" class="hidden"><label class="label-small">Harga</label><input type="text" placeholder="Harga"></div>
                 <button id="btnSubmit" onclick="submitPost()" class="btn-primary" style="margin-top:15px;">Submit</button>
             </div>
         </div>
     </div>
 
-    <!-- FAB (Floating Button) -->
+    <!-- FAB -->
     <button id="fabPost" class="fab-post" onclick="showPostModal()">+</button>
 
     <!-- FLOATING BANNER -->
@@ -352,9 +320,7 @@
         // --- FUNGSI AUTH ---
         async function handleRegister() { const email = document.getElementById('regEmail').value; const pass = document.getElementById('regPass').value; const user = document.getElementById('regUser').value; const wa = document.getElementById('regWa').value; if(!email || !pass || !user) { alert("Harap isi Email, Password, dan Username!"); return; } const { data, error } = await _supabase.auth.signUp({ email: email, password: pass, options: { data: { username: user, wa_number: wa } } }); if (error) alert("Error: " + error.message); else { if(typeof fbq === 'function') fbq('track', 'CompleteRegistration'); alert("Registrasi berhasil!\nAkun Anda perlu DISETUJUI ADMIN."); showScreen('screenLogin'); } }
         
-        // PERBAIKAN: handleLogin dengan Event untuk Form Submit
-        async function handleLogin(e) { 
-            if(e) e.preventDefault(); // Mencegah reload form
+        async function handleLogin() { 
             const email = document.getElementById('loginEmail').value; 
             const pass = document.getElementById('loginPass').value; 
             
@@ -391,7 +357,6 @@
                     if (profile) { currentRole = profile.role || 'user'; isActive = (profile.is_active === true); isStoreActive = (profile.is_store_active === true); } 
                     setupUI(); 
                 } else {
-                    // Jika tidak ada user, tampilkan Login
                     showScreen('screenLogin');
                 }
             } catch(e) { console.error(e); showScreen('screenLogin'); } 
@@ -585,7 +550,7 @@
             } 
         };
 
-        // POSTINGAN: Tambahkan is_active: true
+        // POSTINGAN
         window.submitPost = async function() { 
             const title = document.getElementById('inputTitle').value; 
             const desc = document.getElementById('inputDesc').value; 
@@ -627,7 +592,7 @@
         // Init
         loadProvinsi();
         document.getElementById('menuBtn').addEventListener('click', toggleMenu);
-        // Panggil checkSession saat load untuk menentukan Layar awal
+        // WAJIB: Panggil checkSession di akhir
         checkSession();
     </script>
 </body>
