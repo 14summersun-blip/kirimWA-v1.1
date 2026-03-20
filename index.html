@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>kirimWA App</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { --primary: #25D366; --dark: #128C7E; --bg: #ece5dd; }
@@ -43,6 +43,10 @@
         .banner-track { display: flex; animation: scroll 10s linear infinite; }
         .banner-track img { height: 50px; width: auto; margin: 0 10px; border-radius: 4px; }
         @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        
+        /* TABLE ADMIN */
+        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
@@ -50,30 +54,23 @@
     <div id="loadingScreen" class="loading-screen">
         <div class="spinner"></div>
         <p id="loadingText">Memuat...</p>
-        <button class="btn-cancel" onclick="forceStartApp()">Batal / Mode Offline</button>
+        <button class="btn-cancel" onclick="forceStartApp()">Batal</button>
     </div>
 
     <div class="header" id="mainHeader" style="display:none;">
         <button type="button" class="menu-btn" onclick="toggleMenu()">☰ Menu</button>
-        <div class="header-title" onclick="navigateHome()">
-            <span style="font-weight:700; font-style:italic;">kirimWA</span>
-        </div>
-        <!-- MENU CONTAINER -->
+        <div class="header-title" onclick="navigateHome()"><span style="font-weight:700; font-style:italic;">kirimWA</span></div>
         <div class="menu-popup" id="menuPopup">
             <div id="dynamicMenu"></div>
-            <!-- Logout dipisah agar aman, jika dynamicMenu error, logout tetap ada -->
             <span class="menu-item logout" onclick="executeLogout()">Logout</span>
         </div>
     </div>
 
-    <!-- FLOATING BANNER -->
-    <div id="floatingBannerContainer" class="floating-banner-container">
-        <div class="banner-track" id="bannerTrack"></div>
-    </div>
+    <div id="floatingBannerContainer" class="floating-banner-container"><div class="banner-track" id="bannerTrack"></div></div>
 
-    <!-- SCREENS -->
-    <div class="screen" id="screenLogin"><div class="card" style="margin-top:20px; overflow:hidden; padding:0;"><div style="background:#f0f0f0;"><img src="https://i.ibb.co.com/VWg4bJHp/Login-page-1.jpg" style="width: 100%; display: block;"></div><div style="padding:20px;"><h2 style="text-align:center;">Login</h2><form onsubmit="event.preventDefault(); handleLogin();"><input type="email" id="loginEmail" placeholder="Email"><div style="position:relative;"><input type="password" id="loginPass" placeholder="Password"><span onclick="this.previousElementSibling.type=this.previousElementSibling.type==='password'?'text':'password'" style="position:absolute;right:15px;top:12px;cursor:pointer;">👁️</span></div><button type="submit" class="btn-primary">Login</button></form><p style="text-align:center; margin-top:15px;">Belum punya akun? <a href="#" onclick="navigateTo('register');return false;">Register</a></p></div><div style="background:#fafafa;"><img src="https://i.ibb.co.com/KjP9hNp0/Login-page-2.jpg" style="width: 100%; display: block;"></div></div></div>
-    <div class="screen" id="screenRegister"><div class="card" style="margin-top:20px;"><h2>Register</h2><input type="text" id="regUser" placeholder="Username"><input type="email" id="regEmail" placeholder="Email"><input type="text" id="regWa" placeholder="WA (Opsional)"><div style="position:relative;"><input type="password" id="regPass" placeholder="Password"><span onclick="this.previousElementSibling.type=this.previousElementSibling.type==='password'?'text':'password'" style="position:absolute;right:15px;top:12px;cursor:pointer;">👁️</span></div><button class="btn-primary" onclick="handleRegister()">Register</button><p style="text-align:center; margin-top:15px;"><a href="#" onclick="navigateTo('login');return false;">Login</a></p></div></div>
+    <!-- SCREENS HTML -->
+    <div class="screen" id="screenLogin"><div class="card" style="margin-top:20px; overflow:hidden; padding:0;"><div style="background:#f0f0f0;"><img src="https://i.ibb.co.com/VWg4bJHp/Login-page-1.jpg" style="width: 100%; display: block;"></div><div style="padding:20px;"><h2 style="text-align:center;">Login</h2><form onsubmit="event.preventDefault(); handleLogin();"><input type="email" id="loginEmail" placeholder="Email"><input type="password" id="loginPass" placeholder="Password"><button type="submit" class="btn-primary">Login</button></form><p style="text-align:center; margin-top:15px;">Belum punya akun? <a href="#register">Register</a></p></div><div style="background:#fafafa;"><img src="https://i.ibb.co.com/KjP9hNp0/Login-page-2.jpg" style="width: 100%; display: block;"></div></div></div>
+    <div class="screen" id="screenRegister"><div class="card" style="margin-top:20px;"><h2>Register</h2><input type="text" id="regUser" placeholder="Username"><input type="email" id="regEmail" placeholder="Email"><input type="text" id="regWa" placeholder="WA (Opsional)"><input type="password" id="regPass" placeholder="Password"><button class="btn-primary" onclick="handleRegister()">Register</button><p style="text-align:center; margin-top:15px;"><a href="#login">Login</a></p></div></div>
     <div class="screen" id="screenReset"><div class="card" style="margin-top:50px;"><h2>Reset Password</h2><input type="password" id="newPass" placeholder="Password Baru"><button class="btn-primary" onclick="updateNewPassword()">Simpan</button></div></div>
     
     <div class="screen" id="screenAkun"><h2>Akun Saya</h2><div id="akunGuest" class="card" style="text-align:center; display:none;"><h3>Selamat Datang</h3><button class="btn-primary" onclick="navigateTo('login')">Login</button></div><div id="akunUser" style="display:none;"><div class="warning-banner" id="inactiveWarning" style="display:none;">⚠️ Akun belum aktif.</div><div class="card"><p><strong>Username:</strong> <span id="profUsername">-</span></p><p><strong>Email:</strong> <span id="profEmail">-</span></p><p><strong>Status:</strong> <span id="profStatus">-</span></p><hr><input type="text" id="editWa" placeholder="WA"><button class="btn-secondary" onclick="updateProfile()">Simpan WA</button><br><br><input type="password" id="editPass" placeholder="Password Baru"><button class="btn-secondary" onclick="updatePassword()">Simpan Pass</button><br><br><button class="btn-danger" onclick="deleteAccount()">Hapus Akun</button></div></div></div>
@@ -105,27 +102,23 @@
                 <input type="date" id="logStartDate" onchange="loadActivityLogs()">
             </div>
             <div style="overflow-x:auto; max-height:300px; overflow-y:auto; margin-top:10px; border:1px solid #eee;">
-                <table id="activityLogTable" style="font-size:11px; width:100%;">
-                    <thead><tr><th>Waktu</th><th>User</th><th>Aktivitas</th></tr></thead>
-                    <tbody></tbody>
-                </table>
+                <table id="activityLogTable" style="font-size:11px; width:100%;"><thead><tr><th>Waktu</th><th>User</th><th>Aktivitas</th></tr></thead><tbody></tbody></table>
             </div>
         </div>
     </div>
 
     <script>
-        // === KONFIGURASI ===
+        // === CONFIG ===
         const SUPABASE_URL = 'https://whlyxdcsrvrpxmdsfdjz.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndobHl4ZGNzcnZycHhtZHNmZGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzODY3OTYsImV4cCI6MjA4ODk2Mjc5Nn0.A4SFdoE72-xNn99ez9Ug5R1fndrcTu4GhYy9Mpe1Zfk';
-        
-        // PENTING: Ganti dengan Link Niaga App Anda. Jika belum ada, biarkan '#'
+        // GANTI DENGAN LINK NIAGA ANDA
         const NIAGA_APP_URL = 'https://niaga-app-anda.com'; 
 
         if (typeof supabase === 'undefined') { document.getElementById('loadingText').innerText = "Koneksi Gagal"; throw new Error(""); }
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let currentUser = null; let currentRole = 'user'; let isActive = false; let allContacts = []; let sendList = [];
 
-        // === CORE UI ===
+        // === UI CONTROL ===
         function forceStartApp() { try { document.getElementById('loadingScreen').style.display = 'none'; showScreen('screenLogin'); } catch(e){} }
         var failSafeTimer = setTimeout(forceStartApp, 5000);
 
@@ -138,14 +131,13 @@
             var header = document.getElementById('mainHeader');
             var banner = document.getElementById('floatingBannerContainer');
             
-            // Banner Logic
+            // Banner: Muncul di Kirim, Kontak, Akun
             if(id === 'screenKirim' || id === 'screenKontak' || id === 'screenAkun') { banner.style.display = 'block'; loadBanners(); } 
             else { banner.style.display = 'none'; }
 
             if(id === 'screenLogin' || id === 'screenRegister' || id === 'screenReset') { header.style.display = 'none'; } 
             else { header.style.display = 'flex'; }
             
-            // Pastikan menu tertutup
             document.getElementById('menuPopup').classList.remove('active');
         }
 
@@ -156,7 +148,6 @@
             let target = map[page] || (currentUser ? 'screenAkun' : 'screenLogin');
             showScreen(target);
             document.getElementById('headerTitle').innerText = page ? (page.charAt(0).toUpperCase() + page.slice(1)) : 'Akun';
-            // Loaders
             if(page === 'akun' && currentUser) loadProfile();
             if(page === 'kontak') loadContacts();
             if(page === 'kirim') { loadContacts(); renderAvailableContacts(); }
@@ -166,13 +157,13 @@
         function toggleMenu() { document.getElementById('menuPopup').classList.toggle('active'); }
 
         // === AUTH ===
-        // Logout dipisah namanya agar tidak tertimpa
         window.executeLogout = async function() {
             try { await _supabase.auth.signOut(); } catch(e){}
             currentUser = null; isActive = false; currentRole = 'user';
             try { localStorage.clear(); } catch(e){}
-            alert("Logout berhasil.");
-            forceStartApp();
+            // Pindah ke Login secara paksa tanpa alert
+            window.location.hash = 'login'; 
+            showScreen('screenLogin');
         };
         
         async function handleLogin() { 
@@ -197,35 +188,39 @@
         }
 
         function setupUI() {
-            try {
-                const menuDiv = document.getElementById('dynamicMenu');
-                let html = '';
-                const niagaLink = NIAGA_APP_URL && NIAGA_APP_URL !== '#' ? NIAGA_APP_URL : '#';
-                
-                if(!currentUser) {
-                    document.getElementById('akunGuest').style.display='block'; document.getElementById('akunUser').style.display='none';
-                    // Menu untuk Tamu
-                    html = '<span class="menu-item" onclick="window.open(\''+niagaLink+'\', \'_blank\')">Info Niaga</span>';
-                    renderPage('akun');
-                } else {
-                    document.getElementById('akunGuest').style.display='none'; document.getElementById('akunUser').style.display='block';
-                    if (currentRole === 'admin') {
-                        html = '<span class="menu-item" onclick="navigateTo(\'admin\')">Admin</span><span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
-                        renderPage('admin');
-                    } else {
-                        if(!isActive) {
-                           html = '<span class="menu-item highlight" onclick="aktivasiAdmin()">Aktivasi Hubungi Admin</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
-                        } else {
-                           html = '<span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
-                        }
-                        html += '<span class="menu-item" onclick="window.open(\''+niagaLink+'\', \'_blank\')">Info Niaga</span>';
-                        renderPage('akun');
-                    }
+            // Reset Menu
+            const menuDiv = document.getElementById('dynamicMenu');
+            let html = '';
+            
+            // Logika Menu Sederhana
+            if(!currentUser) {
+                // Menu Tamu
+                html = '<span class="menu-item" onclick="window.open(\''+NIAGA_APP_URL+'\', \'_blank\')">Info Niaga</span>';
+            } else {
+                // Menu User/Admin
+                if (currentRole === 'admin') {
+                    html = '<span class="menu-item" onclick="navigateTo(\'admin\')">Admin</span>';
                 }
-                menuDiv.innerHTML = html;
-            } catch(e) {
-                console.error("Setup UI Error", e);
-                // Fallback: Biarkan menu kosong (hanya logout kelihatan)
+                if(isActive) {
+                    html += '<span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim WA</span>';
+                }
+                html += '<span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span>';
+                if(!isActive) {
+                    html += '<span class="menu-item highlight" onclick="aktivasiAdmin()">Aktivasi Hubungi Admin</span>';
+                }
+                html += '<span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
+                html += '<span class="menu-item" onclick="window.open(\''+NIAGA_APP_URL+'\', \'_blank\')">Info Niaga</span>';
+            }
+            
+            menuDiv.innerHTML = html;
+            
+            // Render Page Logic
+            if(!currentUser) {
+                document.getElementById('akunGuest').style.display='block'; document.getElementById('akunUser').style.display='none';
+                renderPage('akun'); // Menampilkan halaman Akun (Guest View)
+            } else {
+                document.getElementById('akunGuest').style.display='none'; document.getElementById('akunUser').style.display='block';
+                if (currentRole === 'admin') renderPage('admin'); else renderPage('akun');
             }
         }
         window.aktivasiAdmin = () => window.open('https://wa.me/6285161990373?text=Aktivasi%20Akun', '_blank');
@@ -238,12 +233,12 @@
         async function updateNewPassword() { const p=document.getElementById('newPass').value; if(!p) return; await _supabase.auth.updateUser({password:p}); alert("Ok!"); executeLogout(); }
         async function deleteAccount() { if(confirm("Hapus?")){ await _supabase.from('profiles').delete().eq('id',currentUser.id); executeLogout(); }}
 
-        // Kontak Logic
+        // Kontak
         async function loadContacts() { if(!currentUser) return; const {data} = await _supabase.from('contacts').select('*').eq('user_id',currentUser.id); allContacts=data||[]; renderContacts(); renderAvailableContacts(); }
         function renderContacts() { document.getElementById('contactListContainer').innerHTML = allContacts.map(c=>`<div style="background:white; padding:10px; margin-bottom:5px; border-radius:8px; display:flex; justify-content:space-between; align-items:center;"><b>${c.name}</b> <span style="font-size:12px">${c.phone}</span> <button class="btn-danger" style="width:auto; padding:2px 5px; font-size:10px;" onclick="deleteContact('${c.id}')">X</button></div>`).join(''); }
         async function addContact() { const n=document.getElementById('cName').value, p=document.getElementById('cPhone').value, l=document.getElementById('cLocation').value; if(!n||!p) return; await _supabase.from('contacts').insert({user_id:currentUser.id, name:n, phone:p, location:l}); loadContacts(); }
         async function deleteContact(id) { await _supabase.from('contacts').delete().eq('id',id); loadContacts(); }
-        function renderAvailableContacts() { document.getElementById('availableContactsList').innerHTML = allContacts.map(c=>`<div style="background:white; padding:10px; margin-bottom:5px; border-radius:8px;" onclick="addToSendList('${c.id}')">${c.name} <span style="font-size:10px">(${c.phone})</span></div>`).join(''); }
+        function renderAvailableContacts() { document.getElementById('availableContactsList').innerHTML = allContacts.map(c=>`<div style="background:white; padding:10px; margin-bottom:5px; border-radius:8px; cursor:pointer;" onclick="addToSendList('${c.id}')">${c.name}</div>`).join(''); }
         function addToSendList(id) { const c=allContacts.find(x=>x.id==id); if(sendList.find(x=>x.id==id)) return; sendList.push(c); renderSendList(); }
         function renderSendList() { document.getElementById('countSend').innerText=sendList.length; document.getElementById('btnSendNext').style.display=sendList.length?'block':'none'; document.getElementById('sendListDisplay').innerHTML=sendList.map((c,i)=>`<div style="background:white; padding:10px; border-radius:8px; margin-bottom:5px;">${i+1}. ${c.name} <button class="btn-primary" style="width:auto; padding:2px 5px; font-size:10px; float:right" onclick="sendSingle(${i})">Kirim</button></div>`).join(''); }
         function sendNextInQueue() { if(!sendList.length) return; sendSingle(0); }
@@ -251,72 +246,44 @@
             const msg = document.getElementById('messageText').value; if(!msg) return alert("Pesan kosong"); 
             const c = sendList[i]; 
             window.open(`https://wa.me/${c.phone}?text=${encodeURIComponent(msg)}`, '_blank'); 
-            
             try { await _supabase.from('activity_logs').insert({ user_id: currentUser.id, details: `Kirim ke ${c.name} (${c.phone})` }); } catch(e){}
-            
             sendList.splice(i,1); renderSendList(); 
         }
 
-        // === ADMIN FEATURES ===
+        // === ADMIN ===
         async function loadAdminDashboard() {
             const { data: users } = await _supabase.from('profiles').select('id, username');
             document.getElementById('logUserFilter').innerHTML = '<option value="">Semua</option>' + (users||[]).map(u=>`<option value="${u.id}">${u.username}</option>`).join('');
-            
             const { data: settings } = await _supabase.from('site_settings').select('*');
             const speed = settings?.find(s=>s.key==='slider_speed')?.value || 5;
             const enabled = settings?.find(s=>s.key==='banner_enabled')?.value === 'true';
             document.getElementById('sliderSpeed').value = speed;
             document.getElementById('toggleBanner').checked = enabled;
-            renderBannerList();
-            loadActivityLogs();
+            renderBannerList(); loadActivityLogs();
         }
-        
         async function loadActivityLogs() {
             const user = document.getElementById('logUserFilter').value;
             const start = document.getElementById('logStartDate').value;
-            
             let query = _supabase.from('activity_logs').select('created_at, details, profiles(username)').order('created_at', {ascending:false}).limit(50);
             if(user) query = query.eq('user_id', user);
             if(start) query = query.gte('created_at', start);
-            
             const { data } = await query;
             const tbody = document.querySelector('#activityLogTable tbody');
             tbody.innerHTML = (data||[]).map(l => `<tr><td>${new Date(l.created_at).toLocaleString('id-ID')}</td><td>${l.profiles?.username||'-'}</td><td>${l.details}</td></tr>`).join('') || '<tr><td colspan="3">No Data</td></tr>';
         }
-
-        async function toggleBannerStatus(isOn) {
-            await _supabase.from('site_settings').upsert({key:'banner_enabled', value: isOn ? 'true' : 'false'});
-            loadBanners();
-        }
-        async function updateBannerSpeed() {
-            const speed = document.getElementById('sliderSpeed').value || 5;
-            await _supabase.from('site_settings').upsert({key:'slider_speed', value: speed});
-            loadBanners();
-        }
-        async function addBanner() {
-            const img = document.getElementById('newBannerImg').value;
-            const link = document.getElementById('newBannerLink').value;
-            if(!img) return alert("URL Gambar wajib!");
-            await _supabase.from('banners').insert({image_url:img, target_url:link, is_active:true});
-            renderBannerList(); loadBanners();
-        }
-        async function renderBannerList() {
-            const { data } = await _supabase.from('banners').select('*');
-            document.getElementById('bannerList').innerHTML = (data||[]).map(b=>`<div style="border-bottom:1px solid #eee; padding:5px; display:flex; justify-content:space-between; align-items:center;"><img src="${b.image_url}" style="width:60px; height:30px; object-fit:cover; border-radius:4px;"><button class="btn-danger" style="width:auto; padding:2px 8px; font-size:10px;" onclick="deleteBanner('${b.id}')">Hapus</button></div>`).join('') || 'Kosong';
-        }
+        async function toggleBannerStatus(isOn) { await _supabase.from('site_settings').upsert({key:'banner_enabled', value: isOn ? 'true' : 'false'}); loadBanners(); }
+        async function updateBannerSpeed() { const speed = document.getElementById('sliderSpeed').value || 5; await _supabase.from('site_settings').upsert({key:'slider_speed', value: speed}); loadBanners(); }
+        async function addBanner() { const img = document.getElementById('newBannerImg').value; const link = document.getElementById('newBannerLink').value; if(!img) return alert("URL Gambar wajib!"); await _supabase.from('banners').insert({image_url:img, target_url:link, is_active:true}); renderBannerList(); loadBanners(); }
+        async function renderBannerList() { const { data } = await _supabase.from('banners').select('*'); document.getElementById('bannerList').innerHTML = (data||[]).map(b=>`<div style="border-bottom:1px solid #eee; padding:5px; display:flex; justify-content:space-between; align-items:center;"><img src="${b.image_url}" style="width:60px; height:30px; object-fit:cover; border-radius:4px;"><button class="btn-danger" style="width:auto; padding:2px 8px; font-size:10px;" onclick="deleteBanner('${b.id}')">Hapus</button></div>`).join('') || 'Kosong'; }
         async function deleteBanner(id) { await _supabase.from('banners').delete().eq('id',id); renderBannerList(); loadBanners(); }
-
         async function loadBanners() {
             const { data: settings } = await _supabase.from('site_settings').select('*');
             const speed = settings?.find(s=>s.key==='slider_speed')?.value || 5;
             const enabled = settings?.find(s=>s.key==='banner_enabled')?.value === 'true';
             const container = document.getElementById('floatingBannerContainer');
-            
             if(!enabled) { container.style.display = 'none'; return; }
-            
             const { data: banners } = await _supabase.from('banners').select('*').eq('is_active',true).order('order_index');
             if(!banners || banners.length === 0) { container.style.display = 'none'; return; }
-
             const track = document.getElementById('bannerTrack');
             track.innerHTML = banners.map(b=>`<img src="${b.image_url}" onclick="window.open('${b.target_url||'#'}')">`).join('');
             track.innerHTML += track.innerHTML; 
