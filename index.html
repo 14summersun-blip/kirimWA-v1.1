@@ -27,15 +27,11 @@
         .menu-item.logout { color:red; }
         .menu-item.highlight { background:#fff3cd; color:#856404; font-weight:bold; }
         
-        /* BANNER & KEYFRAMES (FIXED) */
+        /* BANNER */
         .banner-cont { display:none; position:sticky; top:40px; background:white; z-index:99; padding:8px 0; overflow:hidden; border-bottom:1px solid #eee; }
         .banner-track { display:flex; width:max-content; }
-        .banner-track img { height:100px; margin:0 10px; border-radius:6px; cursor:pointer; object-fit: cover; }
-        /* Ini kode yang tadi hilang */
-        @keyframes scroll {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
+        .banner-track img { height:80px; margin:0 10px; border-radius:6px; cursor:pointer; object-fit: cover; }
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
         
         /* MAIN */
         .page { display:none; padding:15px; max-width:600px; margin:0 auto; padding-bottom:80px; }
@@ -45,6 +41,8 @@
         .btn-main { background:var(--primary); color:white; }
         .btn-sec { background:#e0e0e0; color:#333; }
         .btn-red { background:#dc3545; color:white; }
+        /* Custom Button Size */
+        .btn-sm { padding: 5px 10px; font-size: 12px; width: auto; }
         
         /* PASSWORD WRAPPER */
         .pass-wrapper { position: relative; width: 100%; }
@@ -78,11 +76,12 @@
         /* ADMIN SCROLLABLE LISTS */
         .scroll-list-admin { max-height: 250px; overflow-y: auto; border: 1px solid #eee; border-radius: 6px; margin-top: 10px; }
         
-        /* User Card Admin */
+        /* User Card Admin - UPDATED */
         .user-card { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; }
         .user-card:last-child { border-bottom: none; }
-        .user-card b { display: block; margin-bottom: 4px; color: #333; }
-        .user-card small { color: #666; }
+        .user-card .user-row { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+        .user-card .user-info { flex: 1; }
+        .user-card .user-actions { display: flex; gap: 5px; }
         
         .status-ok { color:green; font-weight:bold; }
         .status-no { color:red; font-weight:bold; }
@@ -188,8 +187,6 @@
             <input type="text" id="cLoc" placeholder="Lokasi">
             <button class="btn-main" onclick="app.addC()">Simpan Kontak</button>
         </div>
-
-        <!-- Filter & Total -->
         <div class="card" style="padding:10px">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                 <span class="badge">Total: <span id="totalContacts">0</span></span>
@@ -208,8 +205,6 @@
         <div class="card">
             <textarea id="msgText" rows="2" placeholder="Tulis pesan..."></textarea>
         </div>
-
-        <!-- List Pencarian Kontak -->
         <div class="card">
             <h4 style="margin:0 0 10px 0">Cari Penerima</h4>
             <div class="grid-2 mb-10">
@@ -218,8 +213,6 @@
             </div>
             <div id="sendAvailList" class="scroll-list-admin" style="max-height:180px"></div>
         </div>
-
-        <!-- List Pengiriman -->
         <div class="card">
             <h4>List Pengiriman (<span id="cntNum">0</span>)</h4>
             <div id="listTarget" class="mb-10"></div>
@@ -238,13 +231,13 @@
             <hr style="border:none; border-top:1px solid #eee; margin:10px 0">
             <div class="grid-2 mb-10">
                 <input type="number" id="inSpeed" value="5" onchange="app.setSpeed()">
-                <small style="align-self:center">detik (kecepatan)</small>
+                <small style="align-self:center">detik</small>
             </div>
             <hr style="border:none; border-top:1px solid #eee; margin:10px 0">
             <h4>Tambah Banner Baru</h4>
-            <input type="text" id="inImg" placeholder="URL Gambar (Format 728x90px)">
-            <input type="text" id="inLink" placeholder="Link Tujuan">
-            <button class="btn-sec" onclick="app.addBan()">Tambah Banner</button>
+            <input type="text" id="inImg" placeholder="URL Gambar">
+            <input type="text" id="inLink" placeholder="Link">
+            <button class="btn-sec" onclick="app.addBan()">Tambah</button>
             <div id="listBan" style="margin-top:10px"></div>
         </div>
 
@@ -260,7 +253,7 @@
             </div>
         </div>
 
-        <!-- USER LIST SECTION -->
+        <!-- USER LIST SECTION - UPDATED -->
         <div class="card">
             <h3>👥 Daftar User</h3>
             <div class="grid-2 mb-10">
@@ -479,7 +472,7 @@
                 document.getElementById('cntNum').innerText = TARGETS.length;
                 document.getElementById('btnSend').style.display = TARGETS.length ? 'block' : 'none';
                 const el = document.getElementById('listTarget');
-                if(TARGETS.length===0){ el.innerHTML = '<p style="text-align:center;color:#999;font-size:12px">Klik kontak di atas untuk menambahkan.</p>'; return; }
+                if(TARGETS.length===0){ el.innerHTML = '<p style="text-align:center;color:#999;font-size:12px">Klik kontak di atas.</p>'; return; }
                 el.innerHTML = TARGETS.map((c,i) => `
                     <div class="target-card">
                         <span><b>${i+1}.</b> ${c.name}</span>
@@ -490,14 +483,11 @@
             remTar(i){ TARGETS.splice(i,1); this.drawTar(); },
             async send(){
                 if(TARGETS.length===0) return;
-                const i = 0;
-                const msg = document.getElementById('msgText').value;
-                if(!msg) return alert("Pesan kosong");
+                const i = 0; const msg = document.getElementById('msgText').value; if(!msg) return alert("Pesan kosong");
                 const c = TARGETS[i];
                 window.open(`https://wa.me/${c.phone}?text=${encodeURIComponent(msg)}`, '_blank');
                 await db.from('activity_logs').insert({user_id:U.id, details: `Kirim ke ${c.name} (${c.phone})`});
-                TARGETS.splice(i,1);
-                this.drawTar();
+                TARGETS.splice(i,1); this.drawTar();
             },
 
             // ADMIN
@@ -508,7 +498,6 @@
                 document.getElementById('chkBan').checked = en;
                 document.getElementById('inSpeed').value = sp;
                 this.listBan();
-                
                 this.getLog();
                 this.loadUsers();
             },
@@ -523,10 +512,11 @@
                     <tr><td>${new Date(l.created_at).toLocaleString('id-ID')}</td><td>${l.profiles?.username||'-'}</td><td>${l.details}</td></tr>
                 `).join('') || '<tr><td colspan="3">-</td></tr>';
             },
+            // UPDATED: Load Users with Activation Toggle
             async loadUsers(){
                 const start = document.getElementById('usrStart').value;
                 const end = document.getElementById('usrEnd').value;
-                let q = db.from('profiles').select('id, username, email, wa_number, created_at', { count: 'exact' }).order('created_at', {ascending:false});
+                let q = db.from('profiles').select('id, username, email, wa_number, created_at, is_active', { count: 'exact' }).order('created_at', {ascending:false});
                 if(start) q = q.gte('created_at', start);
                 if(end) q = q.lte('created_at', end + ' 23:59:59');
                 
@@ -535,14 +525,32 @@
                 const el = document.getElementById('userList');
                 if(!data || data.length===0){ el.innerHTML = '<p style="text-align:center;color:#999;padding:10px">Tidak ada data.</p>'; return; }
                 
-                el.innerHTML = data.map(u => `
+                el.innerHTML = data.map(u => {
+                    const statusText = u.is_active ? "AKTIF" : "NON-AKTIF";
+                    const statusClass = u.is_active ? "status-ok" : "status-no";
+                    const btnText = u.is_active ? "Nonaktifkan" : "Aktifkan";
+                    const btnClass = u.is_active ? "btn-red" : "btn-main";
+                    return `
                     <div class="user-card">
-                        <b>${u.email}</b>
-                        <small>👤 ${u.username || '-'}</small><br>
-                        <small>📱 ${u.wa_number || '-'}</small><br>
-                        <small>📅 ${new Date(u.created_at).toLocaleDateString('id-ID')}</small>
+                        <div class="user-info">
+                            <b>${u.email}</b>
+                            <small>👤 ${u.username || '-'}</small><br>
+                            <small>📱 ${u.wa_number || '-'}</small><br>
+                            <small>📅 ${new Date(u.created_at).toLocaleDateString('id-ID')} <span class="${statusClass}">• ${statusText}</span></small>
+                        </div>
+                        <div class="user-actions">
+                            <button class="${btnClass} btn-sm" onclick="app.toggleUser('${u.id}', ${!u.is_active})">${btnText}</button>
+                        </div>
                     </div>
-                `).join('');
+                    `;
+                }).join('');
+            },
+            // NEW: Toggle User Status
+            async toggleUser(id, newStatus){
+                try {
+                    await db.from('profiles').update({ is_active: newStatus }).eq('id', id);
+                    this.loadUsers(); // Refresh list
+                } catch(e) { alert("Gagal mengubah status."); console.error(e); }
             },
 
             async setBanStat(v){ await db.from('site_settings').upsert({key:'banner_enabled', value:v?'true':'false'}); this.loadBan(); },
@@ -553,7 +561,7 @@
                 document.getElementById('listBan').innerHTML = (data||[]).map(b=>`
                     <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #eee; padding:5px">
                         <img src="${b.image_url}" style="width:80px; height:40px; object-fit:cover; border-radius:4px">
-                        <button class="btn-red" style="width:auto; padding:2px 8px; font-size:10px" onclick="app.delBan('${b.id}')">Hapus</button>
+                        <button class="btn-red btn-sm" onclick="app.delBan('${b.id}')">Hapus</button>
                     </div>
                 `).join('') || 'Belum ada';
             },
@@ -570,9 +578,8 @@
                 const t = document.getElementById('bannerTrack');
                 t.innerHTML = b.map(x=>`<img src="${x.image_url}" onclick="window.open('${x.target_url||'#'}')">`).join('');
                 t.innerHTML += t.innerHTML; 
-                // Reset animation
                 t.style.animation = 'none';
-                void t.offsetWidth; // Force reflow
+                void t.offsetWidth; 
                 t.style.animation = `scroll ${sp}s linear infinite`;
             }
         };
