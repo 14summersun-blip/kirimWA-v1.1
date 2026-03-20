@@ -34,11 +34,19 @@
         /* MAIN */
         .page { display:none; padding:15px; max-width:600px; margin:0 auto; padding-bottom:80px; }
         .card { background:white; padding:15px; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.1); margin-bottom:15px; }
+        
+        /* INPUT & BUTTON */
         input, textarea { width:100%; padding:10px; margin:5px 0; border:1px solid #ddd; border-radius:6px; box-sizing:border-box; font-family:inherit; }
         button { width:100%; padding:10px; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-family:inherit; }
         .btn-main { background:var(--primary); color:white; }
         .btn-sec { background:#e0e0e0; color:#333; }
         .btn-red { background:#dc3545; color:white; }
+        
+        /* PASSWORD WRAPPER & ICON */
+        .pass-wrapper { position: relative; width: 100%; }
+        .pass-wrapper input { padding-right: 40px; width: 100%; }
+        .pass-icon { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #666; font-size: 18px; background: none; border: none; padding: 0; width: auto; }
+        
         .status-ok { color:green; font-weight:bold; }
         .status-no { color:red; font-weight:bold; }
         
@@ -73,16 +81,20 @@
     <!-- HALAMAN LOGIN -->
     <div class="page" id="pageLogin">
         <div class="card" style="margin-top:20px; padding:0; overflow:hidden;">
-            <!-- GAMBAR ATAS -->
             <img src="https://i.ibb.co.com/VWg4bJHp/Login-page-1.jpg" style="width:100%">
             <div style="padding:20px">
                 <h2 style="text-align:center">Login</h2>
                 <input type="email" id="inEmail" placeholder="Email">
-                <input type="password" id="inPass" placeholder="Password">
+                
+                <!-- Password dengan Ikon Mata -->
+                <div class="pass-wrapper">
+                    <input type="password" id="inPass" placeholder="Password">
+                    <button class="pass-icon" onclick="togglePass('inPass')">👁️</button>
+                </div>
+
                 <button class="btn-main" onclick="app.login()">Login</button>
                 <p style="text-align:center; margin-top:15px; font-size:14px">Belum punya? <a href="#" onclick="app.go('register'); return false;">Register</a></p>
             </div>
-            <!-- GAMBAR BAWAH -->
             <img src="https://i.ibb.co.com/KjP9hNp0/Login-page-2.jpg" style="width:100%">
         </div>
     </div>
@@ -94,7 +106,13 @@
             <input type="text" id="regUser" placeholder="Username">
             <input type="email" id="regEmail" placeholder="Email">
             <input type="text" id="regWa" placeholder="Nomor WA">
-            <input type="password" id="regPass" placeholder="Password">
+            
+            <!-- Password dengan Ikon Mata -->
+            <div class="pass-wrapper">
+                <input type="password" id="regPass" placeholder="Password">
+                <button class="pass-icon" onclick="togglePass('regPass')">👁️</button>
+            </div>
+            
             <button class="btn-main" onclick="app.register()">Register</button>
             <p style="text-align:center; margin-top:15px; font-size:14px">Sudah punya? <a href="#" onclick="app.go('login'); return false;">Login</a></p>
         </div>
@@ -116,7 +134,13 @@
                 <input type="text" id="editWa" placeholder="Ubah WA">
                 <button class="btn-sec" onclick="app.updWa()">Simpan WA</button>
                 <br><br>
-                <input type="password" id="editPass" placeholder="Password Baru">
+                
+                <!-- Password dengan Ikon Mata -->
+                <div class="pass-wrapper">
+                    <input type="password" id="editPass" placeholder="Password Baru">
+                    <button class="pass-icon" onclick="togglePass('editPass')">👁️</button>
+                </div>
+                
                 <button class="btn-sec" onclick="app.updPass()">Simpan Pass</button>
                 <br><br>
                 <button class="btn-red" onclick="app.delAcc()">Hapus Akun</button>
@@ -192,6 +216,16 @@
         const db = supabase.createClient(S_URL, S_KEY);
         let U = null, ROLE='user', ACTIVE=false, CONTACTS=[], TARGETS=[];
 
+        // FUNGSI TOGGLE PASSWORD (Ikon Mata)
+        function togglePass(id) {
+            const x = document.getElementById(id);
+            if (x.type === "password") {
+                x.type = "text";
+            } else {
+                x.type = "password";
+            }
+        }
+
         // APP LOGIC
         const app = {
             go(p){ window.location.hash = p; },
@@ -206,21 +240,12 @@
             async getProf(){
                 if(!U) return;
                 let {data} = await db.from('profiles').select('*').eq('id', U.id).single();
-                
-                // FIX: Jika user login tapi profil belum ada (jarang terjadi di project baru, tapi antisipasi)
                 if(!data){
                     console.log("Profil tidak ditemukan, membuat baru...");
-                    await db.from('profiles').insert({
-                        id: U.id, 
-                        username: U.email.split('@')[0], 
-                        email: U.email, 
-                        role: 'user', 
-                        is_active: false
-                    });
+                    await db.from('profiles').insert({ id: U.id, username: U.email.split('@')[0], email: U.email, role: 'user', is_active: false });
                     let res = await db.from('profiles').select('*').eq('id', U.id).single();
                     data = res.data;
                 }
-
                 if(data){ ROLE=data.role||'user'; ACTIVE=data.is_active===true; }
                 this.render('akun');
                 this.loadBan();
@@ -229,11 +254,9 @@
             render(p){
                 document.getElementById('loadScreen').style.display='none';
                 document.querySelectorAll('.page').forEach(e=>e.style.display='none');
-                
                 const pName = (p||'login').charAt(0).toUpperCase()+p.slice(1);
                 const el = document.getElementById('page'+pName);
                 if(el) el.style.display='block'; else document.getElementById('pageLogin').style.display='block';
-                
                 document.getElementById('mainHead').style.display = (p=='login'||p=='register') ? 'none' : 'flex';
                 document.getElementById('bannerCont').style.display = (p=='kirim'||p=='kontak'||p=='akun') ? 'block' : 'none';
                 
@@ -252,7 +275,6 @@
                     if(!ACTIVE) h += `<a class="menu-item highlight" onclick="window.open('https://wa.me/${ADMIN_WA}?text=Halo Admin, aktivasi akun saya: ${U.email}')">Aktivasi Akun</a>`;
                     h += `<a class="menu-item" onclick="app.go('akun')">Akun</a>`;
                     h += `<a class="menu-item" onclick="window.open('${LINK_NIAGA}')">Info Niaga</a>`;
-                    
                     if(p=='akun') this.loadAkun();
                     if(p=='kontak') this.loadC();
                     if(p=='kirim') { this.loadC(); this.loadAvail(); }
@@ -301,10 +323,7 @@
                 }
             },
             async updWa(){
-                try {
-                    await db.from('profiles').update({wa_number:document.getElementById('editWa').value}).eq('id',U.id);
-                    alert("Update sukses");
-                } catch(e) { alert("Gagal update"); }
+                try { await db.from('profiles').update({wa_number:document.getElementById('editWa').value}).eq('id',U.id); alert("Update sukses"); } catch(e) { alert("Gagal update"); }
             },
             async updPass(){
                 try {
@@ -316,10 +335,7 @@
             },
             async delAcc(){
                 if(!confirm("Hapus akun?")) return;
-                try {
-                    await db.from('profiles').delete().eq('id',U.id);
-                    this.logout();
-                } catch(e) { alert("Gagal hapus"); }
+                try { await db.from('profiles').delete().eq('id',U.id); this.logout(); } catch(e) { alert("Gagal hapus"); }
             },
 
             // KONTAK
@@ -345,10 +361,7 @@
                     document.getElementById('cName').value=''; document.getElementById('cPhone').value=''; document.getElementById('cLoc').value='';
                 } catch(e) { alert("Gagal simpan kontak"); console.error(e); }
             },
-            async delC(id){
-                await db.from('contacts').delete().eq('id',id);
-                this.loadC();
-            },
+            async delC(id){ await db.from('contacts').delete().eq('id',id); this.loadC(); },
 
             // KIRIM
             loadAvail(){
@@ -431,10 +444,8 @@
                 const en = s?.find(x=>x.key=='banner_enabled')?.value === 'true';
                 const sp = s?.find(x=>x.key=='slider_speed')?.value || 5;
                 if(!en) return document.getElementById('bannerCont').style.display='none';
-                
                 const {data:b} = await db.from('banners').select('*').eq('is_active',true);
                 if(!b||b.length==0) return document.getElementById('bannerCont').style.display='none';
-
                 const t = document.getElementById('bannerTrack');
                 t.innerHTML = b.map(x=>`<img src="${x.image_url}" onclick="window.open('${x.target_url||'#'}')">`).join('');
                 t.innerHTML += t.innerHTML;
