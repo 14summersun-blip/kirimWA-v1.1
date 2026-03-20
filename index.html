@@ -27,10 +27,10 @@
         .menu-item.logout { color:red; }
         .menu-item.highlight { background:#fff3cd; color:#856404; font-weight:bold; }
         
-        /* BANNER */
-        .banner-cont { display:none; position:sticky; top:40px; background:white; z-index:99; padding:5px 0; overflow:hidden; border-bottom:1px solid #eee; }
+        /* BANNER - UPDATED SIZE */
+        .banner-cont { display:none; position:sticky; top:40px; background:white; z-index:99; padding:8px 0; overflow:hidden; border-bottom:1px solid #eee; }
         .banner-track { display:flex; width:max-content; }
-        .banner-track img { height:50px; margin:0 10px; border-radius:4px; cursor:pointer; }
+        .banner-track img { height:80px; margin:0 10px; border-radius:6px; cursor:pointer; object-fit: cover; }
         
         /* MAIN */
         .page { display:none; padding:15px; max-width:600px; margin:0 auto; padding-bottom:80px; }
@@ -51,34 +51,39 @@
         .text-right { text-align: right; }
         .mt-10 { margin-top:10px; }
         .mb-10 { margin-bottom:10px; }
-        .badge { background:#eee; padding:2px 8px; border-radius:10px; font-size:12px; }
+        .badge { background:#eee; padding:3px 8px; border-radius:10px; font-size:12px; font-weight:600; }
         
-        /* CONTACT CARD */
+        /* CONTACT CARD - UPDATED BUTTON GAP */
         .contact-card { background:white; padding:12px; border-radius:8px; margin-bottom:8px; box-shadow:0 1px 2px rgba(0,0,0,0.05); border:1px solid #eee; }
-        .contact-row { display:flex; justify-content:space-between; align-items:center; }
         .contact-info h4 { margin:0 0 5px 0; font-size:15px; }
         .contact-info p { margin:0; font-size:12px; color:#555; line-height:1.4; }
-        .contact-actions { display:flex; gap:5px; margin-top:8px; border-top:1px solid #eee; padding-top:8px; }
-        .contact-actions button { padding:5px 10px; font-size:12px; width:auto; }
-
+        .contact-actions { display:flex; gap:15px; margin-top:10px; border-top:1px solid #eee; padding-top:10px; }
+        .contact-actions button { padding:6px 12px; font-size:13px; width:auto; flex:1; }
+        
         /* SEND LIST */
         .target-card { background:#f9f9f9; padding:8px 12px; border-radius:6px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center; font-size:14px; border:1px solid #eee; }
         .target-card button { width:auto; padding:2px 8px; font-size:11px; }
         
-        /* MODAL - FIXED Z-INDEX & DISPLAY */
+        /* MODAL */
         .modal-overlay { display: none !important; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:500; justify-content:center; align-items:center; }
         .modal-overlay.active { display: flex !important; }
         .modal-box { background:white; padding:20px; border-radius:10px; width:90%; max-width:400px; animation: popIn 0.2s ease; }
         @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         
-        /* SCROLLABLE LIST FOR KIRIM WA */
-        .scroll-list { max-height: 200px; overflow-y: auto; border: 1px solid #eee; border-radius: 6px; background: #fafafa; padding: 5px; }
+        /* ADMIN SCROLLABLE LISTS */
+        .scroll-list-admin { max-height: 250px; overflow-y: auto; border: 1px solid #eee; border-radius: 6px; margin-top: 10px; }
+        
+        /* USER Card Admin */
+        .user-card { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; }
+        .user-card:last-child { border-bottom: none; }
+        .user-card b { display: block; margin-bottom: 4px; color: #333; }
+        .user-card small { color: #666; }
         
         .status-ok { color:green; font-weight:bold; }
         .status-no { color:red; font-weight:bold; }
         
         /* TABLE ADMIN */
-        table { width:100%; border-collapse:collapse; font-size:12px; margin-top:10px; }
+        table { width:100%; border-collapse:collapse; font-size:12px; }
         th, td { text-align:left; padding:8px; border-bottom:1px solid #eee; }
     </style>
 </head>
@@ -199,18 +204,17 @@
             <textarea id="msgText" rows="2" placeholder="Tulis pesan..."></textarea>
         </div>
 
-        <!-- List Pencarian Kontak (Bisa di-scroll) -->
+        <!-- List Pencarian Kontak -->
         <div class="card">
             <h4 style="margin:0 0 10px 0">Cari Penerima</h4>
             <div class="grid-2 mb-10">
                 <input type="text" id="sName" placeholder="Nama" onkeyup="app.searchSend()">
                 <input type="text" id="sLoc" placeholder="Lokasi" onkeyup="app.searchSend()">
             </div>
-            <!-- Container dengan max-height -->
-            <div id="sendAvailList" class="scroll-list"></div>
+            <div id="sendAvailList" class="scroll-list-admin" style="max-height:180px"></div>
         </div>
 
-        <!-- List Pengiriman (Selalu dekat dengan tombol) -->
+        <!-- List Pengiriman -->
         <div class="card">
             <h4>List Pengiriman (<span id="cntNum">0</span>)</h4>
             <div id="listTarget" class="mb-10"></div>
@@ -218,30 +222,48 @@
         </div>
     </div>
 
-    <!-- HALAMAN ADMIN -->
+    <!-- HALAMAN ADMIN - UPDATED -->
     <div class="page" id="pageAdmin">
         <h2 style="color:var(--primary)">Admin Panel</h2>
+        
+        <!-- BANNER -->
         <div class="card">
             <h3>🎨 Banner Promosi</h3>
             <label><input type="checkbox" id="chkBan" onchange="app.setBanStat(this.checked)"> Aktifkan Banner</label>
             <hr style="border:none; border-top:1px solid #eee; margin:10px 0">
-            <input type="number" id="inSpeed" value="5" style="width:60px" onchange="app.setSpeed()"> <small>detik</small>
+            <div class="grid-2 mb-10">
+                <input type="number" id="inSpeed" value="5" onchange="app.setSpeed()">
+                <small style="align-self:center">detik (kecepatan)</small>
+            </div>
             <hr style="border:none; border-top:1px solid #eee; margin:10px 0">
-            <h4>Tambah Banner</h4>
-            <input type="text" id="inImg" placeholder="URL Gambar">
-            <input type="text" id="inLink" placeholder="Link">
-            <button class="btn-sec" onclick="app.addBan()">Tambah</button>
+            <h4>Tambah Banner Baru</h4>
+            <input type="text" id="inImg" placeholder="URL Gambar (Format 728x90px)">
+            <input type="text" id="inLink" placeholder="Link Tujuan">
+            <button class="btn-sec" onclick="app.addBan()">Tambah Banner</button>
             <div id="listBan" style="margin-top:10px"></div>
         </div>
+
+        <!-- LOG AKTIVITAS - UPDATED -->
         <div class="card">
             <h3>📊 Log Aktivitas</h3>
             <div class="grid-2 mb-10">
-                <select id="logUser" onchange="app.getLog()"><option value="">Semua</option></select>
-                <input type="date" id="logDate" onchange="app.getLog()">
+                <div><small>Dari Tgl</small><input type="date" id="logStart" onchange="app.getLog()"></div>
+                <div><small>Sampai Tgl</small><input type="date" id="logEnd" onchange="app.getLog()"></div>
             </div>
-            <div style="overflow:auto; max-height:300px; border:1px solid #eee; border-radius:4px">
+            <div class="scroll-list-admin">
                 <table><thead><tr><th>Waktu</th><th>User</th><th>Aksi</th></tr></thead><tbody id="logBody"></tbody></table>
             </div>
+        </div>
+
+        <!-- USER LIST SECTION - NEW -->
+        <div class="card">
+            <h3>👥 Daftar User</h3>
+            <div class="grid-2 mb-10">
+                <div><small>Dari Tgl</small><input type="date" id="usrStart" onchange="app.loadUsers()"></div>
+                <div><small>Sampai Tgl</small><input type="date" id="usrEnd" onchange="app.loadUsers()"></div>
+            </div>
+            <div class="badge mb-10">Total: <span id="usrCount">0</span></div>
+            <div id="userList" class="scroll-list-admin"></div>
         </div>
     </div>
 
@@ -276,8 +298,6 @@
             x.type = x.type === "password" ? "text" : "password";
         }
         function toggleMenu(){ document.getElementById('menuBox').classList.toggle('active'); }
-        
-        // GLOBAL MODAL FUNC
         function closeModal(){ document.getElementById('editModal').classList.remove('active'); }
 
         const app = {
@@ -387,11 +407,7 @@
             searchContacts(){
                 const qName = document.getElementById('fName').value.toLowerCase();
                 const qLoc = document.getElementById('fLoc').value.toLowerCase();
-                const filt = CONTACTS.filter(c => {
-                    const mName = (c.name||'').toLowerCase().includes(qName);
-                    const mLoc = (c.location||'').toLowerCase().includes(qLoc);
-                    return mName && mLoc;
-                });
+                const filt = CONTACTS.filter(c => ((c.name||'').toLowerCase().includes(qName) && (c.location||'').toLowerCase().includes(qLoc)));
                 document.getElementById('totalContacts').innerText = filt.length;
                 const el = document.getElementById('listC');
                 if(filt.length===0){ el.innerHTML = '<p style="text-align:center;color:#999">Tidak ada kontak.</p>'; return; }
@@ -441,11 +457,11 @@
             searchSend(){
                 const qName = document.getElementById('sName').value.toLowerCase();
                 const qLoc = document.getElementById('sLoc').value.toLowerCase();
-                const filt = CONTACTS.filter(c => (c.name||'').toLowerCase().includes(qName) && (c.location||'').toLowerCase().includes(qLoc));
+                const filt = CONTACTS.filter(c => ((c.name||'').toLowerCase().includes(qName) && (c.location||'').toLowerCase().includes(qLoc)));
                 const el = document.getElementById('sendAvailList');
                 if(filt.length===0){ el.innerHTML = '<p style="text-align:center;color:#999;font-size:12px;padding:10px">Tidak ada.</p>'; return; }
                 el.innerHTML = filt.map(c => `
-                    <div class="target-card" style="cursor:pointer" onclick="app.addTar('${c.id}')">
+                    <div class="target-card" style="cursor:pointer;border-radius:0" onclick="app.addTar('${c.id}')">
                         <span>${c.name}</span>
                         <span style="font-size:10px;color:#666">${c.phone}</span>
                     </div>
@@ -484,27 +500,52 @@
 
             // ADMIN
             async loadAdm(){
-                const {data: u} = await db.from('profiles').select('id,username');
-                document.getElementById('logUser').innerHTML = '<option value="">Semua</option>' + (u||[]).map(x=>`<option value="${x.id}">${x.username}</option>`).join('');
-                this.getLog();
                 const {data: s} = await db.from('site_settings').select('*');
                 const en = s?.find(x=>x.key=='banner_enabled')?.value === 'true';
                 const sp = s?.find(x=>x.key=='slider_speed')?.value || 5;
                 document.getElementById('chkBan').checked = en;
                 document.getElementById('inSpeed').value = sp;
                 this.listBan();
+                
+                // Load Logs
+                this.getLog();
+                // Load Users
+                this.loadUsers();
             },
             async getLog(){
-                const uid = document.getElementById('logUser').value;
-                const dt = document.getElementById('logDate').value;
-                let q = db.from('activity_logs').select('created_at, details, profiles(username)').order('created_at',{ascending:false}).limit(100);
-                if(uid) q = q.eq('user_id', uid);
-                if(dt) q = q.gte('created_at', dt);
+                const start = document.getElementById('logStart').value;
+                const end = document.getElementById('logEnd').value;
+                let q = db.from('activity_logs').select('created_at, details, profiles(username)').order('created_at',{ascending:false}).limit(12);
+                if(start) q = q.gte('created_at', start);
+                if(end) q = q.lte('created_at', end + ' 23:59:59');
                 const {data} = await q;
                 document.getElementById('logBody').innerHTML = (data||[]).map(l=>`
                     <tr><td>${new Date(l.created_at).toLocaleString('id-ID')}</td><td>${l.profiles?.username||'-'}</td><td>${l.details}</td></tr>
                 `).join('') || '<tr><td colspan="3">-</td></tr>';
             },
+            // NEW: Load Users
+            async loadUsers(){
+                const start = document.getElementById('usrStart').value;
+                const end = document.getElementById('usrEnd').value;
+                let q = db.from('profiles').select('id, username, email, wa_number, created_at', { count: 'exact' }).order('created_at', {ascending:false});
+                if(start) q = q.gte('created_at', start);
+                if(end) q = q.lte('created_at', end + ' 23:59:59');
+                
+                const {data, count} = await q.limit(7);
+                document.getElementById('usrCount').innerText = count || 0;
+                const el = document.getElementById('userList');
+                if(!data || data.length===0){ el.innerHTML = '<p style="text-align:center;color:#999;padding:10px">Tidak ada data.</p>'; return; }
+                
+                el.innerHTML = data.map(u => `
+                    <div class="user-card">
+                        <b>${u.email}</b>
+                        <small>👤 ${u.username || '-'}</small><br>
+                        <small>📱 ${u.wa_number || '-'}</small><br>
+                        <small>📅 ${new Date(u.created_at).toLocaleDateString('id-ID')}</small>
+                    </div>
+                `).join('');
+            },
+
             async setBanStat(v){ await db.from('site_settings').upsert({key:'banner_enabled', value:v?'true':'false'}); this.loadBan(); },
             async setSpeed(){ await db.from('site_settings').upsert({key:'slider_speed', value:document.getElementById('inSpeed').value}); this.loadBan(); },
             async addBan(){ await db.from('banners').insert({image_url:document.getElementById('inImg').value, target_url:document.getElementById('inLink').value}); this.listBan(); },
@@ -512,14 +553,14 @@
                 const {data} = await db.from('banners').select('*');
                 document.getElementById('listBan').innerHTML = (data||[]).map(b=>`
                     <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #eee; padding:5px">
-                        <img src="${b.image_url}" style="width:60px; height:30px; object-fit:cover; border-radius:4px">
+                        <img src="${b.image_url}" style="width:80px; height:40px; object-fit:cover; border-radius:4px">
                         <button class="btn-red" style="width:auto; padding:2px 8px; font-size:10px" onclick="app.delBan('${b.id}')">Hapus</button>
                     </div>
                 `).join('') || 'Belum ada';
             },
             async delBan(id){ await db.from('banners').delete().eq('id',id); this.listBan(); },
 
-            // BANNER
+            // BANNER FIX
             async loadBan(){
                 const {data:s} = await db.from('site_settings').select('*');
                 const en = s?.find(x=>x.key=='banner_enabled')?.value === 'true';
@@ -529,8 +570,10 @@
                 if(!b||b.length==0) return document.getElementById('bannerCont').style.display='none';
                 const t = document.getElementById('bannerTrack');
                 t.innerHTML = b.map(x=>`<img src="${x.image_url}" onclick="window.open('${x.target_url||'#'}')">`).join('');
-                t.innerHTML += t.innerHTML;
-                t.style.animation = 'none'; t.offsetHeight;
+                t.innerHTML += t.innerHTML; // Duplikat
+                // Reset animasi
+                t.style.animation = 'none';
+                t.offsetHeight; // trigger reflow
                 t.style.animation = `scroll ${sp}s linear infinite`;
             }
         };
