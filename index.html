@@ -16,7 +16,7 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         .btn-cancel { background:#ddd; border:none; padding:10px 20px; border-radius:20px; cursor:pointer; margin-top:20px; font-weight:bold; }
         
-        /* HEADER - UPDATED */
+        /* HEADER */
         .header { background: var(--primary); color:white; padding:6px 15px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100; box-shadow:0 2px 5px rgba(0,0,0,0.1); min-height: 40px; }
         .menu-btn { background:none; border:none; color:white; font-size:16px; cursor:pointer; font-weight:bold; display:flex; align-items:center; gap:5px; }
         .header-title { font-size: 18px; font-weight: 700; font-style: italic; cursor: pointer; }
@@ -65,9 +65,14 @@
         .target-card { background:#f9f9f9; padding:8px 12px; border-radius:6px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center; font-size:14px; border:1px solid #eee; }
         .target-card button { width:auto; padding:2px 8px; font-size:11px; }
         
-        /* MODAL */
-        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; justify-content:center; align-items:center; }
-        .modal-box { background:white; padding:20px; border-radius:10px; width:90%; max-width:400px; }
+        /* MODAL - FIXED Z-INDEX & DISPLAY */
+        .modal-overlay { display: none !important; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:500; justify-content:center; align-items:center; }
+        .modal-overlay.active { display: flex !important; }
+        .modal-box { background:white; padding:20px; border-radius:10px; width:90%; max-width:400px; animation: popIn 0.2s ease; }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        /* SCROLLABLE LIST FOR KIRIM WA */
+        .scroll-list { max-height: 200px; overflow-y: auto; border: 1px solid #eee; border-radius: 6px; background: #fafafa; padding: 5px; }
         
         .status-ok { color:green; font-weight:bold; }
         .status-no { color:red; font-weight:bold; }
@@ -194,17 +199,18 @@
             <textarea id="msgText" rows="2" placeholder="Tulis pesan..."></textarea>
         </div>
 
-        <!-- Pencarian Kontak -->
+        <!-- List Pencarian Kontak (Bisa di-scroll) -->
         <div class="card">
             <h4 style="margin:0 0 10px 0">Cari Penerima</h4>
             <div class="grid-2 mb-10">
                 <input type="text" id="sName" placeholder="Nama" onkeyup="app.searchSend()">
                 <input type="text" id="sLoc" placeholder="Lokasi" onkeyup="app.searchSend()">
             </div>
-            <div id="sendAvailList" style="max-height:150px; overflow-y:auto;"></div>
+            <!-- Container dengan max-height -->
+            <div id="sendAvailList" class="scroll-list"></div>
         </div>
 
-        <!-- List Pengiriman -->
+        <!-- List Pengiriman (Selalu dekat dengan tombol) -->
         <div class="card">
             <h4>List Pengiriman (<span id="cntNum">0</span>)</h4>
             <div id="listTarget" class="mb-10"></div>
@@ -270,6 +276,8 @@
             x.type = x.type === "password" ? "text" : "password";
         }
         function toggleMenu(){ document.getElementById('menuBox').classList.toggle('active'); }
+        
+        // GLOBAL MODAL FUNC
         function closeModal(){ document.getElementById('editModal').classList.remove('active'); }
 
         const app = {
@@ -374,7 +382,7 @@
             async loadC(){
                 const {data} = await db.from('contacts').select('*').eq('user_id',U.id);
                 CONTACTS = data||[];
-                this.searchContacts(); // trigger filter
+                this.searchContacts(); 
             },
             searchContacts(){
                 const qName = document.getElementById('fName').value.toLowerCase();
@@ -435,7 +443,7 @@
                 const qLoc = document.getElementById('sLoc').value.toLowerCase();
                 const filt = CONTACTS.filter(c => (c.name||'').toLowerCase().includes(qName) && (c.location||'').toLowerCase().includes(qLoc));
                 const el = document.getElementById('sendAvailList');
-                if(filt.length===0){ el.innerHTML = '<p style="text-align:center;color:#999;font-size:12px">Tidak ada.</p>'; return; }
+                if(filt.length===0){ el.innerHTML = '<p style="text-align:center;color:#999;font-size:12px;padding:10px">Tidak ada.</p>'; return; }
                 el.innerHTML = filt.map(c => `
                     <div class="target-card" style="cursor:pointer" onclick="app.addTar('${c.id}')">
                         <span>${c.name}</span>
