@@ -16,36 +16,58 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         .btn-cancel { background:#ddd; border:none; padding:10px 20px; border-radius:20px; cursor:pointer; margin-top:20px; font-weight:bold; }
         
-        /* HEADER */
-        .header { background: var(--primary); color:white; padding:10px 15px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
-        .menu-btn { background:none; border:none; color:white; font-size:22px; cursor:pointer; }
-        .menu-box { display:none; position:absolute; top:50px; left:10px; background:white; width:220px; box-shadow:0 4px 10px rgba(0,0,0,0.2); border-radius:8px; z-index:110; }
+        /* HEADER - UPDATED */
+        .header { background: var(--primary); color:white; padding:6px 15px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100; box-shadow:0 2px 5px rgba(0,0,0,0.1); min-height: 40px; }
+        .menu-btn { background:none; border:none; color:white; font-size:16px; cursor:pointer; font-weight:bold; display:flex; align-items:center; gap:5px; }
+        .header-title { font-size: 18px; font-weight: 700; font-style: italic; cursor: pointer; }
+        .menu-box { display:none; position:absolute; top:42px; left:10px; background:white; width:220px; box-shadow:0 4px 10px rgba(0,0,0,0.2); border-radius:8px; z-index:110; }
         .menu-box.active { display:block; }
-        .menu-item { display:block; padding:12px 15px; border-bottom:1px solid #eee; color:#333; text-decoration:none; cursor:pointer; }
+        .menu-item { display:block; padding:12px 15px; border-bottom:1px solid #eee; color:#333; text-decoration:none; cursor:pointer; font-size:14px; }
         .menu-item:hover { background:#f5f5f5; }
         .menu-item.logout { color:red; }
         .menu-item.highlight { background:#fff3cd; color:#856404; font-weight:bold; }
         
         /* BANNER */
-        .banner-cont { display:none; position:sticky; top:48px; background:white; z-index:99; padding:5px 0; overflow:hidden; border-bottom:1px solid #eee; }
+        .banner-cont { display:none; position:sticky; top:40px; background:white; z-index:99; padding:5px 0; overflow:hidden; border-bottom:1px solid #eee; }
         .banner-track { display:flex; width:max-content; }
         .banner-track img { height:50px; margin:0 10px; border-radius:4px; cursor:pointer; }
         
         /* MAIN */
         .page { display:none; padding:15px; max-width:600px; margin:0 auto; padding-bottom:80px; }
         .card { background:white; padding:15px; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.1); margin-bottom:15px; }
-        
-        /* INPUT & BUTTON */
-        input, textarea { width:100%; padding:10px; margin:5px 0; border:1px solid #ddd; border-radius:6px; box-sizing:border-box; font-family:inherit; }
-        button { width:100%; padding:10px; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-family:inherit; }
+        input, textarea, select { width:100%; padding:10px; margin:5px 0; border:1px solid #ddd; border-radius:6px; box-sizing:border-box; font-family:inherit; font-size:14px; }
+        button { width:100%; padding:10px; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-family:inherit; font-size:14px; }
         .btn-main { background:var(--primary); color:white; }
         .btn-sec { background:#e0e0e0; color:#333; }
         .btn-red { background:#dc3545; color:white; }
         
-        /* PASSWORD WRAPPER & ICON */
+        /* PASSWORD WRAPPER */
         .pass-wrapper { position: relative; width: 100%; }
         .pass-wrapper input { padding-right: 40px; width: 100%; }
         .pass-icon { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #666; font-size: 18px; background: none; border: none; padding: 0; width: auto; }
+        
+        /* GRID HELPERS */
+        .grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+        .text-right { text-align: right; }
+        .mt-10 { margin-top:10px; }
+        .mb-10 { margin-bottom:10px; }
+        .badge { background:#eee; padding:2px 8px; border-radius:10px; font-size:12px; }
+        
+        /* CONTACT CARD */
+        .contact-card { background:white; padding:12px; border-radius:8px; margin-bottom:8px; box-shadow:0 1px 2px rgba(0,0,0,0.05); border:1px solid #eee; }
+        .contact-row { display:flex; justify-content:space-between; align-items:center; }
+        .contact-info h4 { margin:0 0 5px 0; font-size:15px; }
+        .contact-info p { margin:0; font-size:12px; color:#555; line-height:1.4; }
+        .contact-actions { display:flex; gap:5px; margin-top:8px; border-top:1px solid #eee; padding-top:8px; }
+        .contact-actions button { padding:5px 10px; font-size:12px; width:auto; }
+
+        /* SEND LIST */
+        .target-card { background:#f9f9f9; padding:8px 12px; border-radius:6px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center; font-size:14px; border:1px solid #eee; }
+        .target-card button { width:auto; padding:2px 8px; font-size:11px; }
+        
+        /* MODAL */
+        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; justify-content:center; align-items:center; }
+        .modal-box { background:white; padding:20px; border-radius:10px; width:90%; max-width:400px; }
         
         .status-ok { color:green; font-weight:bold; }
         .status-no { color:red; font-weight:bold; }
@@ -66,9 +88,9 @@
 
     <!-- HEADER -->
     <div class="header" id="mainHead" style="display:none">
-        <button class="menu-btn" onclick="toggleMenu()">☰</button>
-        <b style="cursor:pointer" onclick="app.go('akun')">kirimWA</b>
-        <div style="width:20px"></div>
+        <button class="menu-btn" onclick="toggleMenu()">☰ Menu</button>
+        <span class="header-title" onclick="app.go('akun')">kirimWA</span>
+        <div style="width:60px"></div>
         <div class="menu-box" id="menuBox">
             <div id="menuContent"></div>
             <span class="menu-item logout" onclick="app.logout()">Logout</span>
@@ -85,13 +107,10 @@
             <div style="padding:20px">
                 <h2 style="text-align:center">Login</h2>
                 <input type="email" id="inEmail" placeholder="Email">
-                
-                <!-- Password dengan Ikon Mata -->
                 <div class="pass-wrapper">
                     <input type="password" id="inPass" placeholder="Password">
                     <button class="pass-icon" onclick="togglePass('inPass')">👁️</button>
                 </div>
-
                 <button class="btn-main" onclick="app.login()">Login</button>
                 <p style="text-align:center; margin-top:15px; font-size:14px">Belum punya? <a href="#" onclick="app.go('register'); return false;">Register</a></p>
             </div>
@@ -106,13 +125,10 @@
             <input type="text" id="regUser" placeholder="Username">
             <input type="email" id="regEmail" placeholder="Email">
             <input type="text" id="regWa" placeholder="Nomor WA">
-            
-            <!-- Password dengan Ikon Mata -->
             <div class="pass-wrapper">
                 <input type="password" id="regPass" placeholder="Password">
                 <button class="pass-icon" onclick="togglePass('regPass')">👁️</button>
             </div>
-            
             <button class="btn-main" onclick="app.register()">Register</button>
             <p style="text-align:center; margin-top:15px; font-size:14px">Sudah punya? <a href="#" onclick="app.go('login'); return false;">Login</a></p>
         </div>
@@ -134,13 +150,10 @@
                 <input type="text" id="editWa" placeholder="Ubah WA">
                 <button class="btn-sec" onclick="app.updWa()">Simpan WA</button>
                 <br><br>
-                
-                <!-- Password dengan Ikon Mata -->
                 <div class="pass-wrapper">
                     <input type="password" id="editPass" placeholder="Password Baru">
                     <button class="pass-icon" onclick="togglePass('editPass')">👁️</button>
                 </div>
-                
                 <button class="btn-sec" onclick="app.updPass()">Simpan Pass</button>
                 <br><br>
                 <button class="btn-red" onclick="app.delAcc()">Hapus Akun</button>
@@ -152,10 +165,24 @@
     <div class="page" id="pageKontak">
         <h2>Daftar Kontak</h2>
         <div class="card">
-            <input type="text" id="cName" placeholder="Nama">
-            <input type="text" id="cPhone" placeholder="HP">
+            <h4 style="margin:0 0 10px 0">Tambah Kontak Baru</h4>
+            <div class="grid-2">
+                <input type="text" id="cName" placeholder="Nama">
+                <input type="text" id="cPhone" placeholder="No HP">
+            </div>
             <input type="text" id="cLoc" placeholder="Lokasi">
-            <button class="btn-main" onclick="app.addC()">Simpan</button>
+            <button class="btn-main" onclick="app.addC()">Simpan Kontak</button>
+        </div>
+
+        <!-- Filter & Total -->
+        <div class="card" style="padding:10px">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <span class="badge">Total: <span id="totalContacts">0</span></span>
+            </div>
+            <div class="grid-2">
+                <input type="text" id="fName" placeholder="🔍 Cari Nama" onkeyup="app.searchContacts()">
+                <input type="text" id="fLoc" placeholder="📍 Cari Lokasi" onkeyup="app.searchContacts()">
+            </div>
         </div>
         <div id="listC"></div>
     </div>
@@ -164,69 +191,87 @@
     <div class="page" id="pageKirim">
         <h2>Kirim Pesan</h2>
         <div class="card">
-            <textarea id="msgText" rows="3" placeholder="Tulis pesan..."></textarea>
+            <textarea id="msgText" rows="2" placeholder="Tulis pesan..."></textarea>
         </div>
-        <div id="listAvail"></div>
+
+        <!-- Pencarian Kontak -->
         <div class="card">
-            <h3>Target (<span id="cntNum">0</span>)</h3>
-            <div id="listTarget"></div>
-            <button class="btn-main" id="btnSend" style="display:none" onclick="app.send()">Kirim Sekarang</button>
+            <h4 style="margin:0 0 10px 0">Cari Penerima</h4>
+            <div class="grid-2 mb-10">
+                <input type="text" id="sName" placeholder="Nama" onkeyup="app.searchSend()">
+                <input type="text" id="sLoc" placeholder="Lokasi" onkeyup="app.searchSend()">
+            </div>
+            <div id="sendAvailList" style="max-height:150px; overflow-y:auto;"></div>
+        </div>
+
+        <!-- List Pengiriman -->
+        <div class="card">
+            <h4>List Pengiriman (<span id="cntNum">0</span>)</h4>
+            <div id="listTarget" class="mb-10"></div>
+            <button class="btn-main" id="btnSend" style="display:none" onclick="app.send()">Kirim ke urutan teratas</button>
         </div>
     </div>
 
     <!-- HALAMAN ADMIN -->
     <div class="page" id="pageAdmin">
         <h2 style="color:var(--primary)">Admin Panel</h2>
-        
-        <!-- BANNER MANAGER -->
         <div class="card">
             <h3>🎨 Banner Promosi</h3>
             <label><input type="checkbox" id="chkBan" onchange="app.setBanStat(this.checked)"> Aktifkan Banner</label>
             <hr style="border:none; border-top:1px solid #eee; margin:10px 0">
-            <input type="number" id="inSpeed" value="5" style="width:60px" onchange="app.setSpeed()"> <small>detik (kecepatan)</small>
+            <input type="number" id="inSpeed" value="5" style="width:60px" onchange="app.setSpeed()"> <small>detik</small>
             <hr style="border:none; border-top:1px solid #eee; margin:10px 0">
-            <h4>Tambah Banner Baru</h4>
+            <h4>Tambah Banner</h4>
             <input type="text" id="inImg" placeholder="URL Gambar">
-            <input type="text" id="inLink" placeholder="Link Tujuan (Opsional)">
+            <input type="text" id="inLink" placeholder="Link">
             <button class="btn-sec" onclick="app.addBan()">Tambah</button>
             <div id="listBan" style="margin-top:10px"></div>
         </div>
-
-        <!-- LOG ACTIVITY -->
         <div class="card">
-            <h3>📊 Log Aktivitas User</h3>
-            <div style="display:flex; gap:10px; margin-bottom:10px">
-                <select id="logUser" onchange="app.getLog()" style="width:50%"><option value="">Semua User</option></select>
-                <input type="date" id="logDate" onchange="app.getLog()" style="width:50%">
+            <h3>📊 Log Aktivitas</h3>
+            <div class="grid-2 mb-10">
+                <select id="logUser" onchange="app.getLog()"><option value="">Semua</option></select>
+                <input type="date" id="logDate" onchange="app.getLog()">
             </div>
             <div style="overflow:auto; max-height:300px; border:1px solid #eee; border-radius:4px">
-                <table><thead><tr><th>Waktu</th><th>User</th><th>Aktivitas</th></tr></thead><tbody id="logBody"></tbody></table>
+                <table><thead><tr><th>Waktu</th><th>User</th><th>Aksi</th></tr></thead><tbody id="logBody"></tbody></table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL EDIT KONTAK -->
+    <div id="editModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3>Edit Kontak</h3>
+            <input type="hidden" id="editId">
+            <input type="text" id="editName" placeholder="Nama">
+            <input type="text" id="editPhone" placeholder="No HP">
+            <input type="text" id="editLoc" placeholder="Lokasi">
+            <div class="grid-2" style="margin-top:15px">
+                <button class="btn-sec" onclick="closeModal()">Batal</button>
+                <button class="btn-main" onclick="app.saveEdit()">Simpan</button>
             </div>
         </div>
     </div>
 
     <script>
-        // KONFIGURASI PROJECT BARU
+        // KONFIG
         const S_URL = 'https://gfwygrlyoguyeycrzpdj.supabase.co';
         const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdmd3lncmx5b2d1eWV5Y3J6cGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5ODAxNzYsImV4cCI6MjA4OTU1NjE3Nn0.LLnonm_gDWfFvTGBg-9lhKTHZdpzz66aP5pRLXMnAnI';
-        const LINK_NIAGA = 'https://google.com'; // GANTI INI NANTI
+        const LINK_NIAGA = 'https://google.com'; 
         const ADMIN_WA = '6285161990373';
         
         if(typeof supabase==='undefined'){ alert("Koneksi Gagal"); throw ""; }
         const db = supabase.createClient(S_URL, S_KEY);
         let U = null, ROLE='user', ACTIVE=false, CONTACTS=[], TARGETS=[];
 
-        // FUNGSI TOGGLE PASSWORD (Ikon Mata)
         function togglePass(id) {
             const x = document.getElementById(id);
-            if (x.type === "password") {
-                x.type = "text";
-            } else {
-                x.type = "password";
-            }
+            x.type = x.type === "password" ? "text" : "password";
         }
+        function toggleMenu(){ document.getElementById('menuBox').classList.toggle('active'); }
+        function closeModal(){ document.getElementById('editModal').classList.remove('active'); }
 
-        // APP LOGIC
         const app = {
             go(p){ window.location.hash = p; },
             
@@ -241,7 +286,6 @@
                 if(!U) return;
                 let {data} = await db.from('profiles').select('*').eq('id', U.id).single();
                 if(!data){
-                    console.log("Profil tidak ditemukan, membuat baru...");
                     await db.from('profiles').insert({ id: U.id, username: U.email.split('@')[0], email: U.email, role: 'user', is_active: false });
                     let res = await db.from('profiles').select('*').eq('id', U.id).single();
                     data = res.data;
@@ -272,12 +316,12 @@
                     if(ROLE=='admin') h += `<a class="menu-item" onclick="app.go('admin')">Admin</a>`;
                     if(ACTIVE) h += `<a class="menu-item" onclick="app.go('kirim')">Kirim WA</a>`;
                     h += `<a class="menu-item" onclick="app.go('kontak')">Kontak</a>`;
-                    if(!ACTIVE) h += `<a class="menu-item highlight" onclick="window.open('https://wa.me/${ADMIN_WA}?text=Halo Admin, aktivasi akun saya: ${U.email}')">Aktivasi Akun</a>`;
+                    if(!ACTIVE) h += `<a class="menu-item highlight" onclick="window.open('https://wa.me/${ADMIN_WA}?text=Halo Admin, aktivasi akun: ${U.email}')">Aktivasi Akun</a>`;
                     h += `<a class="menu-item" onclick="app.go('akun')">Akun</a>`;
                     h += `<a class="menu-item" onclick="window.open('${LINK_NIAGA}')">Info Niaga</a>`;
                     if(p=='akun') this.loadAkun();
                     if(p=='kontak') this.loadC();
-                    if(p=='kirim') { this.loadC(); this.loadAvail(); }
+                    if(p=='kirim') { this.loadC(); this.searchSend(); }
                     if(p=='admin') this.loadAdm();
                 }
                 m.innerHTML = h;
@@ -302,7 +346,7 @@
                     const {error} = await db.auth.signUp({email:e,password:p,options:{data:{username:u}}});
                     if(error) alert(error.message); 
                     else { alert("Sukses! Tunggu admin aktifkan."); this.go('login'); }
-                } catch(err) { alert("Error koneksi"); console.error(err); }
+                } catch(err) { alert("Error koneksi"); }
             },
             logout(){
                 U=null; ACTIVE=false; ROLE='user';
@@ -322,33 +366,37 @@
                     document.getElementById('editWa').value = data.wa_number || '';
                 }
             },
-            async updWa(){
-                try { await db.from('profiles').update({wa_number:document.getElementById('editWa').value}).eq('id',U.id); alert("Update sukses"); } catch(e) { alert("Gagal update"); }
-            },
-            async updPass(){
-                try {
-                    const p = document.getElementById('editPass').value;
-                    if(!p) return;
-                    const {error} = await db.auth.updateUser({password:p});
-                    alert(error ? "Gagal" : "Sukses");
-                } catch(e) { alert("Error"); }
-            },
-            async delAcc(){
-                if(!confirm("Hapus akun?")) return;
-                try { await db.from('profiles').delete().eq('id',U.id); this.logout(); } catch(e) { alert("Gagal hapus"); }
-            },
+            async updWa(){ try { await db.from('profiles').update({wa_number:document.getElementById('editWa').value}).eq('id',U.id); alert("Update sukses"); } catch(e) { alert("Gagal"); } },
+            async updPass(){ try { const p = document.getElementById('editPass').value; if(!p) return; const {error} = await db.auth.updateUser({password:p}); alert(error ? "Gagal" : "Sukses"); } catch(e) {} },
+            async delAcc(){ if(!confirm("Hapus?")) return; try { await db.from('profiles').delete().eq('id',U.id); this.logout(); } catch(e) { alert("Gagal"); } },
 
             // KONTAK
             async loadC(){
                 const {data} = await db.from('contacts').select('*').eq('user_id',U.id);
                 CONTACTS = data||[];
-                this.drawC();
+                this.searchContacts(); // trigger filter
             },
-            drawC(){
-                document.getElementById('listC').innerHTML = CONTACTS.map(c=>`
-                    <div class="card" style="padding:10px; display:flex; justify-content:space-between; align-items:center; margin-bottom:5px">
-                        <div><b>${c.name}</b> <small style="color:#666">${c.phone}</small></div>
-                        <button class="btn-red" style="width:auto; padding:2px 8px; font-size:12px" onclick="app.delC('${c.id}')">Hapus</button>
+            searchContacts(){
+                const qName = document.getElementById('fName').value.toLowerCase();
+                const qLoc = document.getElementById('fLoc').value.toLowerCase();
+                const filt = CONTACTS.filter(c => {
+                    const mName = (c.name||'').toLowerCase().includes(qName);
+                    const mLoc = (c.location||'').toLowerCase().includes(qLoc);
+                    return mName && mLoc;
+                });
+                document.getElementById('totalContacts').innerText = filt.length;
+                const el = document.getElementById('listC');
+                if(filt.length===0){ el.innerHTML = '<p style="text-align:center;color:#999">Tidak ada kontak.</p>'; return; }
+                el.innerHTML = filt.map(c => `
+                    <div class="contact-card">
+                        <div class="contact-info">
+                            <h4>${c.name}</h4>
+                            <p>📱 ${c.phone}<br>📍 ${c.location||'-'}</p>
+                        </div>
+                        <div class="contact-actions">
+                            <button class="btn-sec" onclick="app.editC('${c.id}')">Edit</button>
+                            <button class="btn-red" onclick="app.delC('${c.id}')">Hapus</button>
+                        </div>
                     </div>
                 `).join('');
             },
@@ -357,34 +405,66 @@
                     const n=document.getElementById('cName').value, p=document.getElementById('cPhone').value, l=document.getElementById('cLoc').value;
                     if(!n||!p) return alert("Isi nama & hp");
                     await db.from('contacts').insert({user_id:U.id, name:n, phone:p, location:l});
-                    this.loadC();
                     document.getElementById('cName').value=''; document.getElementById('cPhone').value=''; document.getElementById('cLoc').value='';
-                } catch(e) { alert("Gagal simpan kontak"); console.error(e); }
+                    this.loadC();
+                } catch(e) { alert("Gagal simpan"); }
             },
-            async delC(id){ await db.from('contacts').delete().eq('id',id); this.loadC(); },
+            editC(id){
+                const c = CONTACTS.find(x=>x.id==id);
+                if(!c) return;
+                document.getElementById('editId').value = id;
+                document.getElementById('editName').value = c.name;
+                document.getElementById('editPhone').value = c.phone;
+                document.getElementById('editLoc').value = c.location;
+                document.getElementById('editModal').classList.add('active');
+            },
+            async saveEdit(){
+                const id = document.getElementById('editId').value;
+                const n = document.getElementById('editName').value;
+                const p = document.getElementById('editPhone').value;
+                const l = document.getElementById('editLoc').value;
+                await db.from('contacts').update({name:n, phone:p, location:l}).eq('id',id);
+                closeModal();
+                this.loadC();
+            },
+            async delC(id){ if(!confirm("Hapus?")) return; await db.from('contacts').delete().eq('id',id); this.loadC(); },
 
             // KIRIM
-            loadAvail(){
-                document.getElementById('listAvail').innerHTML = CONTACTS.map(c=>`
-                    <div class="card" style="padding:10px; cursor:pointer; margin-bottom:5px" onclick="app.addTar('${c.id}')">${c.name} <small>(${c.phone})</small></div>
+            searchSend(){
+                const qName = document.getElementById('sName').value.toLowerCase();
+                const qLoc = document.getElementById('sLoc').value.toLowerCase();
+                const filt = CONTACTS.filter(c => (c.name||'').toLowerCase().includes(qName) && (c.location||'').toLowerCase().includes(qLoc));
+                const el = document.getElementById('sendAvailList');
+                if(filt.length===0){ el.innerHTML = '<p style="text-align:center;color:#999;font-size:12px">Tidak ada.</p>'; return; }
+                el.innerHTML = filt.map(c => `
+                    <div class="target-card" style="cursor:pointer" onclick="app.addTar('${c.id}')">
+                        <span>${c.name}</span>
+                        <span style="font-size:10px;color:#666">${c.phone}</span>
+                    </div>
                 `).join('');
             },
             addTar(id){
                 const c = CONTACTS.find(x=>x.id==id);
-                if(TARGETS.find(x=>x.id==id)) return;
+                if(TARGETS.find(x=>x.id==id)) return alert("Sudah ada di list!");
                 TARGETS.push(c);
                 this.drawTar();
             },
             drawTar(){
                 document.getElementById('cntNum').innerText = TARGETS.length;
                 document.getElementById('btnSend').style.display = TARGETS.length ? 'block' : 'none';
-                document.getElementById('listTarget').innerHTML = TARGETS.map((c,i)=>`
-                    <div style="background:white; padding:8px; border-radius:6px; margin-bottom:5px; display:flex; justify-content:space-between; font-size:14px">
-                        ${i+1}. ${c.name} <button class="btn-main" style="width:auto; padding:2px 10px; font-size:11px" onclick="app.sendOne(${i})">Kirim</button>
+                const el = document.getElementById('listTarget');
+                if(TARGETS.length===0){ el.innerHTML = '<p style="text-align:center;color:#999;font-size:12px">Klik kontak di atas untuk menambahkan.</p>'; return; }
+                el.innerHTML = TARGETS.map((c,i) => `
+                    <div class="target-card">
+                        <span><b>${i+1}.</b> ${c.name}</span>
+                        <button class="btn-red" onclick="app.remTar(${i})">Hapus</button>
                     </div>
                 `).join('');
             },
-            async sendOne(i){
+            remTar(i){ TARGETS.splice(i,1); this.drawTar(); },
+            async send(){
+                if(TARGETS.length===0) return;
+                const i = 0;
                 const msg = document.getElementById('msgText').value;
                 if(!msg) return alert("Pesan kosong");
                 const c = TARGETS[i];
@@ -414,19 +494,12 @@
                 if(dt) q = q.gte('created_at', dt);
                 const {data} = await q;
                 document.getElementById('logBody').innerHTML = (data||[]).map(l=>`
-                    <tr>
-                        <td>${new Date(l.created_at).toLocaleString('id-ID')}</td>
-                        <td>${l.profiles?.username||'-'}</td>
-                        <td>${l.details}</td>
-                    </tr>
-                `).join('') || '<tr><td colspan="3">Tidak ada data</td></tr>';
+                    <tr><td>${new Date(l.created_at).toLocaleString('id-ID')}</td><td>${l.profiles?.username||'-'}</td><td>${l.details}</td></tr>
+                `).join('') || '<tr><td colspan="3">-</td></tr>';
             },
             async setBanStat(v){ await db.from('site_settings').upsert({key:'banner_enabled', value:v?'true':'false'}); this.loadBan(); },
             async setSpeed(){ await db.from('site_settings').upsert({key:'slider_speed', value:document.getElementById('inSpeed').value}); this.loadBan(); },
-            async addBan(){
-                await db.from('banners').insert({image_url:document.getElementById('inImg').value, target_url:document.getElementById('inLink').value});
-                this.listBan();
-            },
+            async addBan(){ await db.from('banners').insert({image_url:document.getElementById('inImg').value, target_url:document.getElementById('inLink').value}); this.listBan(); },
             async listBan(){
                 const {data} = await db.from('banners').select('*');
                 document.getElementById('listBan').innerHTML = (data||[]).map(b=>`
@@ -434,11 +507,11 @@
                         <img src="${b.image_url}" style="width:60px; height:30px; object-fit:cover; border-radius:4px">
                         <button class="btn-red" style="width:auto; padding:2px 8px; font-size:10px" onclick="app.delBan('${b.id}')">Hapus</button>
                     </div>
-                `).join('') || 'Belum ada banner';
+                `).join('') || 'Belum ada';
             },
             async delBan(id){ await db.from('banners').delete().eq('id',id); this.listBan(); },
 
-            // BANNER FRONTEND
+            // BANNER
             async loadBan(){
                 const {data:s} = await db.from('site_settings').select('*');
                 const en = s?.find(x=>x.key=='banner_enabled')?.value === 'true';
@@ -454,9 +527,7 @@
             }
         };
 
-        // Init App
         app.init();
-        function toggleMenu(){ document.getElementById('menuBox').classList.toggle('active'); }
     </script>
 </body>
 </html>
