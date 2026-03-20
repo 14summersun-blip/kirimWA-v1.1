@@ -73,14 +73,16 @@
     <!-- HALAMAN LOGIN -->
     <div class="page" id="pageLogin">
         <div class="card" style="margin-top:20px; padding:0; overflow:hidden;">
+            <!-- GAMBAR ATAS -->
             <img src="https://i.ibb.co.com/VWg4bJHp/Login-page-1.jpg" style="width:100%">
             <div style="padding:20px">
                 <h2 style="text-align:center">Login</h2>
                 <input type="email" id="inEmail" placeholder="Email">
                 <input type="password" id="inPass" placeholder="Password">
                 <button class="btn-main" onclick="app.login()">Login</button>
-                <p style="text-align:center; margin-top:15px; font-size:14px">Belum punya? <a href="#" onclick="app.go('register')">Register</a></p>
+                <p style="text-align:center; margin-top:15px; font-size:14px">Belum punya? <a href="#" onclick="app.go('register'); return false;">Register</a></p>
             </div>
+            <!-- GAMBAR BAWAH -->
             <img src="https://i.ibb.co.com/KjP9hNp0/Login-page-2.jpg" style="width:100%">
         </div>
     </div>
@@ -94,7 +96,7 @@
             <input type="text" id="regWa" placeholder="Nomor WA">
             <input type="password" id="regPass" placeholder="Password">
             <button class="btn-main" onclick="app.register()">Register</button>
-            <p style="text-align:center; margin-top:15px; font-size:14px">Sudah punya? <a href="#" onclick="app.go('login')">Login</a></p>
+            <p style="text-align:center; margin-top:15px; font-size:14px">Sudah punya? <a href="#" onclick="app.go('login'); return false;">Login</a></p>
         </div>
     </div>
 
@@ -152,46 +154,46 @@
     <div class="page" id="pageAdmin">
         <h2 style="color:var(--primary)">Admin Panel</h2>
         
-        <!-- BANNER -->
+        <!-- BANNER MANAGER -->
         <div class="card">
             <h3>🎨 Banner Promosi</h3>
-            <label><input type="checkbox" id="chkBan" onchange="app.setBanStat(this.checked)"> Aktifkan</label>
+            <label><input type="checkbox" id="chkBan" onchange="app.setBanStat(this.checked)"> Aktifkan Banner</label>
             <hr style="border:none; border-top:1px solid #eee; margin:10px 0">
-            <input type="number" id="inSpeed" value="10" style="width:60px" onchange="app.setSpeed()"> detik
+            <input type="number" id="inSpeed" value="5" style="width:60px" onchange="app.setSpeed()"> <small>detik (kecepatan)</small>
             <hr style="border:none; border-top:1px solid #eee; margin:10px 0">
-            <h4>Tambah Banner</h4>
+            <h4>Tambah Banner Baru</h4>
             <input type="text" id="inImg" placeholder="URL Gambar">
-            <input type="text" id="inLink" placeholder="Link Tujuan">
+            <input type="text" id="inLink" placeholder="Link Tujuan (Opsional)">
             <button class="btn-sec" onclick="app.addBan()">Tambah</button>
             <div id="listBan" style="margin-top:10px"></div>
         </div>
 
-        <!-- LOG -->
+        <!-- LOG ACTIVITY -->
         <div class="card">
-            <h3>📊 Log Aktivitas</h3>
-            <div style="display:flex; gap:10px">
-                <select id="logUser" onchange="app.getLog()"><option value="">Semua</option></select>
-                <input type="date" id="logDate" onchange="app.getLog()">
+            <h3>📊 Log Aktivitas User</h3>
+            <div style="display:flex; gap:10px; margin-bottom:10px">
+                <select id="logUser" onchange="app.getLog()" style="width:50%"><option value="">Semua User</option></select>
+                <input type="date" id="logDate" onchange="app.getLog()" style="width:50%">
             </div>
-            <div style="overflow:auto; max-height:300px; border:1px solid #eee; margin-top:10px; border-radius:4px">
-                <table><thead><tr><th>Waktu</th><th>User</th><th>Aksi</th></tr></thead><tbody id="logBody"></tbody></table>
+            <div style="overflow:auto; max-height:300px; border:1px solid #eee; border-radius:4px">
+                <table><thead><tr><th>Waktu</th><th>User</th><th>Aktivitas</th></tr></thead><tbody id="logBody"></tbody></table>
             </div>
         </div>
     </div>
 
     <script>
-        // KONFIG
-        const S_URL = 'https://whlyxdcsrvrpxmdsfdjz.supabase.co';
-        const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndobHl4ZGNzcnZycHhtZHNmZGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzODY3OTYsImV4cCI6MjA4ODk2Mjc5Nn0.A4SFdoE72-xNn99ez9Ug5R1fndrcTu4GhYy9Mpe1Zfk';
-        const LINK_NIAGA = 'https://niaga-app-anda.com'; // GANTI INI
+        // KONFIGURASI PROJECT BARU
+        const S_URL = 'https://gfwygrlyoguyeycrzpdj.supabase.co';
+        const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdmd3lncmx5b2d1eWV5Y3J6cGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5ODAxNzYsImV4cCI6MjA4OTU1NjE3Nn0.LLnonm_gDWfFvTGBg-9lhKTHZdpzz66aP5pRLXMnAnI';
+        const LINK_NIAGA = 'https://google.com'; // GANTI INI NANTI
+        const ADMIN_WA = '6285161990373';
         
-        if(typeof supabase==='undefined'){ alert("Koneksi gagal"); throw ""; }
+        if(typeof supabase==='undefined'){ alert("Koneksi Gagal"); throw ""; }
         const db = supabase.createClient(S_URL, S_KEY);
         let U = null, ROLE='user', ACTIVE=false, CONTACTS=[], TARGETS=[];
 
         // APP LOGIC
         const app = {
-            //ROUTER
             go(p){ window.location.hash = p; },
             
             init(){
@@ -202,7 +204,23 @@
             },
 
             async getProf(){
+                if(!U) return;
                 let {data} = await db.from('profiles').select('*').eq('id', U.id).single();
+                
+                // FIX: Jika user login tapi profil belum ada (jarang terjadi di project baru, tapi antisipasi)
+                if(!data){
+                    console.log("Profil tidak ditemukan, membuat baru...");
+                    await db.from('profiles').insert({
+                        id: U.id, 
+                        username: U.email.split('@')[0], 
+                        email: U.email, 
+                        role: 'user', 
+                        is_active: false
+                    });
+                    let res = await db.from('profiles').select('*').eq('id', U.id).single();
+                    data = res.data;
+                }
+
                 if(data){ ROLE=data.role||'user'; ACTIVE=data.is_active===true; }
                 this.render('akun');
                 this.loadBan();
@@ -212,7 +230,6 @@
                 document.getElementById('loadScreen').style.display='none';
                 document.querySelectorAll('.page').forEach(e=>e.style.display='none');
                 
-                // Mapping halaman
                 const pName = (p||'login').charAt(0).toUpperCase()+p.slice(1);
                 const el = document.getElementById('page'+pName);
                 if(el) el.style.display='block'; else document.getElementById('pageLogin').style.display='block';
@@ -220,7 +237,6 @@
                 document.getElementById('mainHead').style.display = (p=='login'||p=='register') ? 'none' : 'flex';
                 document.getElementById('bannerCont').style.display = (p=='kirim'||p=='kontak'||p=='akun') ? 'block' : 'none';
                 
-                // Menu Logic
                 const m = document.getElementById('menuContent');
                 let h = '';
                 if(!U){
@@ -233,7 +249,7 @@
                     if(ROLE=='admin') h += `<a class="menu-item" onclick="app.go('admin')">Admin</a>`;
                     if(ACTIVE) h += `<a class="menu-item" onclick="app.go('kirim')">Kirim WA</a>`;
                     h += `<a class="menu-item" onclick="app.go('kontak')">Kontak</a>`;
-                    if(!ACTIVE) h += `<a class="menu-item highlight" onclick="alert('Hubungi Admin')">Aktivasi Akun</a>`;
+                    if(!ACTIVE) h += `<a class="menu-item highlight" onclick="window.open('https://wa.me/${ADMIN_WA}?text=Halo Admin, aktivasi akun saya: ${U.email}')">Aktivasi Akun</a>`;
                     h += `<a class="menu-item" onclick="app.go('akun')">Akun</a>`;
                     h += `<a class="menu-item" onclick="window.open('${LINK_NIAGA}')">Info Niaga</a>`;
                     
@@ -248,24 +264,27 @@
 
             // AUTH
             async login(){
-                const e=document.getElementById('inEmail').value, p=document.getElementById('inPass').value;
-                if(!e||!p) return alert("Isi email/pass");
-                const {data,error} = await db.auth.signInWithPassword({email:e,password:p});
-                if(error) return alert(error.message);
-                U=data.user;
-                await this.getProf();
+                try {
+                    const e=document.getElementById('inEmail').value, p=document.getElementById('inPass').value;
+                    if(!e||!p) return alert("Isi email/pass");
+                    const {data,error} = await db.auth.signInWithPassword({email:e,password:p});
+                    if(error) return alert(error.message);
+                    U=data.user;
+                    await this.getProf();
+                } catch(err) { alert("Error koneksi"); console.error(err); }
             },
             async register(){
-                const u=document.getElementById('regUser').value, e=document.getElementById('regEmail').value, p=document.getElementById('regPass').value;
-                if(!u||!e||!p) return alert("Isi semua");
-                const {error} = await db.auth.signUp({email:e,password:p,options:{data:{username:u}}});
-                if(error) alert(error.message); 
-                else { alert("Sukses! Tunggu admin aktifkan."); this.go('login'); }
+                try {
+                    const u=document.getElementById('regUser').value, e=document.getElementById('regEmail').value, p=document.getElementById('regPass').value;
+                    if(!u||!e||!p) return alert("Isi semua");
+                    const {error} = await db.auth.signUp({email:e,password:p,options:{data:{username:u}}});
+                    if(error) alert(error.message); 
+                    else { alert("Sukses! Tunggu admin aktifkan."); this.go('login'); }
+                } catch(err) { alert("Error koneksi"); console.error(err); }
             },
             logout(){
-                // LANGSUNG PINDAH (ANTI HANG)
                 U=null; ACTIVE=false; ROLE='user';
-                db.auth.signOut(); // Fire & forget
+                db.auth.signOut();
                 this.go('login');
             },
 
@@ -282,19 +301,25 @@
                 }
             },
             async updWa(){
-                await db.from('profiles').update({wa_number:document.getElementById('editWa').value}).eq('id',U.id);
-                alert("Update sukses");
+                try {
+                    await db.from('profiles').update({wa_number:document.getElementById('editWa').value}).eq('id',U.id);
+                    alert("Update sukses");
+                } catch(e) { alert("Gagal update"); }
             },
             async updPass(){
-                const p = document.getElementById('editPass').value;
-                if(!p) return;
-                const {error} = await db.auth.updateUser({password:p});
-                alert(error ? "Gagal" : "Sukses");
+                try {
+                    const p = document.getElementById('editPass').value;
+                    if(!p) return;
+                    const {error} = await db.auth.updateUser({password:p});
+                    alert(error ? "Gagal" : "Sukses");
+                } catch(e) { alert("Error"); }
             },
             async delAcc(){
                 if(!confirm("Hapus akun?")) return;
-                await db.from('profiles').delete().eq('id',U.id);
-                this.logout();
+                try {
+                    await db.from('profiles').delete().eq('id',U.id);
+                    this.logout();
+                } catch(e) { alert("Gagal hapus"); }
             },
 
             // KONTAK
@@ -312,10 +337,13 @@
                 `).join('');
             },
             async addC(){
-                const n=document.getElementById('cName').value, p=document.getElementById('cPhone').value, l=document.getElementById('cLoc').value;
-                if(!n||!p) return alert("Isi nama & hp");
-                await db.from('contacts').insert({user_id:U.id, name:n, phone:p, location:l});
-                this.loadC();
+                try {
+                    const n=document.getElementById('cName').value, p=document.getElementById('cPhone').value, l=document.getElementById('cLoc').value;
+                    if(!n||!p) return alert("Isi nama & hp");
+                    await db.from('contacts').insert({user_id:U.id, name:n, phone:p, location:l});
+                    this.loadC();
+                    document.getElementById('cName').value=''; document.getElementById('cPhone').value=''; document.getElementById('cLoc').value='';
+                } catch(e) { alert("Gagal simpan kontak"); console.error(e); }
             },
             async delC(id){
                 await db.from('contacts').delete().eq('id',id);
@@ -325,7 +353,7 @@
             // KIRIM
             loadAvail(){
                 document.getElementById('listAvail').innerHTML = CONTACTS.map(c=>`
-                    <div class="card" style="padding:10px; cursor:pointer; margin-bottom:5px" onclick="app.addTar('${c.id}')">${c.name}</div>
+                    <div class="card" style="padding:10px; cursor:pointer; margin-bottom:5px" onclick="app.addTar('${c.id}')">${c.name} <small>(${c.phone})</small></div>
                 `).join('');
             },
             addTar(id){
@@ -360,7 +388,7 @@
                 this.getLog();
                 const {data: s} = await db.from('site_settings').select('*');
                 const en = s?.find(x=>x.key=='banner_enabled')?.value === 'true';
-                const sp = s?.find(x=>x.key=='slider_speed')?.value || 10;
+                const sp = s?.find(x=>x.key=='slider_speed')?.value || 5;
                 document.getElementById('chkBan').checked = en;
                 document.getElementById('inSpeed').value = sp;
                 this.listBan();
@@ -378,7 +406,7 @@
                         <td>${l.profiles?.username||'-'}</td>
                         <td>${l.details}</td>
                     </tr>
-                `).join('');
+                `).join('') || '<tr><td colspan="3">Tidak ada data</td></tr>';
             },
             async setBanStat(v){ await db.from('site_settings').upsert({key:'banner_enabled', value:v?'true':'false'}); this.loadBan(); },
             async setSpeed(){ await db.from('site_settings').upsert({key:'slider_speed', value:document.getElementById('inSpeed').value}); this.loadBan(); },
@@ -393,7 +421,7 @@
                         <img src="${b.image_url}" style="width:60px; height:30px; object-fit:cover; border-radius:4px">
                         <button class="btn-red" style="width:auto; padding:2px 8px; font-size:10px" onclick="app.delBan('${b.id}')">Hapus</button>
                     </div>
-                `).join('');
+                `).join('') || 'Belum ada banner';
             },
             async delBan(id){ await db.from('banners').delete().eq('id',id); this.listBan(); },
 
@@ -401,7 +429,7 @@
             async loadBan(){
                 const {data:s} = await db.from('site_settings').select('*');
                 const en = s?.find(x=>x.key=='banner_enabled')?.value === 'true';
-                const sp = s?.find(x=>x.key=='slider_speed')?.value || 10;
+                const sp = s?.find(x=>x.key=='slider_speed')?.value || 5;
                 if(!en) return document.getElementById('bannerCont').style.display='none';
                 
                 const {data:b} = await db.from('banners').select('*').eq('is_active',true);
@@ -415,7 +443,7 @@
             }
         };
 
-        // Init
+        // Init App
         app.init();
         function toggleMenu(){ document.getElementById('menuBox').classList.toggle('active'); }
     </script>
