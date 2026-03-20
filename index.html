@@ -3,588 +3,329 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>kirimWA Ekosistem</title>
-    <!-- PIXEL & ANALYTICS -->
-    <script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init', '1379361620875155');fbq('track', 'PageView');</script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ED0ZKSR99T"></script>
-    <script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'G-ED0ZKSR99T');</script>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>kirimWA App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { --primary: #25D366; --dark: #128C7E; --bg: #ece5dd; --blue: #2563EB; }
         body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; min-height: 100vh; font-size: 16px; }
-        .screen { display: none; padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 80px; }
-        .screen.active { display: block; }
         
-        /* HEADER */
+        /* LOADING SCREEN */
+        .loading-screen { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--bg); z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #ccc; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .btn-cancel { background: #eee; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        
+        /* HEADER & BANNER */
         .header { background: var(--primary); color: white; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .menu-btn { background: none; border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 18px; margin-left: -5px; }
-        .header-title { white-space: nowrap; text-align: right; line-height: 1.2; cursor: pointer; }
-        .title-main { font-weight: 700; font-style: italic; font-size: 18px; }
-        .title-version { font-weight: 400; font-style: italic; font-size: 12px; }
-        
-        /* MENU */
-        .menu-popup { display: none; position: absolute; top: 45px; left: 10px; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-radius: 8px; overflow: hidden; width: 220px; }
+        .menu-btn { background: none; border: none; color: white; padding: 5px 10px; font-weight: bold; font-size: 18px; cursor: pointer; }
+        .header-title { cursor: pointer; }
+        .menu-popup { display: none; position: absolute; top: 45px; left: 10px; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-radius: 8px; width: 220px; z-index: 110; }
         .menu-popup.active { display: block; }
-        .menu-item { display: block; padding: 15px 20px; color: #333; text-decoration: none; border-bottom: 1px solid #eee; cursor: pointer; font-size: 14px; }
-        .menu-item:hover { background: #f1f1f1; }
+        .menu-item { display: block; padding: 15px; color: #333; border-bottom: 1px solid #eee; cursor: pointer; text-decoration: none; }
         .menu-item.logout { color: red; }
         .menu-item.highlight { background: #fff3cd; color: #856404; font-weight: bold; }
-        .menu-item.alert { background: #ffebee; color: #d32f2f; font-weight: bold; }
         
-        /* FORMS */
-        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; font-family: 'Poppins', sans-serif; background: #fff; }
-        .pass-wrapper { position: relative; width: 100%; }
-        .pass-wrapper input { padding-right: 45px; } 
-        .pass-wrapper .toggle-pass { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #666; font-size: 18px; user-select: none; }
-        button { cursor: pointer; padding: 12px; border: none; border-radius: 8px; width: 100%; margin-top: 10px; font-size: 15px; font-weight: bold; font-family: 'Poppins', sans-serif; }
+        /* FLOATING BANNER CONTAINER */
+        .floating-banner-container { 
+            display: none; /* Hidden by default */
+            position: sticky; 
+            top: 44px; /* Adjust based on header height */
+            z-index: 99;
+            background: white; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            padding: 5px 0; 
+            overflow: hidden;
+            border-bottom: 1px solid #eee;
+        }
+        .banner-track { display: flex; animation: scroll var(--speed, 10s) linear infinite; }
+        .banner-track img { height: 50px; width: auto; margin: 0 10px; border-radius: 4px; }
+
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* SCREENS */
+        .screen { display: none; padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 80px; }
+        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        button { cursor: pointer; padding: 12px; border: none; border-radius: 8px; width: 100%; margin-top: 10px; font-weight: bold; font-family: 'Poppins', sans-serif; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-secondary { background: #ddd; color: #333; }
         .btn-danger { background: #ff4444; color: white; }
-        .btn-link { background: none; border: none; color: var(--dark); text-decoration: underline; padding: 5px; margin-top: 5px; font-size: 14px; cursor: pointer; }
-        
-        /* CARDS & ITEMS */
         .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .contact-item { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .contact-item .c-name { font-weight: bold; font-size: 16px; color: #333; margin-bottom: 4px; }
-        .contact-item .c-phone { color: var(--dark); font-size: 14px; margin-bottom: 2px; }
-        .contact-item .c-loc { color: #666; font-size: 12px; margin-bottom: 10px; }
-        .contact-item .c-actions { display: flex; gap: 10px; border-top: 1px solid #eee; padding-top: 10px; }
-        .contact-item .c-actions button { margin-top: 0; padding: 8px; font-size: 13px; }
-        
-        /* UTILITIES */
-        .scroll-list-container { max-height: 400px; overflow-y: auto; border: 1px solid #eee; padding: 10px; border-radius: 8px; background: #fafafa; }
-        .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .contact-item { background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display:flex; justify-content:space-between; align-items:center; }
         .status-active { color: green; font-weight: bold; }
         .status-banned { color: red; font-weight: bold; }
-        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; }
-        .modal.active { display: flex; }
-        .modal-content { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 400px; }
-        
-        /* POP UP POSTING */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1050; justify-content: center; align-items: center; }
-        .modal-overlay.active { display: flex; }
-        .modal-box { background: white; width: 90%; max-width: 450px; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.3); animation: popIn 0.3s ease; }
-        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .modal-header { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-        .modal-body { padding: 15px; }
+        .warning-banner { background: #fff3cd; color: #856404; padding: 10px; text-align: center; font-size: 13px; margin-bottom: 15px; border-radius: 8px; }
 
-        .counter-badge { background: #eee; padding: 5px 10px; border-radius: 20px; font-size: 14px; display: inline-block; margin-bottom: 10px; }
-        .label-small { font-size: 11px; color: #666; margin-bottom: 2px; display: block; }
-        .warning-banner { background: #fff3cd; color: #856404; padding: 10px; text-align: center; font-size: 13px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ffeeba; }
-
-        /* NIAGA STYLES */
-        .niaga-header { background: var(--blue); }
-        .niaga-header .menu-btn, .niaga-header .header-title { color: white; }
-        
-        .feed-card { background: white; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 15px; border: 1px solid #f0f0f0; }
-        .feed-header { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: flex-start; }
-        .feed-location { font-size: 12px; color: #666; margin-top: 2px; }
-        .feed-time { font-size: 11px; color: #999; font-style: italic; }
-        .feed-body { padding: 15px; }
-        .feed-title { font-size: 16px; font-weight: 600; margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .feed-desc { font-size: 14px; color: #555; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .feed-footer { padding: 10px 15px; background: #f9f9f9; display: flex; justify-content: space-between; align-items: center; }
-        .feed-metrics { font-size: 11px; color: #888; }
-        
-        .store-header-bg { background: linear-gradient(to right, #3b82f6, #1d4ed8); height: 100px; position: relative; }
-        .store-avatar { width: 80px; height: 80px; background: white; border-radius: 50%; border: 4px solid white; position: absolute; bottom: -40px; left: 20px; display: flex; align-items: center; justify-content: center; font-size: 30px; color: var(--blue); font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        
-        /* BANNER ANIMATION */
-        .banner-track { display: flex; overflow-x: auto; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-        .banner-track::-webkit-scrollbar { display: none; }
-        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        .banner-animate { animation: scroll 20s linear infinite; }
-        
-        /* FAB */
-        .fab-post { position: fixed; bottom: 80px; right: 20px; width: 56px; height: 56px; background-color: var(--blue); color: white; border-radius: 50%; box-shadow: 0 4px 8px rgba(0,0,0,0.3); display: none; align-items: center; justify-content: center; font-size: 32px; font-weight: 700; cursor: pointer; z-index: 50; border: none; transition: transform 0.2s; }
-        .fab-post:hover { transform: scale(1.1); }
+        /* ADMIN TABLE */
+        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #eee; }
+        th { background: #f9f9f9; }
     </style>
 </head>
 <body>
 
-    <!-- MAIN HEADER -->
+    <!-- LOADING SCREEN -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="spinner"></div>
+        <p id="loadingText">Memuat...</p>
+        <button class="btn-cancel" onclick="forceStartApp()">Batal / Mode Offline</button>
+    </div>
+
+    <!-- HEADER -->
     <div class="header" id="mainHeader" style="display:none;">
         <button type="button" class="menu-btn" onclick="toggleMenu()">☰ Menu</button>
         <div class="header-title" onclick="navigateHome()">
-            <span class="title-main" id="headerTitle">kirimWA</span><span class="title-version"> v2.0</span>
+            <span style="font-weight:700; font-style:italic;">kirimWA</span>
         </div>
         <div class="menu-popup" id="menuPopup">
             <div id="dynamicMenu"></div>
-            <a id="adminLinkBtn" href="#" target="_blank" class="menu-item" style="display:none;">Hubungi Admin</a>
             <span class="menu-item logout" onclick="logout()">Logout</span>
         </div>
     </div>
 
-    <!-- LOGIN SCREEN -->
-    <div class="screen active" id="screenLogin">
-        <div class="card" style="margin-top:20px; overflow:hidden; padding:0;">
-            <div style="background:#f0f0f0;">
-                <!-- PERBAIKAN URL: Sesuai permintaan pakai .co.com -->
-                <img src="https://i.ibb.co.com/VWg4bJHp/Login-page-1.jpg" style="width: 100%; height: auto; display: block;" alt="Login Header">
-            </div>
-            <div style="padding:20px;">
-                <h2 style="text-align:center; margin-top:0;">Login</h2>
-                <form onsubmit="event.preventDefault(); handleLogin();">
-                    <input type="email" id="loginEmail" placeholder="Email" autocomplete="email">
-                    <div class="pass-wrapper">
-                        <input type="password" id="loginPass" placeholder="Password" autocomplete="current-password">
-                        <span class="toggle-pass" onclick="togglePassword('loginPass')">👁️</span>
-                    </div>
-                    <button type="submit" class="btn-primary">Login</button>
-                </form>
-                <button type="button" class="btn-link" onclick="contactAdminReset()">Lupa Password?</button>
-                <p style="text-align:center; margin-top:15px;">Belum punya akun? <a href="#" onclick="showScreen('screenRegister'); return false;">Register di sini</a></p>
-            </div>
-            <div style="background:#fafafa;">
-                <!-- PERBAIKAN URL: Sesuai permintaan pakai .co.com -->
-                <img src="https://i.ibb.co.com/KjP9hNp0/Login-page-2.jpg" style="width: 100%; height: auto; display: block;" alt="Login Footer">
-            </div>
-        </div>
+    <!-- FLOATING BANNER (Controlled by JS) -->
+    <div id="floatingBannerContainer" class="floating-banner-container">
+        <div class="banner-track" id="bannerTrack"></div>
     </div>
 
-    <!-- REGISTER SCREEN -->
-    <div class="screen" id="screenRegister">
-        <div class="card" style="margin-top:20px; overflow:hidden; padding:0;">
-            <div style="background:#f0f0f0;">
-                <img src="https://placehold.co/600x200/128C7E/white?text=Bergabung+Bersama+Kami" style="width: 100%; height: auto; display: block;">
-            </div>
-            <div style="padding:20px;">
-                <h2 style="text-align:center; margin-top:0;">Register</h2>
-                <input type="text" id="regUser" placeholder="Username">
-                <input type="email" id="regEmail" placeholder="Email">
-                <input type="text" id="regWa" placeholder="Nomor WA (cth: 62812...)">
-                <div class="pass-wrapper">
-                    <input type="password" id="regPass" placeholder="Password">
-                    <span class="toggle-pass" onclick="togglePassword('regPass')">👁️</span>
-                </div>
-                <button type="button" class="btn-primary" onclick="handleRegister()">Register Sekarang</button>
-                <p style="text-align:center; margin-top:15px;">Sudah punya akun? <a href="#" onclick="showScreen('screenLogin'); return false;">Login</a></p>
-            </div>
-        </div>
-    </div>
-
-    <!-- RESET PASSWORD --><div class="screen" id="screenReset"><div class="card" style="margin-top:50px; text-align:center;"><h2>Reset Password</h2><p>Silakan masukkan password baru Anda.</p><div class="pass-wrapper"><input type="password" id="newPass" placeholder="Password Baru"><span class="toggle-pass" onclick="togglePassword('newPass')">👁️</span></div><button type="button" class="btn-primary" onclick="updateNewPassword()">Simpan Password Baru</button></div></div>
-    <!-- AKUN --><div class="screen" id="screenAkun"><h2>Akun Saya</h2><div class="warning-banner" id="inactiveWarning" style="display:none;">⚠️ <strong>AKUN BELUM AKTIF.</strong><br>Silakan hubungi Admin via Menu.</div><div class="card"><p><strong>Username:</strong> <span id="profUsername">-</span></p><p><strong>Email:</strong> <span id="profEmail">-</span></p><p><strong>Status:</strong> <span id="profStatus">-</span></p><hr><h3>Edit Data</h3><input type="text" id="editWa" placeholder="Nomor WA Baru"><button type="button" class="btn-secondary" onclick="updateProfile()">Simpan Nomor WA</button><br><br><div class="pass-wrapper"><input type="password" id="editPass" placeholder="Password Baru"><span class="toggle-pass" onclick="togglePassword('editPass')">👁️</span></div><button type="button" class="btn-secondary" onclick="updatePassword()">Simpan Password</button><br><br><button type="button" class="btn-danger" onclick="deleteAccount()">Hapus Akun?</button></div></div>
-    <!-- KONTAK --><div class="screen" id="screenKontak"><h2>Daftar Kontak</h2><div class="card"><h3>Tambah Kontak Baru</h3><input type="text" id="cName" placeholder="Nama"><input type="text" id="cPhone" placeholder="Nomor HP"><input type="text" id="cLocation" placeholder="Lokasi"><button type="button" class="btn-primary" onclick="addContact()">Simpan Kontak</button></div><div class="filter-row"><input type="text" id="searchContact" placeholder="Nama / No HP" onkeyup="renderContacts()"><input type="text" id="searchLocation" placeholder="Lokasi" onkeyup="renderContacts()"></div><div id="contactListContainer"></div></div>
-    <!-- KIRIM PESAN --><div class="screen" id="screenKirim"><h2>Kirim Pesan</h2><div class="card"><h3>Tulis Pesan</h3><textarea id="messageText" rows="3" placeholder="Tulis pesan di sini..."></textarea></div><div class="card"><h3>Pilih Kontak Penerima</h3><div style="display:flex; gap:10px; margin-bottom:10px;"><input type="text" id="filterName" placeholder="Filter Nama" onkeyup="renderAvailableContacts()" style="margin:0"><input type="text" id="filterLoc" placeholder="Filter Lokasi" onkeyup="renderAvailableContacts()" style="margin:0"></div><div id="availableContactsList"></div></div><div class="card"><h3>List Pengiriman (<span id="countSend">0</span>)</h3><div id="sendListDisplay" style="margin-bottom:15px;"></div><button type="button" class="btn-primary" id="btnSendNext" onclick="sendNextInQueue()" style="display:none;">🚀 Kirim ke Nomor Teratas</button><p style="font-size:12px; color:#666; margin-top:10px; text-align:center;">Klik tombol di atas -> Kirim di WA -> Kembali ke sini.</p></div></div>
-
-    <!-- INFO NIAGA (FEED) -->
-    <div class="screen" id="screenNiaga">
-        <div class="bg-white shadow-sm py-3 px-4 mb-2 border-b">
-            <div class="mb-2 text-sm font-semibold text-gray-600">Filter Lokasi:</div>
-            <div class="grid grid-cols-3 gap-2 mb-2">
-                <select id="filterProvinsi" onchange="loadKabupaten()" class="border rounded px-2 py-2 text-xs w-full bg-white"><option value="">Semua Provinsi</option></select>
-                <select id="filterKabupaten" onchange="loadKecamatan()" class="border rounded px-2 py-2 text-xs w-full bg-white" disabled><option value="">Semua Kabupaten</option></select>
-                <select id="filterKecamatan" class="border rounded px-2 py-2 text-xs w-full bg-white" disabled><option value="">Semua Kecamatan</option></select>
-            </div>
-            <button onclick="applyFilter()" class="w-full bg-blue-500 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-600 transition">Terapkan Filter</button>
-        </div>
-        <div id="feedContainer"></div>
-    </div>
-
-    <!-- TOKO SAYA -->
-    <div class="screen" id="screenToko">
-        <div class="bg-white shadow-sm">
-            <div class="store-header-bg relative"><div class="store-avatar" id="storeAvatar">T</div></div>
-            <div class="pt-12 px-4 pb-4">
-                <h2 id="storeName" class="text-xl font-bold text-gray-800">Nama Toko</h2>
-                <p id="storeAddress" class="text-sm text-gray-500 flex items-center gap-1 mt-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg><span>Alamat Toko</span></p>
-                <div class="mt-3 flex gap-2">
-                    <a id="storeMapLink" href="#" target="_blank" class="flex-1 text-center bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition flex items-center justify-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path></svg>Lihat Lokasi</a>
-                    <button id="storeWaBtn" class="flex-1 bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-green-600 transition flex items-center justify-center gap-2">Chat Toko</button>
-                </div>
-            </div>
-        </div>
-        <div class="mt-4 px-4">
-            <h3 class="text-lg font-bold text-gray-800 mb-3">Daftar Produk</h3>
-            <div id="productContainer" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
-        </div>
-    </div>
-
+    <!-- SCREENS -->
+    <div class="screen" id="screenLogin"><div class="card" style="margin-top:20px; overflow:hidden; padding:0;"><div style="background:#f0f0f0;"><img src="https://i.ibb.co.com/VWg4bJHp/Login-page-1.jpg" style="width: 100%; display: block;"></div><div style="padding:20px;"><h2 style="text-align:center;">Login</h2><form onsubmit="event.preventDefault(); handleLogin();"><input type="email" id="loginEmail" placeholder="Email"><div style="position:relative;"><input type="password" id="loginPass" placeholder="Password"><span onclick="this.previousElementSibling.type=this.previousElementSibling.type==='password'?'text':'password'" style="position:absolute;right:15px;top:12px;cursor:pointer;">👁️</span></div><button type="submit" class="btn-primary">Login</button></form><p style="text-align:center; margin-top:15px;">Belum punya akun? <a href="#" onclick="navigateTo('register');return false;">Register</a></p></div><div style="background:#fafafa;"><img src="https://i.ibb.co.com/KjP9hNp0/Login-page-2.jpg" style="width: 100%; display: block;"></div></div></div>
+    <div class="screen" id="screenRegister"><div class="card" style="margin-top:20px;"><h2>Register</h2><input type="text" id="regUser" placeholder="Username"><input type="email" id="regEmail" placeholder="Email"><input type="text" id="regWa" placeholder="WA (Opsional)"><div style="position:relative;"><input type="password" id="regPass" placeholder="Password"><span onclick="this.previousElementSibling.type=this.previousElementSibling.type==='password'?'text':'password'" style="position:absolute;right:15px;top:12px;cursor:pointer;">👁️</span></div><button class="btn-primary" onclick="handleRegister()">Register</button><p style="text-align:center; margin-top:15px;"><a href="#" onclick="navigateTo('login');return false;">Login</a></p></div></div>
+    <div class="screen" id="screenReset"><div class="card" style="margin-top:50px;"><h2>Reset Password</h2><input type="password" id="newPass" placeholder="Password Baru"><button class="btn-primary" onclick="updateNewPassword()">Simpan</button></div></div>
+    
+    <div class="screen" id="screenAkun"><h2>Akun Saya</h2><div id="akunGuest" class="card" style="text-align:center; display:none;"><h3>Selamat Datang</h3><button class="btn-primary" onclick="navigateTo('login')">Login</button></div><div id="akunUser" style="display:none;"><div class="warning-banner" id="inactiveWarning" style="display:none;">⚠️ Akun belum aktif.</div><div class="card"><p><strong>Username:</strong> <span id="profUsername">-</span></p><p><strong>Email:</strong> <span id="profEmail">-</span></p><p><strong>Status:</strong> <span id="profStatus">-</span></p><hr><input type="text" id="editWa" placeholder="WA"><button class="btn-secondary" onclick="updateProfile()">Simpan WA</button><br><br><input type="password" id="editPass" placeholder="Password Baru"><button class="btn-secondary" onclick="updatePassword()">Simpan Pass</button><br><br><button class="btn-danger" onclick="deleteAccount()">Hapus Akun</button></div></div></div>
+    
+    <div class="screen" id="screenKontak"><h2>Kontak</h2><div class="card"><input type="text" id="cName" placeholder="Nama"><input type="text" id="cPhone" placeholder="HP"><input type="text" id="cLocation" placeholder="Lokasi"><button class="btn-primary" onclick="addContact()">Simpan</button></div><div id="contactListContainer"></div></div>
+    
+    <div class="screen" id="screenKirim"><h2>Kirim Pesan</h2><div class="card"><textarea id="messageText" rows="2"></textarea></div><div id="availableContactsList"></div><div class="card"><h3>List (<span id="countSend">0</span>)</h3><div id="sendListDisplay"></div><button class="btn-primary" id="btnSendNext" onclick="sendNextInQueue()" style="display:none;">Kirim</button></div></div>
+    
     <!-- ADMIN DASHBOARD -->
     <div class="screen" id="screenAdmin">
-        <h2 style="color:#ffc107;">Admin Dashboard</h2>
-        <div class="card bg-gradient-to-r from-blue-50 to-green-50">
-            <h3 class="font-bold text-gray-700 mb-2">📊 Statistik Ekosistem</h3>
-            <div class="grid grid-cols-3 gap-2 text-center">
-                <div class="bg-white p-2 rounded shadow-sm"><div class="text-2xl font-bold text-green-600" id="metricFeedWa">0</div><div class="text-xs text-gray-500">Klik WA (Feed)</div></div>
-                <div class="bg-white p-2 rounded shadow-sm"><div class="text-2xl font-bold text-blue-600" id="metricStore">0</div><div class="text-xs text-gray-500">Klik Toko</div></div>
-                <div class="bg-white p-2 rounded shadow-sm"><div class="text-2xl font-bold text-purple-600" id="metricProd">0</div><div class="text-xs text-gray-500">Klik Produk</div></div>
-            </div>
-        </div>
+        <h2 style="color:var(--dark);">Admin Dashboard</h2>
+        
+        <!-- Banner Manager -->
         <div class="card">
-            <h3>Filter User</h3>
-            <div class="filter-grid"><div><span class="label-small">Dari Tanggal</span><input type="date" id="adminFilterStart" onchange="loadAdminData()" style="margin:0"></div><div><span class="label-small">Sampai Tanggal</span><input type="date" id="adminFilterEnd" onchange="loadAdminData()" style="margin:0"></div></div>
-            <input type="text" id="adminFilterName" placeholder="Nama User" onkeyup="loadAdminData()" style="margin-top:5px;"><input type="text" id="adminFilterEmail" placeholder="Email" onkeyup="loadAdminData()"><input type="text" id="adminFilterWa" placeholder="No WA" onkeyup="loadAdminData()">
-            <div class="counter-badge" id="adminCount" style="margin-top:10px;">Total User: 0</div>
+            <h3>🎨 Banner Promosi</h3>
+            <p style="font-size:12px; color:#666;">Tampil di bawah header halaman utama.</p>
+            <label class="switch"><input type="checkbox" id="toggleBanner" onchange="toggleBannerStatus(this.checked)"> <span>Aktifkan Banner</span></label>
+            <hr style="margin:10px 0; border:none; border-top:1px solid #eee;">
+            <label>Kecepatan Slider (detik)</label>
+            <input type="number" id="sliderSpeed" placeholder="5" onchange="updateBannerSpeed()" style="margin:0; width:80px;">
+            <hr style="margin:10px 0; border:none; border-top:1px solid #eee;">
+            <h4>Tambah Banner Baru</h4>
+            <input type="text" id="newBannerImg" placeholder="URL Gambar">
+            <input type="text" id="newBannerLink" placeholder="Link Tujuan (Opsional)">
+            <button class="btn-secondary" onclick="addBanner()">Tambah</button>
+            <div id="bannerList" style="margin-top:10px;"></div>
         </div>
-        <div class="card"><h3>Daftar User</h3><div class="scroll-list-container" id="adminUserList"></div></div>
-        <div class="card"><h3>Data Global</h3><button type="button" class="btn-admin" onclick="downloadAllContacts()">Download Semua Kontak (CSV)</button></div>
+
+        <!-- Activity Logs -->
+        <div class="card">
+            <h3>📊 Log Aktivitas User</h3>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <select id="logUserFilter" onchange="loadActivityLogs()"><option value="">Semua User</option></select>
+                <input type="date" id="logStartDate" onchange="loadActivityLogs()">
+                <input type="date" id="logEndDate" onchange="loadActivityLogs()">
+            </div>
+            <div style="overflow-x:auto;">
+                <table id="activityLogTable">
+                    <thead><tr><th>Waktu</th><th>User</th><th>Aktivitas</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
-    <!-- MODALS -->
-    <div class="modal" id="editModal"><div class="modal-content"><h3>Edit Kontak</h3><input type="hidden" id="editId"><input type="text" id="editName" placeholder="Nama"><input type="text" id="editPhone" placeholder="No HP"><input type="text" id="editLocation" placeholder="Lokasi"><button type="button" class="btn-primary" onclick="saveEditContact()">Simpan</button><button type="button" class="btn-secondary" onclick="closeModal()">Batal</button></div></div>
-    
-    <!-- MODAL POSTING -->
-    <div id="postModal" class="modal-overlay">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h3 id="modalTitle" style="margin:0; font-weight:bold;">Judul Modal</h3>
-                <button onclick="closePostModal()" style="background:none; border:none; font-size:24px; color:#888; cursor:pointer;">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div style="margin-bottom:10px;"><label class="label-small">Judul</label><input type="text" id="inputTitle" placeholder="Judul"></div>
-                <div style="margin-bottom:10px;"><label class="label-small">Deskripsi</label><textarea id="inputDesc" rows="3" placeholder="Deskripsi..."></textarea></div>
-                <div style="margin-bottom:10px;"><label class="label-small">Upload Gambar (Max 3)</label><input type="file" id="inputImages" multiple accept="image/*"></div>
-                <div id="inputPrice" class="hidden"><label class="label-small">Harga</label><input type="text" placeholder="Harga"></div>
-                <button id="btnSubmit" onclick="submitPost()" class="btn-primary" style="margin-top:15px;">Submit</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- FAB -->
-    <button id="fabPost" class="fab-post" onclick="showPostModal()">+</button>
-
-    <!-- FLOATING BANNER -->
-    <div id="bannerFooter" class="fixed bottom-0 left-0 w-full bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-30 overflow-hidden hidden"><div class="banner-track p-2 gap-4" id="bannerTrack"></div></div>
-
-    <!-- SCRIPT -->
     <script>
-        // --- KONFIGURASI ---
+        // === CONFIG ===
         const SUPABASE_URL = 'https://whlyxdcsrvrpxmdsfdjz.supabase.co'; 
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndobHl4ZGNzcnZycHhtZHNmZGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzODY3OTYsImV4cCI6MjA4ODk2Mjc5Nn0.A4SFdoE72-xNn99ez9Ug5R1fndrcTu4GhYy9Mpe1Zfk';
-        const ADMIN_LINK = 'https://wa.me/6285161990373?text=Hai%20Admin%20kirimWA,%20mau%20minta%20info%20ya'; 
+        // PENTING: Ganti dengan Link Niaga App Anda
+        const NIAGA_APP_URL = 'https://niaga-app-anda.com'; 
 
+        if (typeof supabase === 'undefined') { document.getElementById('loadingText').innerText = "Koneksi Gagal"; throw new Error(""); }
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let currentUser = null; let currentRole = 'user'; let isActive = false; let allContacts = []; let sendList = [];
 
-        let currentUser = null;
-        let currentRole = 'user';
-        let isActive = false; 
-        let isStoreActive = false; 
-        let allContacts = [];
-        let sendList = []; 
+        // === CORE UI ===
+        function forceStartApp() { try { document.getElementById('loadingScreen').style.display = 'none'; showScreen('screenLogin'); } catch(e){} }
+        var failSafeTimer = setTimeout(forceStartApp, 5000);
 
-        // --- FUNGSI UI ---
         function showScreen(id) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            const header = document.getElementById('mainHeader');
-            const fab = document.getElementById('fabPost');
-            const banner = document.getElementById('bannerFooter');
+            clearTimeout(failSafeTimer); document.getElementById('loadingScreen').style.display = 'none';
+            var screens = ['screenLogin','screenRegister','screenReset','screenAkun','screenKontak','screenKirim','screenAdmin'];
+            screens.forEach(s => { var el = document.getElementById(s); if(el) el.style.display = 'none'; });
+            if(document.getElementById(id)) document.getElementById(id).style.display = 'block';
+            
+            var header = document.getElementById('mainHeader');
+            var banner = document.getElementById('floatingBannerContainer');
+            
+            // Banner Logic: Muncul di Kirim, Kontak, Akun (sesuai rapat)
+            if(id === 'screenKirim' || id === 'screenKontak' || id === 'screenAkun') { banner.style.display = 'block'; loadBanners(); } 
+            else { banner.style.display = 'none'; }
 
-            header.className = 'header'; 
-            fab.style.display = 'none';
-            banner.classList.add('hidden');
-
-            if(id === 'screenLogin' || id === 'screenRegister' || id === 'screenReset') {
-                header.style.display = 'none';
-            } else {
-                header.style.display = 'flex';
-                if(id === 'screenNiaga' || id === 'screenToko') {
-                    header.className = 'header niaga-header';
-                    loadBanners(); 
-                }
-                if(id === 'screenNiaga') {
-                    fab.style.display = 'flex'; 
-                }
-            }
+            if(id === 'screenLogin' || id === 'screenRegister' || id === 'screenReset') { header.style.display = 'none'; } 
+            else { header.style.display = 'flex'; }
             toggleMenu(false);
         }
-
-        function toggleMenu(state) { const popup = document.getElementById('menuPopup'); if(state === undefined) popup.classList.toggle('active'); else state ? popup.classList.add('active') : popup.classList.remove('active'); }
-        function closeModal() { document.getElementById('editModal').classList.remove('active'); }
-        
-        function closePostModal() { 
-            const modal = document.getElementById('postModal');
-            modal.classList.remove('active'); 
-            document.getElementById('inputTitle').value = ''; 
-            document.getElementById('inputDesc').value = ''; 
-            document.getElementById('inputPrice').value = ''; 
-            document.getElementById('inputImages').value = ''; 
+        function navigateTo(page) { window.location.hash = page; }
+        window.onhashchange = () => { const page = window.location.hash.substring(1); renderPage(page); };
+        function renderPage(page) {
+            const map = { 'login':'screenLogin','register':'screenRegister','akun':'screenAkun','kirim':'screenKirim','kontak':'screenKontak','admin':'screenAdmin' };
+            let target = map[page] || (currentUser ? 'screenAkun' : 'screenLogin');
+            showScreen(target);
+            document.getElementById('headerTitle').innerText = page ? (page.charAt(0).toUpperCase() + page.slice(1)) : 'Akun';
+            if(page === 'akun' && currentUser) loadProfile();
+            if(page === 'kontak') loadContacts();
+            if(page === 'kirim') { loadContacts(); renderAvailableContacts(); }
+            if(page === 'admin') loadAdminDashboard();
         }
+        function navigateHome() { navigateTo('akun'); }
+        function toggleMenu() { document.getElementById('menuPopup').classList.toggle('active'); }
 
-        function togglePassword(inputId) { const x = document.getElementById(inputId); x.type = x.type === "password" ? "text" : "password"; }
-
-        // --- FUNGSI AUTH ---
-        async function handleRegister() { const email = document.getElementById('regEmail').value; const pass = document.getElementById('regPass').value; const user = document.getElementById('regUser').value; const wa = document.getElementById('regWa').value; if(!email || !pass || !user) { alert("Harap isi Email, Password, dan Username!"); return; } const { data, error } = await _supabase.auth.signUp({ email: email, password: pass, options: { data: { username: user, wa_number: wa } } }); if (error) alert("Error: " + error.message); else { if(typeof fbq === 'function') fbq('track', 'CompleteRegistration'); alert("Registrasi berhasil!\nAkun Anda perlu DISETUJUI ADMIN."); showScreen('screenLogin'); } }
-        
+        // === AUTH ===
+        async function logout() { try { await _supabase.auth.signOut(); } catch(e){} currentUser=null; isActive=false; forceStartApp(); }
         async function handleLogin() { 
-            const email = document.getElementById('loginEmail').value; 
-            const pass = document.getElementById('loginPass').value; 
-            
-            if(!email || !pass) { alert("Email dan Password harus diisi!"); return; }
-
-            try { 
-                const { data, error } = await _supabase.auth.signInWithPassword({ email, password: pass }); 
-                if (error) { alert("Login Gagal: " + error.message); return; } 
-                currentUser = data.user; 
-                const { data: profile, error: profileError } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single(); 
-                if (profileError || !profile) { await _supabase.from('profiles').insert({ id: currentUser.id, username: currentUser.email, email: currentUser.email, role: 'user', is_active: false }); const { data: newProfile } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single(); if(newProfile) { currentRole = 'user'; isActive = false; isStoreActive = false; } else { alert("Gagal membuat profil."); logout(); return; } } else { currentRole = profile.role || 'user'; isActive = (profile.is_active === true); isStoreActive = (profile.is_store_active === true); } 
-                if (currentRole !== 'admin' && !isActive) alert("PERHATIAN: Akun Anda BELUM AKTIF."); 
-                setupUI(); 
-            } catch (err) { console.error(err); alert("Terjadi kesalahan sistem."); } 
+            const email = document.getElementById('loginEmail').value, pass = document.getElementById('loginPass').value; if(!email||!pass) return alert("Isi!"); 
+            const { data, error } = await _supabase.auth.signInWithPassword({ email, password: pass }); 
+            if(error) return alert("Gagal: "+error.message); 
+            currentUser=data.user; 
+            const { data:prof } = await _supabase.from('profiles').select('*').eq('id',currentUser.id).single(); 
+            if(prof){ currentRole=prof.role||'user'; isActive=prof.is_active===true; } 
+            setupUI(); 
         }
-        
-        function contactAdminReset() { const email = document.getElementById('loginEmail').value; let message = `Hai Admin kirimWA, saya lupa password saya.`; if(email) message += ` Email saya: ${email}`; window.open(`https://wa.me/6285161990373?text=${encodeURIComponent(message)}`, '_blank'); }
-        async function updateNewPassword() { const pass = document.getElementById('newPass').value; if(!pass) return alert("Masukkan password baru!"); const { error } = await _supabase.auth.updateUser({ password: pass }); if(error) alert("Gagal update: " + error.message); else { alert("Password berhasil diubah!"); logout(); } }
-        async function logout() { await _supabase.auth.signOut(); currentUser = null; isActive = false; currentRole = 'user'; isStoreActive = false; showScreen('screenLogin'); }
-        
-        _supabase.auth.onAuthStateChange((event, session) => { 
-            if (event === 'PASSWORD_RECOVERY') showScreen('screenReset'); 
-            else if (event === 'SIGNED_IN' && session && session.user) { if(!currentUser) checkSession(); } 
-            else if (event === 'SIGNED_OUT') { currentUser = null; showScreen('screenLogin'); } 
-        });
-        
-        async function checkSession() { 
-            try { 
-                const { data: { user } } = await _supabase.auth.getUser(); 
-                if (user) { 
-                    currentUser = user; 
-                    const { data: profile } = await _supabase.from('profiles').select('*').eq('id', user.id).single(); 
-                    if (profile) { currentRole = profile.role || 'user'; isActive = (profile.is_active === true); isStoreActive = (profile.is_store_active === true); } 
-                    setupUI(); 
-                } else {
-                    document.getElementById('mainHeader').style.display = 'none';
-                    showScreen('screenLogin');
-                }
-            } catch(e) { console.error(e); showScreen('screenLogin'); } 
-        }
+        _supabase.auth.onAuthStateChange((e) => { if(e==='SIGNED_OUT') logout(); });
+        async function checkSession() { try { const {data:{user}} = await _supabase.auth.getUser(); if(user){ currentUser=user; const {data:prof} = await _supabase.from('profiles').select('*').eq('id',user.id).single(); if(prof){ currentRole=prof.role; isActive=prof.is_active; } setupUI(); } else { currentUser=null; setupUI(); } } catch(e){ forceStartApp(); } }
 
         function setupUI() {
             const menuDiv = document.getElementById('dynamicMenu');
-            const adminLinkBtn = document.getElementById('adminLinkBtn');
-            adminLinkBtn.href = ADMIN_LINK;
-            const warning = document.getElementById('inactiveWarning');
-            let menuHTML = '';
-
-            let tokoMenuItem = '';
-            if (!isStoreActive) {
-                tokoMenuItem = '<span class="menu-item alert" onclick="aktivasiToko(currentUser.email)">Aktifkan Toko</span>';
+            let html = '';
+            if(!currentUser) {
+                document.getElementById('akunGuest').style.display='block'; document.getElementById('akunUser').style.display='none';
+                html = '<span class="menu-item" onclick="window.open(\''+NIAGA_APP_URL+'\', \'_blank\')">Info Niaga</span>';
+                renderPage('akun');
             } else {
-                tokoMenuItem = '<span class="menu-item" onclick="navigateTo(\'toko\')">Toko Saya</span>';
-            }
-
-            if (currentRole === 'admin') {
-                menuHTML = '<span class="menu-item" onclick="navigateTo(\'admin\')">Admin</span><span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'niaga\')">Info Niaga</span><span class="menu-item" onclick="navigateTo(\'toko\')">Toko Saya</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
-                adminLinkBtn.style.display = 'none'; warning.style.display = 'none';
-                navigateTo('admin');
-            } else {
-                menuHTML = '<span class="menu-item" onclick="navigateTo(\'niaga\')">Info Niaga</span>';
-                if (!isActive) {
-                    menuHTML += '<span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span>';
-                    menuHTML += tokoMenuItem; 
-                    adminLinkBtn.style.display = 'block'; adminLinkBtn.className = 'menu-item highlight'; warning.style.display = 'block';
+                document.getElementById('akunGuest').style.display='none'; document.getElementById('akunUser').style.display='block';
+                if (currentRole === 'admin') {
+                    html = '<span class="menu-item" onclick="navigateTo(\'admin\')">Admin</span><span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span><span class="menu-item" onclick="window.open(\''+NIAGA_APP_URL+'\', \'_blank\')">Info Niaga</span>';
+                    renderPage('admin');
                 } else {
-                    menuHTML += '<span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span>';
-                    menuHTML += tokoMenuItem; 
-                    adminLinkBtn.style.display = 'block'; adminLinkBtn.className = 'menu-item'; warning.style.display = 'none';
+                    if(!isActive) {
+                       html = '<span class="menu-item highlight" onclick="aktivasiAdmin()">Aktivasi Hubungi Admin</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span><span class="menu-item" onclick="window.open(\''+NIAGA_APP_URL+'\', \'_blank\')">Info Niaga</span>';
+                    } else {
+                       html = '<span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim</span><span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span><span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span><span class="menu-item" onclick="window.open(\''+NIAGA_APP_URL+'\', \'_blank\')">Info Niaga</span>';
+                    }
+                    renderPage('akun');
                 }
-                menuHTML += '<span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
-                navigateTo('akun');
             }
-            menuDiv.innerHTML = menuHTML;
+            menuDiv.innerHTML = html;
+        }
+        window.aktivasiAdmin = () => window.open('https://wa.me/6285161990373?text=Aktivasi%20Akun', '_blank');
+
+        // === LOGIC ===
+        async function loadProfile() { if(!currentUser) return; const {data} = await _supabase.from('profiles').select('*').eq('id',currentUser.id).single(); if(data){ document.getElementById('profUsername').innerText=data.username; document.getElementById('profEmail').innerText=data.email; document.getElementById('profStatus').innerText=isActive?"AKTIF":"NON-AKTIF"; document.getElementById('profStatus').className=isActive?"status-active":"status-banned"; document.getElementById('inactiveWarning').style.display=isActive?'none':'block'; }}
+        async function handleRegister() { const e=document.getElementById('regEmail').value, p=document.getElementById('regPass').value, u=document.getElementById('regUser').value; if(!e||!p||!u) return alert("Isi!"); await _supabase.auth.signUp({email:e, password:p, options:{data:{username:u}}}); alert("Sukses! Tunggu Admin."); navigateTo('login'); }
+        async function updateProfile() { const wa=document.getElementById('editWa').value; await _supabase.from('profiles').update({wa_number:wa}).eq('id',currentUser.id); alert("Update!"); }
+        async function updatePassword() { const p=document.getElementById('editPass').value; if(!p) return; await _supabase.auth.updateUser({password:p}); alert("Ok!"); }
+        async function updateNewPassword() { const p=document.getElementById('newPass').value; if(!p) return; await _supabase.auth.updateUser({password:p}); alert("Ok!"); logout(); }
+        async function deleteAccount() { if(confirm("Hapus?")){ await _supabase.from('profiles').delete().eq('id',currentUser.id); logout(); }}
+
+        // Kontak Logic
+        async function loadContacts() { if(!currentUser) return; const {data} = await _supabase.from('contacts').select('*').eq('user_id',currentUser.id); allContacts=data||[]; renderContacts(); renderAvailableContacts(); }
+        function renderContacts() { document.getElementById('contactListContainer').innerHTML = allContacts.map(c=>`<div class="contact-item"><b>${c.name}</b> <span style="font-size:12px">${c.phone}</span> <button class="btn-danger" style="width:auto;padding:2px 5px" onclick="deleteContact('${c.id}')">X</button></div>`).join(''); }
+        async function addContact() { const n=document.getElementById('cName').value, p=document.getElementById('cPhone').value, l=document.getElementById('cLocation').value; if(!n||!p) return; await _supabase.from('contacts').insert({user_id:currentUser.id, name:n, phone:p, location:l}); loadContacts(); }
+        async function deleteContact(id) { await _supabase.from('contacts').delete().eq('id',id); loadContacts(); }
+        function renderAvailableContacts() { document.getElementById('availableContactsList').innerHTML = allContacts.map(c=>`<div class="contact-item" onclick="addToSendList('${c.id}')">${c.name}</div>`).join(''); }
+        function addToSendList(id) { const c=allContacts.find(x=>x.id==id); if(sendList.find(x=>x.id==id)) return; sendList.push(c); renderSendList(); }
+        function renderSendList() { document.getElementById('countSend').innerText=sendList.length; document.getElementById('btnSendNext').style.display=sendList.length?'block':'none'; document.getElementById('sendListDisplay').innerHTML=sendList.map((c,i)=>`<div class="contact-item">${i+1}. ${c.name} <button class="btn-primary" style="width:auto;padding:2px 5px" onclick="sendSingle(${i})">Kirim</button></div>`).join(''); }
+        function sendNextInQueue() { if(!sendList.length) return; sendSingle(0); }
+        async function sendSingle(i) { 
+            const msg = document.getElementById('messageText').value; if(!msg) return alert("Pesan kosong"); 
+            const c = sendList[i]; 
+            window.open(`https://wa.me/${c.phone}?text=${encodeURIComponent(msg)}`, '_blank'); 
+            
+            // LOG ACTIVITY
+            await _supabase.from('activity_logs').insert({ user_id: currentUser.id, details: `Kirim ke ${c.name} (${c.phone})` }); 
+            
+            sendList.splice(i,1); renderSendList(); 
         }
 
-        window.aktivasiToko = function(email) {
-            const message = `Hai Admin, saya mau Aktivasi Toko, email saya ${email}`;
-            window.open(`https://wa.me/6285161990373?text=${encodeURIComponent(message)}`, '_blank');
-        }
-
-        function navigateTo(page) {
-            const map = { 'akun': 'screenAkun', 'kirim': 'screenKirim', 'kontak': 'screenKontak', 'admin': 'screenAdmin', 'niaga': 'screenNiaga', 'toko': 'screenToko' };
-            showScreen(map[page]);
-            document.getElementById('headerTitle').innerText = page.charAt(0).toUpperCase() + page.slice(1);
-            if(page === 'akun') { loadProfile(); document.getElementById('profStatus').innerText = isActive ? "AKTIF" : "NON-AKTIF"; document.getElementById('profStatus').className = isActive ? "status-active" : "status-banned"; }
-            if(page === 'kontak') loadContacts();
-            if(page === 'admin') { loadAdminData(); loadAdminMetrics(); }
-            if(page === 'kirim') { loadContacts(); renderAvailableContacts(); }
-            if(page === 'niaga') loadFeed();
-            if(page === 'toko') loadMyStore();
+        // === ADMIN FEATURES ===
+        async function loadAdminDashboard() {
+            // Load User Filter
+            const { data: users } = await _supabase.from('profiles').select('id, username');
+            document.getElementById('logUserFilter').innerHTML = '<option value="">Semua</option>' + users.map(u=>`<option value="${u.id}">${u.username}</option>`).join('');
+            
+            // Load Banner Status
+            const { data: settings } = await _supabase.from('site_settings').select('*');
+            const speed = settings?.find(s=>s.key==='slider_speed')?.value || 5;
+            const enabled = settings?.find(s=>s.key==='banner_enabled')?.value === 'true';
+            document.getElementById('sliderSpeed').value = speed;
+            document.getElementById('toggleBanner').checked = enabled;
+            renderBannerList();
+            loadActivityLogs();
         }
         
-        function navigateHome() { navigateTo('akun'); }
-
-        async function loadProfile() { try { const { data, error } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single(); if (error || !data) { document.getElementById('profUsername').innerText = "Error"; document.getElementById('profEmail').innerText = currentUser.email; return; } document.getElementById('profUsername').innerText = data.username || '-'; document.getElementById('profEmail').innerText = data.email || currentUser.email; document.getElementById('editWa').value = data.wa_number || ''; } catch(e) { console.error(e); } }
-        async function updateProfile() { const wa = document.getElementById('editWa').value; const { error } = await _supabase.from('profiles').update({ wa_number: wa }).eq('id', currentUser.id); alert(error ? "Gagal" : "WA diupdate!"); }
-        async function updatePassword() { const pass = document.getElementById('editPass').value; if(!pass) return; const { error } = await _supabase.auth.updateUser({ password: pass }); alert(error ? "Gagal" : "Password diubah!"); }
-        async function deleteAccount() { if(!confirm("Hapus akun?")) return; await _supabase.from('profiles').delete().eq('id', currentUser.id); logout(); }
-
-        // --- LOGIC KONTAK & KIRIM ---
-        async function loadContacts() { const { data } = await _supabase.from('contacts').select('*').eq('user_id', currentUser.id); allContacts = data || []; renderContacts(); renderAvailableContacts(); }
-        function renderContacts() { const q = document.getElementById('searchContact').value.toLowerCase(); const l = document.getElementById('searchLocation').value.toLowerCase(); const filtered = allContacts.filter(c => { const m = c.name.toLowerCase().includes(q) || c.phone.includes(q); const lM = (c.location || '').toLowerCase().includes(l); return m && lM; }); const c = document.getElementById('contactListContainer'); c.innerHTML = filtered.map(c => `<div class="contact-item"><div class="c-name">${c.name}</div><div class="c-phone">📱 ${c.phone}</div><div class="c-loc">📍 ${c.location || '-'}</div><div class="c-actions"><button class="btn-secondary" onclick="editContact('${c.id}', '${c.name}', '${c.phone}', '${c.location || ''}')">Edit</button><button class="btn-danger" onclick="deleteContact('${c.id}')">Hapus</button></div></div>`).join(''); }
-        async function addContact() { const name = document.getElementById('cName').value; const phone = document.getElementById('cPhone').value; const loc = document.getElementById('cLocation').value; if(!name || !phone) return alert("Nama & No HP wajib!"); await _supabase.from('contacts').insert({ user_id: currentUser.id, name, phone, location: loc }); document.getElementById('cName').value = ''; document.getElementById('cPhone').value = ''; document.getElementById('cLocation').value = ''; loadContacts(); }
-        function editContact(id, name, phone, loc) { document.getElementById('editId').value = id; document.getElementById('editName').value = name; document.getElementById('editPhone').value = phone; document.getElementById('editLocation').value = loc; document.getElementById('editModal').classList.add('active'); }
-        async function saveEditContact() { const id = document.getElementById('editId').value; const name = document.getElementById('editName').value; const phone = document.getElementById('editPhone').value; const loc = document.getElementById('editLocation').value; await _supabase.from('contacts').update({ name, phone, location: loc }).eq('id', id); closeModal(); loadContacts(); }
-        async function deleteContact(id) { if(confirm("Hapus?")) { await _supabase.from('contacts').delete().eq('id', id); loadContacts(); } }
-        function renderAvailableContacts() { const nameQ = document.getElementById('filterName').value.toLowerCase(); const locQ = document.getElementById('filterLoc').value.toLowerCase(); const filtered = allContacts.filter(c => { return c.name.toLowerCase().includes(nameQ) && (c.location || '').toLowerCase().includes(locQ); }); const c = document.getElementById('availableContactsList'); if(filtered.length === 0) { c.innerHTML = '<p style="text-align:center;color:#999;padding:10px;">Tidak ada.</p>'; return; } c.innerHTML = filtered.map(c => `<div class="contact-item contact-select-item" onclick="addToSendList('${c.id}')"><div style="display:flex;justify-content:space-between;align-items:center;"><div><div class="c-name">${c.name}</div><div class="c-phone">📱 ${c.phone}</div><div class="c-loc">📍 ${c.location || '-'}</div></div><button class="btn-primary" style="width:auto;padding:5px 10px;font-size:12px;">+ Pilih</button></div></div>`).join(''); }
-        function addToSendList(id) { const contact = allContacts.find(c => c.id == id); if(sendList.find(s => s.id == id)) return alert("Sudah ada!"); sendList.push(contact); renderSendList(); }
-        function removeFromSendList(id) { sendList = sendList.filter(c => c.id != id); renderSendList(); }
-        function renderSendList() { document.getElementById('countSend').innerText = sendList.length; const btn = document.getElementById('btnSendNext'); if(sendList.length > 0) btn.style.display = 'block'; else btn.style.display = 'none'; const div = document.getElementById('sendListDisplay'); div.innerHTML = sendList.map((c, i) => `<div class="contact-item queue-card" style="padding:10px;margin-bottom:5px;"><div style="display:flex;justify-content:space-between;align-items:center;"><div style="text-align:left;"><div style="font-weight:bold;">${i + 1}. ${c.name}</div><div style="font-size:12px;color:#666;">${c.phone}</div></div><div style="display:flex;gap:5px;"><button class="btn-primary" style="width:auto;padding:8px;font-size:13px;" onclick="sendSingle(${i})">Kirim</button><button class="btn-danger" style="width:auto;padding:5px 10px;" onclick="removeFromSendList('${c.id}')">X</button></div></div></div>`).join(''); }
-        function sendNextInQueue() { if(sendList.length === 0) return; sendSingle(0); }
-        async function sendSingle(index) { const msg = document.getElementById('messageText').value; if(!msg) return alert("Pesan kosong!"); const c = sendList[index]; let phone = c.phone.replace(/[^0-9]/g, ''); let text = encodeURIComponent(msg); window.open('https://wa.me/'+phone+'?text='+text, '_blank'); sendList.splice(index, 1); renderSendList(); }
-
-        // --- LOGIC ADMIN ---
-        async function loadAdminMetrics() { const { data: feedData } = await _supabase.from('feed_posts').select('wa_click_count, store_click_count'); let waTotal = 0; let storeTotal = 0; if (feedData) { feedData.forEach(p => { waTotal += p.wa_click_count || 0; storeTotal += p.store_click_count || 0; }); } document.getElementById('metricFeedWa').innerText = waTotal; document.getElementById('metricStore').innerText = storeTotal; const { data: prodData } = await _supabase.from('store_products').select('wa_click_count'); let prodTotal = 0; if (prodData) { prodData.forEach(p => { prodTotal += p.wa_click_count || 0; }); } document.getElementById('metricProd').innerText = prodTotal; }
-        async function loadAdminData() { try { const fStart = document.getElementById('adminFilterStart').value; const fEnd = document.getElementById('adminFilterEnd').value; const fName = document.getElementById('adminFilterName').value.toLowerCase(); const fEmail = document.getElementById('adminFilterEmail').value.toLowerCase(); const fWa = document.getElementById('adminFilterWa').value.toLowerCase(); let query = _supabase.from('profiles').select('id, username, email, wa_number, is_active, is_store_active, created_at', { count: 'exact' }); if(fStart) query = query.gte('created_at', fStart + 'T00:00:00'); if(fEnd) query = query.lte('created_at', fEnd + 'T23:59:59'); if(fName) query = query.ilike('username', '%'+fName+'%'); if(fEmail) query = query.ilike('email', '%'+fEmail+'%'); if(fWa) query = query.ilike('wa_number', '%'+fWa+'%'); const { data, error, count } = await query; if (error) throw error; document.getElementById('adminCount').innerText = "Total User: " + (count || 0); const c = document.getElementById('adminUserList'); if (!data || data.length === 0) { c.innerHTML = '<p style="text-align:center;color:#999;">Tidak ada user.</p>'; return; } c.innerHTML = data.map(u => { const t = u.is_active ? 'Non-Aktifkan' : 'Aktifkan'; const cl = u.is_active ? 'btn-danger' : 'btn-primary'; const ts = u.is_store_active ? 'Toko Non-Aktifkan' : 'Aktivasi Toko'; const cls = u.is_store_active ? 'btn-danger' : 'btn-secondary'; return `<div class="contact-item"><div class="c-name">${u.email}</div><div class="c-phone">${u.username} | WA: ${u.wa_number || '-'}</div><div class="c-loc">📅 ${u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID') : 'N/A'}</div><div style="font-size:11px; margin-bottom:5px;"><span style="color:${u.is_active ? 'green' : 'red'}">Akun: ${u.is_active ? 'AKTIF' : 'NONAKTIF'}</span> | <span style="color:${u.is_store_active ? 'green' : 'orange'}">Toko: ${u.is_store_active ? 'AKTIF' : 'NONAKTIF'}</span></div><div class="c-actions"><button class="${cl}" onclick="toggleUserStatus('${u.id}', ${u.is_active})">${t}</button><button class="${cls}" onclick="toggleStoreStatus('${u.id}', ${u.is_store_active})">${ts}</button></div></div>`}).join(''); } catch (err) { console.error(err); } }
-        async function toggleUserStatus(userId, currentStatus) { const newStatus = !currentStatus; await _supabase.from('profiles').update({ is_active: newStatus }).eq('id', userId); loadAdminData(); }
-        async function toggleStoreStatus(userId, currentStatus) { const newStatus = !currentStatus; await _supabase.from('profiles').update({ is_store_active: newStatus }).eq('id', userId); loadAdminData(); }
-        async function downloadAllContacts() { const { data } = await _supabase.from('contacts').select('name, phone, location, profiles(email)'); if(!data) return; let csv = "Nama,No HP,Lokasi,Email\n"; data.forEach(r => { csv += r.name+','+r.phone+','+r.location+','+(r.profiles?.email||'')+'\n'; }); var a = document.createElement('a'); a.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv); a.target = '_blank'; a.download = 'data_kontak.csv'; a.click(); }
-
-        // --- LOGIC NIAGA (FEED & TOKO) ---
-        async function loadMyStore() { if (!currentUser) return; const { data: profile } = await _supabase.from('profiles').select('*').eq('id', currentUser.id).single(); if (!profile.is_store_active) { alert("Anda belum aktivasi Akun Toko."); navigateTo('niaga'); return; } document.getElementById('storeName').innerText = profile.store_name || "Toko Saya"; document.getElementById('storeAddress').innerText = profile.store_address || "-"; document.getElementById('storeAvatar').innerText = profile.store_name ? profile.store_name.charAt(0).toUpperCase() : "T"; document.getElementById('storeWaBtn').onclick = () => window.open(`https://wa.me/${profile.phone}`, '_blank'); if (profile.gmaps_link) { document.getElementById('storeMapLink').href = profile.gmaps_link; document.getElementById('storeMapLink').classList.remove('hidden'); } else { document.getElementById('storeMapLink').classList.add('hidden'); } loadProducts(currentUser.id, true); }
-        
-        async function loadProducts(userId, isOwner = false) { 
-            const container = document.getElementById('productContainer'); 
-            container.innerHTML = '<div class="col-span-2 text-center text-gray-500 py-4">Memuat...</div>'; 
-            const { data: products, error } = await _supabase.from('store_products').select('*').eq('user_id', userId); 
-            let htmlContent = isOwner ? `<div class="col-span-2 mb-2"><button onclick="showProductModal()" class="w-full bg-blue-100 text-blue-700 py-2 rounded-lg font-semibold border border-dashed border-blue-300 hover:bg-blue-200">+ Tambah Produk</button></div>` : ''; 
-            if (error || products.length === 0) { container.innerHTML = htmlContent + '<div class="col-span-2 text-center text-gray-400 py-6">Belum ada produk.</div>'; return; } 
-            container.innerHTML = htmlContent; 
-            products.forEach(p => { 
-                const card = document.createElement('div'); 
-                card.className = 'bg-white rounded-lg shadow overflow-hidden'; 
-                const imgSrc = (p.images && p.images.length > 0) ? p.images[0] : 'https://via.placeholder.com/150';
-                card.innerHTML = `<img src="${imgSrc}" class="w-full h-24 object-cover"><div class="p-2"><h4 class="font-semibold text-sm truncate">${p.product_name}</h4><p class="text-green-600 font-bold text-xs">${p.price || ''}</p><button onclick="handleProductWa('${p.id}', '${userId}')" class="mt-2 w-full bg-green-500 text-white text-xs py-1 rounded hover:bg-green-600">WhatsApp</button></div>`; 
-                container.appendChild(card); 
-            }); 
-        }
-        
-        window.handleProductWa = async (prodId, userId) => { await _supabase.rpc('increment_product_counter', { prod_id: prodId }); const { data } = await _supabase.from('profiles').select('phone').eq('id', userId).single(); if (data) window.open(`https://wa.me/${data.phone}`, '_blank'); };
-
-        async function loadProvinsi() { try { const response = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json'); const data = await response.json(); const select = document.getElementById('filterProvinsi'); data.forEach(p => { const opt = document.createElement('option'); opt.value = p.name; opt.textContent = p.name; select.appendChild(opt); }); } catch (e) { console.error("Gagal load provinsi", e); } }
-        window.loadKabupaten = async function() { const provSelect = document.getElementById('filterProvinsi'); const kabSelect = document.getElementById('filterKabupaten'); const kecSelect = document.getElementById('filterKecamatan'); kabSelect.innerHTML = '<option value="">Semua Kabupaten</option>'; kecSelect.innerHTML = '<option value="">Semua Kecamatan</option>'; kecSelect.disabled = true; kabSelect.disabled = true; if (!provSelect.value) return; const provRes = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json'); const provs = await provRes.json(); const foundProv = provs.find(p => p.name === provSelect.value); if (foundProv) { const response = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${foundProv.id}.json`); const data = await response.json(); data.forEach(k => { const opt = document.createElement('option'); opt.value = k.name; opt.textContent = k.name; kabSelect.appendChild(opt); }); kabSelect.disabled = false; } }
-        window.loadKecamatan = async function() { const provSelect = document.getElementById('filterProvinsi'); const kabSelect = document.getElementById('filterKabupaten'); const kecSelect = document.getElementById('filterKecamatan'); kecSelect.innerHTML = '<option value="">Semua Kecamatan</option>'; kecSelect.disabled = true; if (!kabSelect.value) return; const provRes = await fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json'); const provs = await provRes.json(); const foundProv = provs.find(p => p.name === provSelect.value); if (foundProv) { const kabRes = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${foundProv.id}.json`); const kabs = await kabRes.json(); const foundKab = kabs.find(k => k.name === kabSelect.value); if (foundKab) { const response = await fetch(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${foundKab.id}.json`); const data = await response.json(); data.forEach(k => { const opt = document.createElement('option'); opt.value = k.name; opt.textContent = k.name; kecSelect.appendChild(opt); }); kecSelect.disabled = false; } } }
-        window.applyFilter = function() { loadFeed(true); }
-        
-        async function loadFeed(isFiltered = false) {
-            const container = document.getElementById('feedContainer');
-            container.innerHTML = '<div class="col-span-full text-center py-10">Memuat data...</div>';
-            const prov = document.getElementById('filterProvinsi').value; const kab = document.getElementById('filterKabupaten').value; const kec = document.getElementById('filterKecamatan').value;
-            const { data: posts, error } = await _supabase.from('feed_posts').select(`id, title, description, images, created_at, wa_click_count, store_click_count, profiles ( id, username, raw_location, is_store_active, phone )`).eq('is_active', true).order('created_at', { ascending: false });
-            if (error) { container.innerHTML = `<div class="col-span-full text-center text-red-500">Gagal memuat data.</div>`; return; }
-            let filteredPosts = posts;
-            if (isFiltered) { filteredPosts = posts.filter(post => { if (!post.profiles.raw_location) return false; const loc = post.profiles.raw_location.toLowerCase(); let match = true; if (kec) match = loc.includes(kec.toLowerCase()); else if (kab) match = loc.includes(kab.toLowerCase()); else if (prov) match = loc.includes(prov.toLowerCase()); return match; }); }
-            if (filteredPosts.length === 0) { container.innerHTML = `<div class="col-span-full text-center text-gray-400 py-10">Tidak ada postingan.</div>`; return; }
-            container.innerHTML = '';
-            filteredPosts.forEach(post => {
-                const user = post.profiles; const date = new Date(post.created_at); const isStore = user.is_store_active;
-                let desc = post.description || '';
-                if (!isStore) desc = desc.replace(/(https?:\/\/[^\s]+)/g, '[link tersembunyi]'); else desc = desc.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" class="text-blue-600 underline">$1</a>');
-                const card = document.createElement('div');
-                card.className = 'feed-card';
-                card.innerHTML = `<div class="feed-header"><div><h3 class="font-semibold text-gray-800">${user.username || 'Anonim'}</h3><p class="feed-location">${user.raw_location || '-'}</p></div><p class="feed-time">${date.toLocaleDateString('id-ID')} ${date.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})}</p></div>${post.images && post.images.length > 0 ? `<div class="carousel-container bg-gray-50"><div class="carousel-slide" id="slide-${post.id}">${post.images.map(img => `<img src="${img}" class="w-full h-48 object-cover flex-shrink-0">`).join('')}</div>${post.images.length > 1 ? `<div class="carousel-btn prev" onclick="moveSlide('${post.id}', -1)">&#10094;</div><div class="carousel-btn next" onclick="moveSlide('${post.id}', 1)">&#10095;</div>` : ''}</div>` : ''}<div class="feed-body"><h4 class="feed-title">${post.title}</h4><p class="feed-desc">${desc}</p></div><div class="feed-footer"><div class="feed-metrics">WA: ${post.wa_click_count}x | Toko: ${post.store_click_count}x</div><div style="display:flex; gap:8px;"><button onclick="handleFeedWa('${post.id}', '${user.phone}', '${post.title}')" class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold hover:bg-green-600">WhatsApp</button>${isStore ? `<button onclick="viewOtherStore('${user.id}')" class="bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-semibold hover:bg-blue-600">Lihat Toko</button>` : ''}</div></div>`;
-                container.appendChild(card);
-            });
+        // Activity Logs
+        async function loadActivityLogs() {
+            const user = document.getElementById('logUserFilter').value;
+            const start = document.getElementById('logStartDate').value;
+            const end = document.getElementById('logEndDate').value;
+            
+            let query = _supabase.from('activity_logs').select('created_at, details, profiles(username)').order('created_at', {ascending:false}).limit(100);
+            if(user) query = query.eq('user_id', user);
+            if(start) query = query.gte('created_at', start);
+            if(end) query = query.lte('created_at', end + ' 23:59');
+            
+            const { data } = await query;
+            const tbody = document.querySelector('#activityLogTable tbody');
+            tbody.innerHTML = data?.map(l => `<tr><td>${new Date(l.created_at).toLocaleString('id-ID')}</td><td>${l.profiles?.username||'-'}</td><td>${l.details}</td></tr>`).join('') || '<tr><td colspan="3">No Data</td></tr>';
         }
 
-        window.viewOtherStore = async function(userId) { if(userId === currentUser.id) { navigateTo('toko'); return; } const { data: profile } = await _supabase.from('profiles').select('*').eq('id', userId).single(); if (!profile) return alert("Toko tidak ditemukan"); document.getElementById('storeName').innerText = profile.store_name; document.getElementById('storeAddress').innerText = profile.store_address; document.getElementById('storeAvatar').innerText = profile.store_name ? profile.store_name.charAt(0).toUpperCase() : "T"; document.getElementById('storeWaBtn').onclick = () => window.open(`https://wa.me/${profile.phone}`, '_blank'); if (profile.gmaps_link) { document.getElementById('storeMapLink').href = profile.gmaps_link; document.getElementById('storeMapLink').classList.remove('hidden'); } else { document.getElementById('storeMapLink').classList.add('hidden'); } loadProducts(userId, false); showScreen('screenToko'); document.getElementById('headerTitle').innerText = profile.store_name || "Toko"; };
-        window.handleFeedWa = async (postId, phone, title) => { await _supabase.rpc('increment_feed_counter', { post_id: postId, column_name: 'wa' }); window.open(`https://wa.me/${phone}?text=${encodeURIComponent('Halo, saya tertarik dengan: ' + title)}`, '_blank'); };
+        // Banner Management
+        async function toggleBannerStatus(isOn) {
+            await _supabase.from('site_settings').upsert({key:'banner_enabled', value: isOn ? 'true' : 'false'});
+            alert("Banner "+(isOn?"Dinyalakan":"Dimatikan")); loadBanners();
+        }
+        async function updateBannerSpeed() {
+            const speed = document.getElementById('sliderSpeed').value || 5;
+            await _supabase.from('site_settings').upsert({key:'slider_speed', value: speed});
+            alert("Kecepatan diupdate"); loadBanners();
+        }
+        async function addBanner() {
+            const img = document.getElementById('newBannerImg').value;
+            const link = document.getElementById('newBannerLink').value;
+            if(!img) return alert("URL Gambar wajib!");
+            await _supabase.from('banners').insert({image_url:img, target_url:link, is_active:true});
+            renderBannerList(); loadBanners();
+        }
+        async function renderBannerList() {
+            const { data } = await _supabase.from('banners').select('*');
+            document.getElementById('bannerList').innerHTML = data?.map(b=>`<div style="border-bottom:1px solid #eee; padding:5px; display:flex; justify-content:space-between; align-items:center;"><img src="${b.image_url}" style="width:60px; height:30px; object-fit:cover; border-radius:4px;"><button class="btn-danger" style="width:auto; padding:2px 8px; font-size:10px;" onclick="deleteBanner('${b.id}')">Hapus</button></div>`).join('') || 'Kosong';
+        }
+        async function deleteBanner(id) { await _supabase.from('banners').delete().eq('id',id); renderBannerList(); loadBanners(); }
 
-        async function loadBanners() { const { data: settings } = await _supabase.from('site_settings').select('*'); const bannerSetting = settings?.find(s => s.key === 'banner_enabled'); if (bannerSetting?.value === 'true') { const { data: banners } = await _supabase.from('banners').select('*').eq('is_active', true).order('order_index'); if (banners?.length > 0) { const footer = document.getElementById('bannerFooter'); const track = document.getElementById('bannerTrack'); footer.classList.remove('hidden'); track.innerHTML = banners.map(b => `<img src="${b.image_url}" class="h-14 object-contain rounded cursor-pointer" onclick="window.open('${b.target_url}')">`).join(''); track.innerHTML += track.innerHTML; track.classList.add('banner-animate'); } } }
-
-        // --- MODAL LOGIC (FIXED) ---
-        window.showPostModal = function() { 
-            if(!currentUser) return alert("Login dulu"); 
-            document.getElementById('inputTitle').value = ''; 
-            document.getElementById('inputDesc').value = ''; 
-            document.getElementById('inputImages').value = '';
-            document.getElementById('modalTitle').innerText = "Posting Baru"; 
-            document.getElementById('inputPrice').classList.add('hidden'); 
-            document.getElementById('btnSubmit').innerText = "Posting"; 
-            document.getElementById('btnSubmit').setAttribute('onclick', 'submitPost()'); 
-            const modal = document.getElementById('postModal');
-            modal.classList.add('active'); 
-        };
-
-        window.showProductModal = function() { 
-            document.getElementById('modalTitle').innerText = "Tambah Produk"; 
-            document.getElementById('inputPrice').classList.remove('hidden'); 
-            document.getElementById('btnSubmit').innerText = "Simpan"; 
-            document.getElementById('btnSubmit').setAttribute('onclick', 'submitProduct()'); 
-            const modal = document.getElementById('postModal');
-            modal.classList.add('active');
-        };
-
-        window.submitProduct = async function() { 
-            const name = document.getElementById('inputTitle').value; 
-            const price = document.getElementById('inputPrice').value; 
-            const files = document.getElementById('inputImages').files; 
-            if (!name) return alert("Nama produk harus diisi!"); 
+        // Load Banners to UI
+        async function loadBanners() {
+            const { data: settings } = await _supabase.from('site_settings').select('*');
+            const speed = settings?.find(s=>s.key==='slider_speed')?.value || 5;
+            const enabled = settings?.find(s=>s.key==='banner_enabled')?.value === 'true';
+            const container = document.getElementById('floatingBannerContainer');
             
-            let imageUrls = [];
-            if (files.length > 0) { 
-                for (let i = 0; i < Math.min(files.length, 3); i++) { 
-                    const file = files[i]; 
-                    const fileName = `prod_${Date.now()}_${file.name}`; 
-                    const { data, error } = await _supabase.storage.from('product-images').upload(fileName, file); 
-                    if (data) { 
-                        const publicUrl = _supabase.storage.from('product-images').getPublicUrl(data.path).data.publicUrl; 
-                        imageUrls.push(publicUrl); 
-                    } 
-                } 
-            } 
+            if(!enabled) { container.style.display = 'none'; return; }
             
-            const { error } = await _supabase.from('store_products').insert({ 
-                user_id: currentUser.id, 
-                product_name: name, 
-                price: price, 
-                images: imageUrls 
-            }); 
-            if (error) { 
-                alert("Gagal simpan produk: " + error.message); 
-            } else { 
-                closePostModal(); 
-                loadProducts(currentUser.id, true); 
-            } 
-        };
+            const { data: banners } = await _supabase.from('banners').select('*').eq('is_active',true).order('order_index');
+            if(!banners || banners.length === 0) { container.style.display = 'none'; return; }
 
-        // POSTINGAN
-        window.submitPost = async function() { 
-            const title = document.getElementById('inputTitle').value; 
-            const desc = document.getElementById('inputDesc').value; 
-            const files = document.getElementById('inputImages').files; 
-            if (!title) return alert("Judul harus diisi!"); 
-            
-            let imageUrls = []; 
-            if (files.length > 0) { 
-                for (let i = 0; i < Math.min(files.length, 3); i++) { 
-                    const file = files[i]; 
-                    const fileName = `${Date.now()}_${file.name}`; 
-                    const { data, error } = await _supabase.storage.from('product-images').upload(fileName, file); 
-                    if (data) { 
-                        const publicUrl = _supabase.storage.from('product-images').getPublicUrl(data.path).data.publicUrl; 
-                        imageUrls.push(publicUrl); 
-                    } 
-                } 
-            } 
-
-            // SIMPAN DENGAN STATUS AKTIF
-            const { error } = await _supabase.from('feed_posts').insert({ 
-                user_id: currentUser.id, 
-                title: title, 
-                description: desc, 
-                images: imageUrls,
-                is_active: true 
-            }); 
-            
-            if (error) { 
-                alert("Gagal posting: " + error.message); 
-            } else { 
-                closePostModal(); 
-                loadFeed(); 
-            } 
-        };
-
-        window.moveSlide = (id, dir) => { const slide = document.getElementById(`slide-${id}`); const width = slide.offsetWidth; const currentTransform = slide.style.transform ? parseInt(slide.style.transform.replace('translateX(', '').replace('px)', '')) : 0; let newTransform = currentTransform + (dir * -width); const maxTransform = -(slide.children.length - 1) * width; if (newTransform > 0) newTransform = maxTransform; if (newTransform < maxTransform) newTransform = 0; slide.style.transform = `translateX(${newTransform}px)`; };
+            const track = document.getElementById('bannerTrack');
+            track.innerHTML = banners.map(b=>`<img src="${b.image_url}" onclick="window.open('${b.target_url||'#'}')">`).join('');
+            track.innerHTML += track.innerHTML; // Duplicate for infinite loop
+            track.style.animation = 'none'; track.offsetHeight; /* trigger reflow */ track.style.animation = '';
+            document.documentElement.style.setProperty('--speed', speed + 's');
+            track.style.animation = `scroll ${speed}s linear infinite`;
+        }
 
         // Init
-        loadProvinsi();
-        document.getElementById('menuBtn').addEventListener('click', toggleMenu);
-        // WAJIB: Panggil checkSession di akhir
         checkSession();
     </script>
 </body>
