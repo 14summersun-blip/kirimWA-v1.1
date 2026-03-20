@@ -27,10 +27,15 @@
         .menu-item.logout { color:red; }
         .menu-item.highlight { background:#fff3cd; color:#856404; font-weight:bold; }
         
-        /* BANNER - UPDATED SIZE */
+        /* BANNER & KEYFRAMES (FIXED) */
         .banner-cont { display:none; position:sticky; top:40px; background:white; z-index:99; padding:8px 0; overflow:hidden; border-bottom:1px solid #eee; }
         .banner-track { display:flex; width:max-content; }
         .banner-track img { height:80px; margin:0 10px; border-radius:6px; cursor:pointer; object-fit: cover; }
+        /* Ini kode yang tadi hilang */
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
         
         /* MAIN */
         .page { display:none; padding:15px; max-width:600px; margin:0 auto; padding-bottom:80px; }
@@ -53,7 +58,7 @@
         .mb-10 { margin-bottom:10px; }
         .badge { background:#eee; padding:3px 8px; border-radius:10px; font-size:12px; font-weight:600; }
         
-        /* CONTACT CARD - UPDATED BUTTON GAP */
+        /* CONTACT CARD */
         .contact-card { background:white; padding:12px; border-radius:8px; margin-bottom:8px; box-shadow:0 1px 2px rgba(0,0,0,0.05); border:1px solid #eee; }
         .contact-info h4 { margin:0 0 5px 0; font-size:15px; }
         .contact-info p { margin:0; font-size:12px; color:#555; line-height:1.4; }
@@ -73,7 +78,7 @@
         /* ADMIN SCROLLABLE LISTS */
         .scroll-list-admin { max-height: 250px; overflow-y: auto; border: 1px solid #eee; border-radius: 6px; margin-top: 10px; }
         
-        /* USER Card Admin */
+        /* User Card Admin */
         .user-card { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; }
         .user-card:last-child { border-bottom: none; }
         .user-card b { display: block; margin-bottom: 4px; color: #333; }
@@ -222,7 +227,7 @@
         </div>
     </div>
 
-    <!-- HALAMAN ADMIN - UPDATED -->
+    <!-- HALAMAN ADMIN -->
     <div class="page" id="pageAdmin">
         <h2 style="color:var(--primary)">Admin Panel</h2>
         
@@ -243,7 +248,7 @@
             <div id="listBan" style="margin-top:10px"></div>
         </div>
 
-        <!-- LOG AKTIVITAS - UPDATED -->
+        <!-- LOG AKTIVITAS -->
         <div class="card">
             <h3>📊 Log Aktivitas</h3>
             <div class="grid-2 mb-10">
@@ -255,7 +260,7 @@
             </div>
         </div>
 
-        <!-- USER LIST SECTION - NEW -->
+        <!-- USER LIST SECTION -->
         <div class="card">
             <h3>👥 Daftar User</h3>
             <div class="grid-2 mb-10">
@@ -293,10 +298,7 @@
         const db = supabase.createClient(S_URL, S_KEY);
         let U = null, ROLE='user', ACTIVE=false, CONTACTS=[], TARGETS=[];
 
-        function togglePass(id) {
-            const x = document.getElementById(id);
-            x.type = x.type === "password" ? "text" : "password";
-        }
+        function togglePass(id) { const x = document.getElementById(id); x.type = x.type === "password" ? "text" : "password"; }
         function toggleMenu(){ document.getElementById('menuBox').classList.toggle('active'); }
         function closeModal(){ document.getElementById('editModal').classList.remove('active'); }
 
@@ -507,9 +509,7 @@
                 document.getElementById('inSpeed').value = sp;
                 this.listBan();
                 
-                // Load Logs
                 this.getLog();
-                // Load Users
                 this.loadUsers();
             },
             async getLog(){
@@ -523,7 +523,6 @@
                     <tr><td>${new Date(l.created_at).toLocaleString('id-ID')}</td><td>${l.profiles?.username||'-'}</td><td>${l.details}</td></tr>
                 `).join('') || '<tr><td colspan="3">-</td></tr>';
             },
-            // NEW: Load Users
             async loadUsers(){
                 const start = document.getElementById('usrStart').value;
                 const end = document.getElementById('usrEnd').value;
@@ -570,10 +569,10 @@
                 if(!b||b.length==0) return document.getElementById('bannerCont').style.display='none';
                 const t = document.getElementById('bannerTrack');
                 t.innerHTML = b.map(x=>`<img src="${x.image_url}" onclick="window.open('${x.target_url||'#'}')">`).join('');
-                t.innerHTML += t.innerHTML; // Duplikat
-                // Reset animasi
+                t.innerHTML += t.innerHTML; 
+                // Reset animation
                 t.style.animation = 'none';
-                t.offsetHeight; // trigger reflow
+                void t.offsetWidth; // Force reflow
                 t.style.animation = `scroll ${sp}s linear infinite`;
             }
         };
