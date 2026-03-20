@@ -3,297 +3,421 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>kirimWA App</title>
+    <title>kirimWA Core</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --primary: #25D366; --dark: #128C7E; --bg: #ece5dd; }
-        body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; min-height: 100vh; font-size: 16px; }
+        :root { --primary: #25D366; --bg: #ece5dd; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; min-height: 100vh; }
         
-        /* LOADING */
-        .loading-screen { position: fixed; top:0; left:0; width:100%; height:100%; background: var(--bg); z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .spinner { width: 40px; height: 40px; border: 4px solid #ccc; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        /* LOAD SCREEN */
+        #loadScreen { position: fixed; inset:0; background: var(--bg); z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center; }
+        .spinner { width:40px; height:40px; border:4px solid #ccc; border-top-color:var(--primary); border-radius:50%; animation:spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .btn-cancel { background: #eee; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .btn-cancel { background:#ddd; border:none; padding:10px 20px; border-radius:20px; cursor:pointer; margin-top:20px; font-weight:bold; }
         
         /* HEADER */
-        .header { background: var(--primary); color: white; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-        .menu-btn { background: none; border: none; color: white; padding: 5px 10px; font-weight: bold; font-size: 18px; cursor: pointer; }
-        .menu-popup { display: none; position: absolute; top: 45px; left: 10px; background: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border-radius: 8px; width: 220px; z-index: 110; }
-        .menu-popup.active { display: block; }
-        .menu-item { display: block; padding: 15px; color: #333; border-bottom: 1px solid #eee; cursor: pointer; text-decoration: none; }
-        .menu-item:hover { background: #f1f1f1; }
-        .menu-item.logout { color: red; }
-        .menu-item.highlight { background: #fff3cd; color: #856404; font-weight: bold; }
+        .header { background: var(--primary); color:white; padding:10px 15px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+        .menu-btn { background:none; border:none; color:white; font-size:22px; cursor:pointer; }
+        .menu-box { display:none; position:absolute; top:50px; left:10px; background:white; width:220px; box-shadow:0 4px 10px rgba(0,0,0,0.2); border-radius:8px; z-index:110; }
+        .menu-box.active { display:block; }
+        .menu-item { display:block; padding:12px 15px; border-bottom:1px solid #eee; color:#333; text-decoration:none; cursor:pointer; }
+        .menu-item:hover { background:#f5f5f5; }
+        .menu-item.logout { color:red; }
+        .menu-item.highlight { background:#fff3cd; color:#856404; font-weight:bold; }
         
-        /* SCREENS */
-        .screen { display: none; padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 80px; }
-        input, textarea, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        button { cursor: pointer; padding: 12px; border: none; border-radius: 8px; width: 100%; margin-top: 10px; font-weight: bold; font-family: 'Poppins', sans-serif; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-secondary { background: #ddd; color: #333; }
-        .btn-danger { background: #ff4444; color: white; }
-        .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .status-active { color: green; font-weight: bold; }
-        .status-banned { color: red; font-weight: bold; }
-        .warning-banner { background: #fff3cd; color: #856404; padding: 10px; text-align: center; font-size: 13px; margin-bottom: 15px; border-radius: 8px; }
-
         /* BANNER */
-        .floating-banner-container { display: none; position: sticky; top: 44px; z-index: 99; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); padding: 5px 0; overflow: hidden; border-bottom: 1px solid #eee; }
-        .banner-track { display: flex; animation: scroll 10s linear infinite; }
-        .banner-track img { height: 50px; width: auto; margin: 0 10px; border-radius: 4px; }
-        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .banner-cont { display:none; position:sticky; top:48px; background:white; z-index:99; padding:5px 0; overflow:hidden; border-bottom:1px solid #eee; }
+        .banner-track { display:flex; width:max-content; }
+        .banner-track img { height:50px; margin:0 10px; border-radius:4px; cursor:pointer; }
+        
+        /* MAIN */
+        .page { display:none; padding:15px; max-width:600px; margin:0 auto; padding-bottom:80px; }
+        .card { background:white; padding:15px; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.1); margin-bottom:15px; }
+        input, textarea { width:100%; padding:10px; margin:5px 0; border:1px solid #ddd; border-radius:6px; box-sizing:border-box; font-family:inherit; }
+        button { width:100%; padding:10px; border:none; border-radius:6px; font-weight:bold; cursor:pointer; font-family:inherit; }
+        .btn-main { background:var(--primary); color:white; }
+        .btn-sec { background:#e0e0e0; color:#333; }
+        .btn-red { background:#dc3545; color:white; }
+        .status-ok { color:green; font-weight:bold; }
+        .status-no { color:red; font-weight:bold; }
         
         /* TABLE ADMIN */
-        table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
-        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #eee; }
+        table { width:100%; border-collapse:collapse; font-size:12px; margin-top:10px; }
+        th, td { text-align:left; padding:8px; border-bottom:1px solid #eee; }
     </style>
 </head>
 <body>
 
-    <div id="loadingScreen" class="loading-screen">
+    <!-- LOAD SCREEN -->
+    <div id="loadScreen">
         <div class="spinner"></div>
-        <p id="loadingText">Memuat...</p>
-        <button class="btn-cancel" onclick="forceStartApp()">Batal</button>
+        <p>Memuat...</p>
+        <button class="btn-cancel" onclick="app.go('login')">Batal</button>
     </div>
 
-    <div class="header" id="mainHeader" style="display:none;">
-        <button type="button" class="menu-btn" onclick="toggleMenu()">☰ Menu</button>
-        <div class="header-title" onclick="navigateHome()"><span style="font-weight:700; font-style:italic;">kirimWA</span></div>
-        <div class="menu-popup" id="menuPopup">
-            <div id="dynamicMenu"></div>
-            <span class="menu-item logout" onclick="executeLogout()">Logout</span>
+    <!-- HEADER -->
+    <div class="header" id="mainHead" style="display:none">
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <b style="cursor:pointer" onclick="app.go('akun')">kirimWA</b>
+        <div style="width:20px"></div>
+        <div class="menu-box" id="menuBox">
+            <div id="menuContent"></div>
+            <span class="menu-item logout" onclick="app.logout()">Logout</span>
         </div>
     </div>
 
-    <div id="floatingBannerContainer" class="floating-banner-container"><div class="banner-track" id="bannerTrack"></div></div>
+    <!-- BANNER -->
+    <div class="banner-cont" id="bannerCont"><div class="banner-track" id="bannerTrack"></div></div>
 
-    <!-- SCREENS HTML -->
-    <div class="screen" id="screenLogin"><div class="card" style="margin-top:20px; overflow:hidden; padding:0;"><div style="background:#f0f0f0;"><img src="https://i.ibb.co.com/VWg4bJHp/Login-page-1.jpg" style="width: 100%; display: block;"></div><div style="padding:20px;"><h2 style="text-align:center;">Login</h2><form onsubmit="event.preventDefault(); handleLogin();"><input type="email" id="loginEmail" placeholder="Email"><input type="password" id="loginPass" placeholder="Password"><button type="submit" class="btn-primary">Login</button></form><p style="text-align:center; margin-top:15px;">Belum punya akun? <a href="#register">Register</a></p></div><div style="background:#fafafa;"><img src="https://i.ibb.co.com/KjP9hNp0/Login-page-2.jpg" style="width: 100%; display: block;"></div></div></div>
-    <div class="screen" id="screenRegister"><div class="card" style="margin-top:20px;"><h2>Register</h2><input type="text" id="regUser" placeholder="Username"><input type="email" id="regEmail" placeholder="Email"><input type="text" id="regWa" placeholder="WA (Opsional)"><input type="password" id="regPass" placeholder="Password"><button class="btn-primary" onclick="handleRegister()">Register</button><p style="text-align:center; margin-top:15px;"><a href="#login">Login</a></p></div></div>
-    <div class="screen" id="screenReset"><div class="card" style="margin-top:50px;"><h2>Reset Password</h2><input type="password" id="newPass" placeholder="Password Baru"><button class="btn-primary" onclick="updateNewPassword()">Simpan</button></div></div>
-    
-    <div class="screen" id="screenAkun"><h2>Akun Saya</h2><div id="akunGuest" class="card" style="text-align:center; display:none;"><h3>Selamat Datang</h3><button class="btn-primary" onclick="navigateTo('login')">Login</button></div><div id="akunUser" style="display:none;"><div class="warning-banner" id="inactiveWarning" style="display:none;">⚠️ Akun belum aktif.</div><div class="card"><p><strong>Username:</strong> <span id="profUsername">-</span></p><p><strong>Email:</strong> <span id="profEmail">-</span></p><p><strong>Status:</strong> <span id="profStatus">-</span></p><hr><input type="text" id="editWa" placeholder="WA"><button class="btn-secondary" onclick="updateProfile()">Simpan WA</button><br><br><input type="password" id="editPass" placeholder="Password Baru"><button class="btn-secondary" onclick="updatePassword()">Simpan Pass</button><br><br><button class="btn-danger" onclick="deleteAccount()">Hapus Akun</button></div></div></div>
-    
-    <div class="screen" id="screenKontak"><h2>Kontak</h2><div class="card"><input type="text" id="cName" placeholder="Nama"><input type="text" id="cPhone" placeholder="HP"><input type="text" id="cLocation" placeholder="Lokasi"><button class="btn-primary" onclick="addContact()">Simpan</button></div><div id="contactListContainer"></div></div>
-    
-    <div class="screen" id="screenKirim"><h2>Kirim Pesan</h2><div class="card"><textarea id="messageText" rows="2"></textarea></div><div id="availableContactsList"></div><div class="card"><h3>List (<span id="countSend">0</span>)</h3><div id="sendListDisplay"></div><button class="btn-primary" id="btnSendNext" onclick="sendNextInQueue()" style="display:none;">Kirim</button></div></div>
-    
-    <div class="screen" id="screenAdmin">
-        <h2 style="color:var(--dark);">Admin Dashboard</h2>
+    <!-- HALAMAN LOGIN -->
+    <div class="page" id="pageLogin">
+        <div class="card" style="margin-top:20px; padding:0; overflow:hidden;">
+            <img src="https://i.ibb.co.com/VWg4bJHp/Login-page-1.jpg" style="width:100%">
+            <div style="padding:20px">
+                <h2 style="text-align:center">Login</h2>
+                <input type="email" id="inEmail" placeholder="Email">
+                <input type="password" id="inPass" placeholder="Password">
+                <button class="btn-main" onclick="app.login()">Login</button>
+                <p style="text-align:center; margin-top:15px; font-size:14px">Belum punya? <a href="#" onclick="app.go('register')">Register</a></p>
+            </div>
+            <img src="https://i.ibb.co.com/KjP9hNp0/Login-page-2.jpg" style="width:100%">
+        </div>
+    </div>
+
+    <!-- HALAMAN REGISTER -->
+    <div class="page" id="pageRegister">
+        <div class="card" style="margin-top:20px">
+            <h2>Register</h2>
+            <input type="text" id="regUser" placeholder="Username">
+            <input type="email" id="regEmail" placeholder="Email">
+            <input type="text" id="regWa" placeholder="Nomor WA">
+            <input type="password" id="regPass" placeholder="Password">
+            <button class="btn-main" onclick="app.register()">Register</button>
+            <p style="text-align:center; margin-top:15px; font-size:14px">Sudah punya? <a href="#" onclick="app.go('login')">Login</a></p>
+        </div>
+    </div>
+
+    <!-- HALAMAN AKUN -->
+    <div class="page" id="pageAkun">
+        <h2>Akun Saya</h2>
+        <div id="guestView" class="card" style="text-align:center; display:none">
+            <h3>Selamat Datang</h3>
+            <button class="btn-main" onclick="app.go('login')">Login</button>
+        </div>
+        <div id="userView" style="display:none">
+            <div class="card">
+                <p><b>Username:</b> <span id="txtName">-</span></p>
+                <p><b>Email:</b> <span id="txtEmail">-</span></p>
+                <p><b>Status:</b> <span id="txtStatus">-</span></p>
+                <hr>
+                <input type="text" id="editWa" placeholder="Ubah WA">
+                <button class="btn-sec" onclick="app.updWa()">Simpan WA</button>
+                <br><br>
+                <input type="password" id="editPass" placeholder="Password Baru">
+                <button class="btn-sec" onclick="app.updPass()">Simpan Pass</button>
+                <br><br>
+                <button class="btn-red" onclick="app.delAcc()">Hapus Akun</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HALAMAN KONTAK -->
+    <div class="page" id="pageKontak">
+        <h2>Daftar Kontak</h2>
+        <div class="card">
+            <input type="text" id="cName" placeholder="Nama">
+            <input type="text" id="cPhone" placeholder="HP">
+            <input type="text" id="cLoc" placeholder="Lokasi">
+            <button class="btn-main" onclick="app.addC()">Simpan</button>
+        </div>
+        <div id="listC"></div>
+    </div>
+
+    <!-- HALAMAN KIRIM -->
+    <div class="page" id="pageKirim">
+        <h2>Kirim Pesan</h2>
+        <div class="card">
+            <textarea id="msgText" rows="3" placeholder="Tulis pesan..."></textarea>
+        </div>
+        <div id="listAvail"></div>
+        <div class="card">
+            <h3>Target (<span id="cntNum">0</span>)</h3>
+            <div id="listTarget"></div>
+            <button class="btn-main" id="btnSend" style="display:none" onclick="app.send()">Kirim Sekarang</button>
+        </div>
+    </div>
+
+    <!-- HALAMAN ADMIN -->
+    <div class="page" id="pageAdmin">
+        <h2 style="color:var(--primary)">Admin Panel</h2>
+        
+        <!-- BANNER -->
         <div class="card">
             <h3>🎨 Banner Promosi</h3>
-            <p style="font-size:12px; color:#666;">Muncul di bawah header.</p>
-            <label><input type="checkbox" id="toggleBanner" onchange="toggleBannerStatus(this.checked)"> Aktifkan Banner</label>
-            <hr style="margin:10px 0; border:none; border-top:1px solid #eee;">
-            <label>Kecepatan (detik)</label>
-            <input type="number" id="sliderSpeed" value="5" onchange="updateBannerSpeed()" style="width:80px">
-            <hr style="margin:10px 0; border:none; border-top:1px solid #eee;">
+            <label><input type="checkbox" id="chkBan" onchange="app.setBanStat(this.checked)"> Aktifkan</label>
+            <hr style="border:none; border-top:1px solid #eee; margin:10px 0">
+            <input type="number" id="inSpeed" value="10" style="width:60px" onchange="app.setSpeed()"> detik
+            <hr style="border:none; border-top:1px solid #eee; margin:10px 0">
             <h4>Tambah Banner</h4>
-            <input type="text" id="newBannerImg" placeholder="URL Gambar">
-            <input type="text" id="newBannerLink" placeholder="Link Tujuan">
-            <button class="btn-secondary" onclick="addBanner()">Tambah</button>
-            <div id="bannerList" style="margin-top:10px;"></div>
+            <input type="text" id="inImg" placeholder="URL Gambar">
+            <input type="text" id="inLink" placeholder="Link Tujuan">
+            <button class="btn-sec" onclick="app.addBan()">Tambah</button>
+            <div id="listBan" style="margin-top:10px"></div>
         </div>
+
+        <!-- LOG -->
         <div class="card">
             <h3>📊 Log Aktivitas</h3>
-            <div style="display:flex; gap:10px; align-items:center;">
-                <select id="logUserFilter" onchange="loadActivityLogs()"><option value="">Semua User</option></select>
-                <input type="date" id="logStartDate" onchange="loadActivityLogs()">
+            <div style="display:flex; gap:10px">
+                <select id="logUser" onchange="app.getLog()"><option value="">Semua</option></select>
+                <input type="date" id="logDate" onchange="app.getLog()">
             </div>
-            <div style="overflow-x:auto; max-height:300px; overflow-y:auto; margin-top:10px; border:1px solid #eee;">
-                <table id="activityLogTable" style="font-size:11px; width:100%;"><thead><tr><th>Waktu</th><th>User</th><th>Aktivitas</th></tr></thead><tbody></tbody></table>
+            <div style="overflow:auto; max-height:300px; border:1px solid #eee; margin-top:10px; border-radius:4px">
+                <table><thead><tr><th>Waktu</th><th>User</th><th>Aksi</th></tr></thead><tbody id="logBody"></tbody></table>
             </div>
         </div>
     </div>
 
     <script>
-        // === CONFIG ===
-        const SUPABASE_URL = 'https://whlyxdcsrvrpxmdsfdjz.supabase.co'; 
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndobHl4ZGNzcnZycHhtZHNmZGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzODY3OTYsImV4cCI6MjA4ODk2Mjc5Nn0.A4SFdoE72-xNn99ez9Ug5R1fndrcTu4GhYy9Mpe1Zfk';
-        // GANTI DENGAN LINK NIAGA ANDA
-        const NIAGA_APP_URL = 'https://niaga-app-anda.com'; 
+        // KONFIG
+        const S_URL = 'https://whlyxdcsrvrpxmdsfdjz.supabase.co';
+        const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndobHl4ZGNzcnZycHhtZHNmZGp6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzODY3OTYsImV4cCI6MjA4ODk2Mjc5Nn0.A4SFdoE72-xNn99ez9Ug5R1fndrcTu4GhYy9Mpe1Zfk';
+        const LINK_NIAGA = 'https://niaga-app-anda.com'; // GANTI INI
+        
+        if(typeof supabase==='undefined'){ alert("Koneksi gagal"); throw ""; }
+        const db = supabase.createClient(S_URL, S_KEY);
+        let U = null, ROLE='user', ACTIVE=false, CONTACTS=[], TARGETS=[];
 
-        if (typeof supabase === 'undefined') { document.getElementById('loadingText').innerText = "Koneksi Gagal"; throw new Error(""); }
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        let currentUser = null; let currentRole = 'user'; let isActive = false; let allContacts = []; let sendList = [];
-
-        // === UI CONTROL ===
-        function forceStartApp() { try { document.getElementById('loadingScreen').style.display = 'none'; showScreen('screenLogin'); } catch(e){} }
-        var failSafeTimer = setTimeout(forceStartApp, 5000);
-
-        function showScreen(id) {
-            clearTimeout(failSafeTimer); document.getElementById('loadingScreen').style.display = 'none';
-            var screens = ['screenLogin','screenRegister','screenReset','screenAkun','screenKontak','screenKirim','screenAdmin'];
-            screens.forEach(s => { var el = document.getElementById(s); if(el) el.style.display = 'none'; });
-            if(document.getElementById(id)) document.getElementById(id).style.display = 'block';
+        // APP LOGIC
+        const app = {
+            //ROUTER
+            go(p){ window.location.hash = p; },
             
-            var header = document.getElementById('mainHeader');
-            var banner = document.getElementById('floatingBannerContainer');
-            
-            // Banner: Muncul di Kirim, Kontak, Akun
-            if(id === 'screenKirim' || id === 'screenKontak' || id === 'screenAkun') { banner.style.display = 'block'; loadBanners(); } 
-            else { banner.style.display = 'none'; }
+            init(){
+                window.onhashchange = () => this.render(window.location.hash.substring(1));
+                db.auth.getSession().then(r => {
+                    if(r.data.session){ U=r.data.session.user; this.getProf(); } else { this.render('login'); }
+                }).catch(e => { console.error(e); this.render('login'); });
+            },
 
-            if(id === 'screenLogin' || id === 'screenRegister' || id === 'screenReset') { header.style.display = 'none'; } 
-            else { header.style.display = 'flex'; }
-            
-            document.getElementById('menuPopup').classList.remove('active');
-        }
+            async getProf(){
+                let {data} = await db.from('profiles').select('*').eq('id', U.id).single();
+                if(data){ ROLE=data.role||'user'; ACTIVE=data.is_active===true; }
+                this.render('akun');
+                this.loadBan();
+            },
 
-        function navigateTo(page) { window.location.hash = page; }
-        window.onhashchange = () => { const page = window.location.hash.substring(1); if(page) renderPage(page); };
-        function renderPage(page) {
-            const map = { 'login':'screenLogin','register':'screenRegister','akun':'screenAkun','kirim':'screenKirim','kontak':'screenKontak','admin':'screenAdmin' };
-            let target = map[page] || (currentUser ? 'screenAkun' : 'screenLogin');
-            showScreen(target);
-            document.getElementById('headerTitle').innerText = page ? (page.charAt(0).toUpperCase() + page.slice(1)) : 'Akun';
-            if(page === 'akun' && currentUser) loadProfile();
-            if(page === 'kontak') loadContacts();
-            if(page === 'kirim') { loadContacts(); renderAvailableContacts(); }
-            if(page === 'admin') loadAdminDashboard();
-        }
-        function navigateHome() { navigateTo('akun'); }
-        function toggleMenu() { document.getElementById('menuPopup').classList.toggle('active'); }
+            render(p){
+                document.getElementById('loadScreen').style.display='none';
+                document.querySelectorAll('.page').forEach(e=>e.style.display='none');
+                
+                // Mapping halaman
+                const pName = (p||'login').charAt(0).toUpperCase()+p.slice(1);
+                const el = document.getElementById('page'+pName);
+                if(el) el.style.display='block'; else document.getElementById('pageLogin').style.display='block';
+                
+                document.getElementById('mainHead').style.display = (p=='login'||p=='register') ? 'none' : 'flex';
+                document.getElementById('bannerCont').style.display = (p=='kirim'||p=='kontak'||p=='akun') ? 'block' : 'none';
+                
+                // Menu Logic
+                const m = document.getElementById('menuContent');
+                let h = '';
+                if(!U){
+                    h = `<a class="menu-item" onclick="window.open('${LINK_NIAGA}')">Info Niaga</a>`;
+                    document.getElementById('guestView').style.display='block';
+                    document.getElementById('userView').style.display='none';
+                } else {
+                    document.getElementById('guestView').style.display='none';
+                    document.getElementById('userView').style.display='block';
+                    if(ROLE=='admin') h += `<a class="menu-item" onclick="app.go('admin')">Admin</a>`;
+                    if(ACTIVE) h += `<a class="menu-item" onclick="app.go('kirim')">Kirim WA</a>`;
+                    h += `<a class="menu-item" onclick="app.go('kontak')">Kontak</a>`;
+                    if(!ACTIVE) h += `<a class="menu-item highlight" onclick="alert('Hubungi Admin')">Aktivasi Akun</a>`;
+                    h += `<a class="menu-item" onclick="app.go('akun')">Akun</a>`;
+                    h += `<a class="menu-item" onclick="window.open('${LINK_NIAGA}')">Info Niaga</a>`;
+                    
+                    if(p=='akun') this.loadAkun();
+                    if(p=='kontak') this.loadC();
+                    if(p=='kirim') { this.loadC(); this.loadAvail(); }
+                    if(p=='admin') this.loadAdm();
+                }
+                m.innerHTML = h;
+                document.getElementById('menuBox').classList.remove('active');
+            },
 
-        // === AUTH ===
-        window.executeLogout = async function() {
-            try { await _supabase.auth.signOut(); } catch(e){}
-            currentUser = null; isActive = false; currentRole = 'user';
-            try { localStorage.clear(); } catch(e){}
-            // Pindah ke Login secara paksa tanpa alert
-            window.location.hash = 'login'; 
-            showScreen('screenLogin');
+            // AUTH
+            async login(){
+                const e=document.getElementById('inEmail').value, p=document.getElementById('inPass').value;
+                if(!e||!p) return alert("Isi email/pass");
+                const {data,error} = await db.auth.signInWithPassword({email:e,password:p});
+                if(error) return alert(error.message);
+                U=data.user;
+                await this.getProf();
+            },
+            async register(){
+                const u=document.getElementById('regUser').value, e=document.getElementById('regEmail').value, p=document.getElementById('regPass').value;
+                if(!u||!e||!p) return alert("Isi semua");
+                const {error} = await db.auth.signUp({email:e,password:p,options:{data:{username:u}}});
+                if(error) alert(error.message); 
+                else { alert("Sukses! Tunggu admin aktifkan."); this.go('login'); }
+            },
+            logout(){
+                // LANGSUNG PINDAH (ANTI HANG)
+                U=null; ACTIVE=false; ROLE='user';
+                db.auth.signOut(); // Fire & forget
+                this.go('login');
+            },
+
+            // AKUN
+            async loadAkun(){
+                if(!U) return;
+                const {data} = await db.from('profiles').select('*').eq('id',U.id).single();
+                if(data){
+                    document.getElementById('txtName').innerText = data.username || '-';
+                    document.getElementById('txtEmail').innerText = data.email || '-';
+                    document.getElementById('txtStatus').innerText = ACTIVE ? "AKTIF" : "NON-AKTIF";
+                    document.getElementById('txtStatus').className = ACTIVE ? "status-ok" : "status-no";
+                    document.getElementById('editWa').value = data.wa_number || '';
+                }
+            },
+            async updWa(){
+                await db.from('profiles').update({wa_number:document.getElementById('editWa').value}).eq('id',U.id);
+                alert("Update sukses");
+            },
+            async updPass(){
+                const p = document.getElementById('editPass').value;
+                if(!p) return;
+                const {error} = await db.auth.updateUser({password:p});
+                alert(error ? "Gagal" : "Sukses");
+            },
+            async delAcc(){
+                if(!confirm("Hapus akun?")) return;
+                await db.from('profiles').delete().eq('id',U.id);
+                this.logout();
+            },
+
+            // KONTAK
+            async loadC(){
+                const {data} = await db.from('contacts').select('*').eq('user_id',U.id);
+                CONTACTS = data||[];
+                this.drawC();
+            },
+            drawC(){
+                document.getElementById('listC').innerHTML = CONTACTS.map(c=>`
+                    <div class="card" style="padding:10px; display:flex; justify-content:space-between; align-items:center; margin-bottom:5px">
+                        <div><b>${c.name}</b> <small style="color:#666">${c.phone}</small></div>
+                        <button class="btn-red" style="width:auto; padding:2px 8px; font-size:12px" onclick="app.delC('${c.id}')">Hapus</button>
+                    </div>
+                `).join('');
+            },
+            async addC(){
+                const n=document.getElementById('cName').value, p=document.getElementById('cPhone').value, l=document.getElementById('cLoc').value;
+                if(!n||!p) return alert("Isi nama & hp");
+                await db.from('contacts').insert({user_id:U.id, name:n, phone:p, location:l});
+                this.loadC();
+            },
+            async delC(id){
+                await db.from('contacts').delete().eq('id',id);
+                this.loadC();
+            },
+
+            // KIRIM
+            loadAvail(){
+                document.getElementById('listAvail').innerHTML = CONTACTS.map(c=>`
+                    <div class="card" style="padding:10px; cursor:pointer; margin-bottom:5px" onclick="app.addTar('${c.id}')">${c.name}</div>
+                `).join('');
+            },
+            addTar(id){
+                const c = CONTACTS.find(x=>x.id==id);
+                if(TARGETS.find(x=>x.id==id)) return;
+                TARGETS.push(c);
+                this.drawTar();
+            },
+            drawTar(){
+                document.getElementById('cntNum').innerText = TARGETS.length;
+                document.getElementById('btnSend').style.display = TARGETS.length ? 'block' : 'none';
+                document.getElementById('listTarget').innerHTML = TARGETS.map((c,i)=>`
+                    <div style="background:white; padding:8px; border-radius:6px; margin-bottom:5px; display:flex; justify-content:space-between; font-size:14px">
+                        ${i+1}. ${c.name} <button class="btn-main" style="width:auto; padding:2px 10px; font-size:11px" onclick="app.sendOne(${i})">Kirim</button>
+                    </div>
+                `).join('');
+            },
+            async sendOne(i){
+                const msg = document.getElementById('msgText').value;
+                if(!msg) return alert("Pesan kosong");
+                const c = TARGETS[i];
+                window.open(`https://wa.me/${c.phone}?text=${encodeURIComponent(msg)}`, '_blank');
+                await db.from('activity_logs').insert({user_id:U.id, details: `Kirim ke ${c.name} (${c.phone})`});
+                TARGETS.splice(i,1);
+                this.drawTar();
+            },
+
+            // ADMIN
+            async loadAdm(){
+                const {data: u} = await db.from('profiles').select('id,username');
+                document.getElementById('logUser').innerHTML = '<option value="">Semua</option>' + (u||[]).map(x=>`<option value="${x.id}">${x.username}</option>`).join('');
+                this.getLog();
+                const {data: s} = await db.from('site_settings').select('*');
+                const en = s?.find(x=>x.key=='banner_enabled')?.value === 'true';
+                const sp = s?.find(x=>x.key=='slider_speed')?.value || 10;
+                document.getElementById('chkBan').checked = en;
+                document.getElementById('inSpeed').value = sp;
+                this.listBan();
+            },
+            async getLog(){
+                const uid = document.getElementById('logUser').value;
+                const dt = document.getElementById('logDate').value;
+                let q = db.from('activity_logs').select('created_at, details, profiles(username)').order('created_at',{ascending:false}).limit(100);
+                if(uid) q = q.eq('user_id', uid);
+                if(dt) q = q.gte('created_at', dt);
+                const {data} = await q;
+                document.getElementById('logBody').innerHTML = (data||[]).map(l=>`
+                    <tr>
+                        <td>${new Date(l.created_at).toLocaleString('id-ID')}</td>
+                        <td>${l.profiles?.username||'-'}</td>
+                        <td>${l.details}</td>
+                    </tr>
+                `).join('');
+            },
+            async setBanStat(v){ await db.from('site_settings').upsert({key:'banner_enabled', value:v?'true':'false'}); this.loadBan(); },
+            async setSpeed(){ await db.from('site_settings').upsert({key:'slider_speed', value:document.getElementById('inSpeed').value}); this.loadBan(); },
+            async addBan(){
+                await db.from('banners').insert({image_url:document.getElementById('inImg').value, target_url:document.getElementById('inLink').value});
+                this.listBan();
+            },
+            async listBan(){
+                const {data} = await db.from('banners').select('*');
+                document.getElementById('listBan').innerHTML = (data||[]).map(b=>`
+                    <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #eee; padding:5px">
+                        <img src="${b.image_url}" style="width:60px; height:30px; object-fit:cover; border-radius:4px">
+                        <button class="btn-red" style="width:auto; padding:2px 8px; font-size:10px" onclick="app.delBan('${b.id}')">Hapus</button>
+                    </div>
+                `).join('');
+            },
+            async delBan(id){ await db.from('banners').delete().eq('id',id); this.listBan(); },
+
+            // BANNER FRONTEND
+            async loadBan(){
+                const {data:s} = await db.from('site_settings').select('*');
+                const en = s?.find(x=>x.key=='banner_enabled')?.value === 'true';
+                const sp = s?.find(x=>x.key=='slider_speed')?.value || 10;
+                if(!en) return document.getElementById('bannerCont').style.display='none';
+                
+                const {data:b} = await db.from('banners').select('*').eq('is_active',true);
+                if(!b||b.length==0) return document.getElementById('bannerCont').style.display='none';
+
+                const t = document.getElementById('bannerTrack');
+                t.innerHTML = b.map(x=>`<img src="${x.image_url}" onclick="window.open('${x.target_url||'#'}')">`).join('');
+                t.innerHTML += t.innerHTML;
+                t.style.animation = 'none'; t.offsetHeight;
+                t.style.animation = `scroll ${sp}s linear infinite`;
+            }
         };
-        
-        async function handleLogin() { 
-            const email = document.getElementById('loginEmail').value, pass = document.getElementById('loginPass').value; if(!email||!pass) return alert("Isi!"); 
-            const { data, error } = await _supabase.auth.signInWithPassword({ email, password: pass }); 
-            if(error) return alert("Gagal: "+error.message); 
-            currentUser=data.user; 
-            const { data:prof } = await _supabase.from('profiles').select('*').eq('id',currentUser.id).single(); 
-            if(prof){ currentRole=prof.role||'user'; isActive=prof.is_active===true; } 
-            setupUI(); 
-        }
-        
-        _supabase.auth.onAuthStateChange((e) => { if(e==='SIGNED_OUT') executeLogout(); });
-
-        async function checkSession() { 
-            try { 
-                const {data:{user}} = await _supabase.auth.getUser(); 
-                if(user){ currentUser=user; const {data:prof} = await _supabase.from('profiles').select('*').eq('id',user.id).single(); if(prof){ currentRole=prof.role; isActive=prof.is_active; } } 
-                else { currentUser=null; } 
-                setupUI(); 
-            } catch(e) { currentUser=null; setupUI(); } 
-        }
-
-        function setupUI() {
-            // Reset Menu
-            const menuDiv = document.getElementById('dynamicMenu');
-            let html = '';
-            
-            // Logika Menu Sederhana
-            if(!currentUser) {
-                // Menu Tamu
-                html = '<span class="menu-item" onclick="window.open(\''+NIAGA_APP_URL+'\', \'_blank\')">Info Niaga</span>';
-            } else {
-                // Menu User/Admin
-                if (currentRole === 'admin') {
-                    html = '<span class="menu-item" onclick="navigateTo(\'admin\')">Admin</span>';
-                }
-                if(isActive) {
-                    html += '<span class="menu-item" onclick="navigateTo(\'kirim\')">Kirim WA</span>';
-                }
-                html += '<span class="menu-item" onclick="navigateTo(\'kontak\')">Kontak</span>';
-                if(!isActive) {
-                    html += '<span class="menu-item highlight" onclick="aktivasiAdmin()">Aktivasi Hubungi Admin</span>';
-                }
-                html += '<span class="menu-item" onclick="navigateTo(\'akun\')">Akun</span>';
-                html += '<span class="menu-item" onclick="window.open(\''+NIAGA_APP_URL+'\', \'_blank\')">Info Niaga</span>';
-            }
-            
-            menuDiv.innerHTML = html;
-            
-            // Render Page Logic
-            if(!currentUser) {
-                document.getElementById('akunGuest').style.display='block'; document.getElementById('akunUser').style.display='none';
-                renderPage('akun'); // Menampilkan halaman Akun (Guest View)
-            } else {
-                document.getElementById('akunGuest').style.display='none'; document.getElementById('akunUser').style.display='block';
-                if (currentRole === 'admin') renderPage('admin'); else renderPage('akun');
-            }
-        }
-        window.aktivasiAdmin = () => window.open('https://wa.me/6285161990373?text=Aktivasi%20Akun', '_blank');
-
-        // === LOGIC ===
-        async function loadProfile() { if(!currentUser) return; const {data} = await _supabase.from('profiles').select('*').eq('id',currentUser.id).single(); if(data){ document.getElementById('profUsername').innerText=data.username; document.getElementById('profEmail').innerText=data.email; document.getElementById('profStatus').innerText=isActive?"AKTIF":"NON-AKTIF"; document.getElementById('profStatus').className=isActive?"status-active":"status-banned"; document.getElementById('inactiveWarning').style.display=isActive?'none':'block'; }}
-        async function handleRegister() { const e=document.getElementById('regEmail').value, p=document.getElementById('regPass').value, u=document.getElementById('regUser').value; if(!e||!p||!u) return alert("Isi!"); await _supabase.auth.signUp({email:e, password:p, options:{data:{username:u}}}); alert("Sukses! Tunggu Admin."); navigateTo('login'); }
-        async function updateProfile() { const wa=document.getElementById('editWa').value; await _supabase.from('profiles').update({wa_number:wa}).eq('id',currentUser.id); alert("Update!"); }
-        async function updatePassword() { const p=document.getElementById('editPass').value; if(!p) return; await _supabase.auth.updateUser({password:p}); alert("Ok!"); }
-        async function updateNewPassword() { const p=document.getElementById('newPass').value; if(!p) return; await _supabase.auth.updateUser({password:p}); alert("Ok!"); executeLogout(); }
-        async function deleteAccount() { if(confirm("Hapus?")){ await _supabase.from('profiles').delete().eq('id',currentUser.id); executeLogout(); }}
-
-        // Kontak
-        async function loadContacts() { if(!currentUser) return; const {data} = await _supabase.from('contacts').select('*').eq('user_id',currentUser.id); allContacts=data||[]; renderContacts(); renderAvailableContacts(); }
-        function renderContacts() { document.getElementById('contactListContainer').innerHTML = allContacts.map(c=>`<div style="background:white; padding:10px; margin-bottom:5px; border-radius:8px; display:flex; justify-content:space-between; align-items:center;"><b>${c.name}</b> <span style="font-size:12px">${c.phone}</span> <button class="btn-danger" style="width:auto; padding:2px 5px; font-size:10px;" onclick="deleteContact('${c.id}')">X</button></div>`).join(''); }
-        async function addContact() { const n=document.getElementById('cName').value, p=document.getElementById('cPhone').value, l=document.getElementById('cLocation').value; if(!n||!p) return; await _supabase.from('contacts').insert({user_id:currentUser.id, name:n, phone:p, location:l}); loadContacts(); }
-        async function deleteContact(id) { await _supabase.from('contacts').delete().eq('id',id); loadContacts(); }
-        function renderAvailableContacts() { document.getElementById('availableContactsList').innerHTML = allContacts.map(c=>`<div style="background:white; padding:10px; margin-bottom:5px; border-radius:8px; cursor:pointer;" onclick="addToSendList('${c.id}')">${c.name}</div>`).join(''); }
-        function addToSendList(id) { const c=allContacts.find(x=>x.id==id); if(sendList.find(x=>x.id==id)) return; sendList.push(c); renderSendList(); }
-        function renderSendList() { document.getElementById('countSend').innerText=sendList.length; document.getElementById('btnSendNext').style.display=sendList.length?'block':'none'; document.getElementById('sendListDisplay').innerHTML=sendList.map((c,i)=>`<div style="background:white; padding:10px; border-radius:8px; margin-bottom:5px;">${i+1}. ${c.name} <button class="btn-primary" style="width:auto; padding:2px 5px; font-size:10px; float:right" onclick="sendSingle(${i})">Kirim</button></div>`).join(''); }
-        function sendNextInQueue() { if(!sendList.length) return; sendSingle(0); }
-        async function sendSingle(i) { 
-            const msg = document.getElementById('messageText').value; if(!msg) return alert("Pesan kosong"); 
-            const c = sendList[i]; 
-            window.open(`https://wa.me/${c.phone}?text=${encodeURIComponent(msg)}`, '_blank'); 
-            try { await _supabase.from('activity_logs').insert({ user_id: currentUser.id, details: `Kirim ke ${c.name} (${c.phone})` }); } catch(e){}
-            sendList.splice(i,1); renderSendList(); 
-        }
-
-        // === ADMIN ===
-        async function loadAdminDashboard() {
-            const { data: users } = await _supabase.from('profiles').select('id, username');
-            document.getElementById('logUserFilter').innerHTML = '<option value="">Semua</option>' + (users||[]).map(u=>`<option value="${u.id}">${u.username}</option>`).join('');
-            const { data: settings } = await _supabase.from('site_settings').select('*');
-            const speed = settings?.find(s=>s.key==='slider_speed')?.value || 5;
-            const enabled = settings?.find(s=>s.key==='banner_enabled')?.value === 'true';
-            document.getElementById('sliderSpeed').value = speed;
-            document.getElementById('toggleBanner').checked = enabled;
-            renderBannerList(); loadActivityLogs();
-        }
-        async function loadActivityLogs() {
-            const user = document.getElementById('logUserFilter').value;
-            const start = document.getElementById('logStartDate').value;
-            let query = _supabase.from('activity_logs').select('created_at, details, profiles(username)').order('created_at', {ascending:false}).limit(50);
-            if(user) query = query.eq('user_id', user);
-            if(start) query = query.gte('created_at', start);
-            const { data } = await query;
-            const tbody = document.querySelector('#activityLogTable tbody');
-            tbody.innerHTML = (data||[]).map(l => `<tr><td>${new Date(l.created_at).toLocaleString('id-ID')}</td><td>${l.profiles?.username||'-'}</td><td>${l.details}</td></tr>`).join('') || '<tr><td colspan="3">No Data</td></tr>';
-        }
-        async function toggleBannerStatus(isOn) { await _supabase.from('site_settings').upsert({key:'banner_enabled', value: isOn ? 'true' : 'false'}); loadBanners(); }
-        async function updateBannerSpeed() { const speed = document.getElementById('sliderSpeed').value || 5; await _supabase.from('site_settings').upsert({key:'slider_speed', value: speed}); loadBanners(); }
-        async function addBanner() { const img = document.getElementById('newBannerImg').value; const link = document.getElementById('newBannerLink').value; if(!img) return alert("URL Gambar wajib!"); await _supabase.from('banners').insert({image_url:img, target_url:link, is_active:true}); renderBannerList(); loadBanners(); }
-        async function renderBannerList() { const { data } = await _supabase.from('banners').select('*'); document.getElementById('bannerList').innerHTML = (data||[]).map(b=>`<div style="border-bottom:1px solid #eee; padding:5px; display:flex; justify-content:space-between; align-items:center;"><img src="${b.image_url}" style="width:60px; height:30px; object-fit:cover; border-radius:4px;"><button class="btn-danger" style="width:auto; padding:2px 8px; font-size:10px;" onclick="deleteBanner('${b.id}')">Hapus</button></div>`).join('') || 'Kosong'; }
-        async function deleteBanner(id) { await _supabase.from('banners').delete().eq('id',id); renderBannerList(); loadBanners(); }
-        async function loadBanners() {
-            const { data: settings } = await _supabase.from('site_settings').select('*');
-            const speed = settings?.find(s=>s.key==='slider_speed')?.value || 5;
-            const enabled = settings?.find(s=>s.key==='banner_enabled')?.value === 'true';
-            const container = document.getElementById('floatingBannerContainer');
-            if(!enabled) { container.style.display = 'none'; return; }
-            const { data: banners } = await _supabase.from('banners').select('*').eq('is_active',true).order('order_index');
-            if(!banners || banners.length === 0) { container.style.display = 'none'; return; }
-            const track = document.getElementById('bannerTrack');
-            track.innerHTML = banners.map(b=>`<img src="${b.image_url}" onclick="window.open('${b.target_url||'#'}')">`).join('');
-            track.innerHTML += track.innerHTML; 
-            track.style.animation = 'none'; track.offsetHeight; track.style.animation = '';
-            document.documentElement.style.setProperty('--speed', speed + 's');
-            track.style.animation = `scroll ${speed}s linear infinite`;
-        }
 
         // Init
-        checkSession();
+        app.init();
+        function toggleMenu(){ document.getElementById('menuBox').classList.toggle('active'); }
     </script>
 </body>
 </html>
