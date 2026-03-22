@@ -10,13 +10,10 @@
         :root { --primary: #25D366; --bg: #ece5dd; --danger: #dc3545; }
         body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; min-height: 100vh; }
         
-        /* LOAD SCREEN */
+        /* LOAD & HEADER */
         #loadScreen { position: fixed; inset:0; background: var(--bg); z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center; }
         .spinner { width:40px; height:40px; border:4px solid #ccc; border-top-color:var(--primary); border-radius:50%; animation:spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .btn-cancel { background:#ddd; border:none; padding:10px 20px; border-radius:20px; cursor:pointer; margin-top:20px; font-weight:bold; }
-        
-        /* HEADER */
         .header { background: var(--primary); color:white; padding:6px 15px; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:100; box-shadow:0 2px 5px rgba(0,0,0,0.1); min-height: 40px; }
         .menu-btn { background:none; border:none; color:white; font-size:16px; cursor:pointer; font-weight:bold; display:flex; align-items:center; gap:5px; }
         .header-title { font-size: 18px; font-weight: 700; font-style: italic; cursor: pointer; }
@@ -29,7 +26,7 @@
         /* BANNER */
         .banner-cont { display:none; position:sticky; top:40px; background:white; z-index:99; padding:8px 0; overflow:hidden; border-bottom:1px solid #eee; }
         .banner-track { display:flex; width:max-content; }
-        .banner-track img { height:80px; margin:0 10px; border-radius:6px; cursor:pointer; object-fit: cover; flex-shrink: 0; }
+        .banner-track img { height:80px; margin:0 10px; border-radius:6px; cursor:pointer; object-fit: cover; }
         @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
         .banner-track { will-change: transform; -webkit-backface-visibility: hidden; backface-visibility: hidden; }
         
@@ -41,25 +38,24 @@
         .btn-main { background:var(--primary); color:white; }
         .btn-sec { background:#e0e0e0; color:#333; }
         .btn-red { background:var(--danger); color:white; }
-        .pass-wrapper { position: relative; width: 100%; }
-        .pass-wrapper input { padding-right: 40px; width: 100%; }
-        .pass-icon { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #666; font-size: 18px; background: none; border: none; }
         
-        /* GRID & HELPERS */
+        /* PASSWORD */
+        .pass-wrapper { position: relative; width: 100%; }
+        .pass-wrapper input { padding-right: 40px; }
+        .pass-icon { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #666; font-size: 18px; background: none; border: none; padding: 0; }
+        
+        /* GRID */
         .grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
         .badge { background:#eee; padding:3px 8px; border-radius:10px; font-size:12px; font-weight:600; }
         .mb-10 { margin-bottom:10px; }
-        .status-ok { color:green; font-weight:bold; }
-        .status-no { color:red; font-weight:bold; }
+        .status-ok { color:green; font-weight:bold; } .status-no { color:red; font-weight:bold; }
         
-        /* CONTACT CARD */
+        /* CONTACT */
         .contact-card { background:white; padding:12px; border-radius:8px; margin-bottom:8px; border:1px solid #eee; }
         .contact-info h4 { margin:0 0 5px 0; font-size:15px; }
         .contact-info p { margin:0; font-size:12px; color:#555; }
         .contact-actions { display:flex; gap:15px; margin-top:10px; border-top:1px solid #eee; padding-top:10px; }
         .contact-actions button { padding:6px 12px; font-size:13px; width:auto; flex:1; }
-        
-        /* SEND LIST */
         .target-card { background:#f9f9f9; padding:8px 12px; border-radius:6px; margin-bottom:5px; display:flex; justify-content:space-between; font-size:14px; border:1px solid #eee; }
         
         /* MODAL */
@@ -67,53 +63,49 @@
         .modal-overlay.active { display: flex !important; }
         .modal-box { background:white; padding:20px; border-radius:10px; width:90%; max-width:400px; }
         
-        /* ADMIN LISTS */
+        /* ADMIN */
         .scroll-list-admin { max-height: 250px; overflow-y: auto; border: 1px solid #eee; border-radius: 6px; margin-top: 10px; }
         
-        /* USER Card Admin - FIXED */
+        /* USER Card - FIXED */
         .user-card { padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; }
         .user-card:last-child { border-bottom: none; }
         .user-card .u-email { font-weight: bold; color: #333; display:block; margin-bottom:4px; }
         .user-card .u-info { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top:5px; }
-        .user-card small { color: #666; display: block; }
+        .user-card small { color: #666; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .user-card .text-danger { color: var(--danger); font-weight: bold; }
         
-        /* SECURITY PANEL - NEW */
-        .security-card { border: 2px solid #dc3545; background: #fff0f0; }
-        .security-alert { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-        .security-alert h4 { color: #dc3545; margin:0; animation: blink 1s infinite; }
+        /* SECURITY PANEL */
+        .security-panel { border: 1px solid #ddd; }
+        .security-panel.danger { border: 2px solid var(--danger); background: #fff0f0; }
+        .activity-item { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-item.safe { border-left: 4px solid var(--primary); }
+        .activity-item.alert { border-left: 4px solid var(--danger); background: #fff0f0; }
+        .act-info { flex: 1; }
+        .act-info b { display: block; color: #333; }
+        .act-info small { color: #888; font-size: 11px; margin-top: 2px; display: block; }
+        .act-badge { background: #eee; padding: 2px 6px; border-radius: 4px; font-size: 10px; }
+        .act-badge.alert { background: var(--danger); color: white; animation: blink 1s infinite; }
         @keyframes blink { 50% { opacity: 0.5; } }
-        .ip-card { background: white; padding: 10px; border-radius: 5px; margin-bottom: 8px; border-left: 4px solid #dc3545; }
-        .ip-card.safe { border-left-color: var(--primary); }
         
-        /* TABLE ADMIN */
         table { width:100%; border-collapse:collapse; font-size:12px; }
         th, td { text-align:left; padding:8px; border-bottom:1px solid #eee; }
     </style>
 </head>
 <body>
 
-    <!-- LOAD SCREEN -->
-    <div id="loadScreen">
-        <div class="spinner"></div>
-        <p>Memuat...</p>
-        <button class="btn-cancel" onclick="app.go('login')">Batal</button>
-    </div>
+    <div id="loadScreen"><div class="spinner"></div><p>Memuat...</p><button class="btn-cancel" onclick="app.go('login')">Batal</button></div>
 
-    <!-- HEADER -->
     <div class="header" id="mainHead" style="display:none">
         <button class="menu-btn" onclick="toggleMenu()">☰ Menu</button>
         <span class="header-title" onclick="app.go('akun')">kirimWA</span>
         <div style="width:60px"></div>
-        <div class="menu-box" id="menuBox">
-            <div id="menuContent"></div>
-            <span class="menu-item logout" onclick="app.logout()">Logout</span>
-        </div>
+        <div class="menu-box" id="menuBox"><div id="menuContent"></div><span class="menu-item logout" onclick="app.logout()">Logout</span></div>
     </div>
 
-    <!-- BANNER -->
     <div class="banner-cont" id="bannerCont"><div class="banner-track" id="bannerTrack"></div></div>
 
-    <!-- HALAMAN LOGIN -->
+    <!-- LOGIN -->
     <div class="page" id="pageLogin">
         <div class="card" style="margin-top:20px; padding:0; overflow:hidden;">
             <img src="https://i.ibb.co.com/VWg4bJHp/Login-page-1.jpg" style="width:100%">
@@ -131,13 +123,13 @@
         </div>
     </div>
 
-    <!-- HALAMAN REGISTER -->
+    <!-- REGISTER -->
     <div class="page" id="pageRegister">
         <div class="card" style="margin-top:20px">
             <h2>Register</h2>
             <input type="text" id="regUser" placeholder="Username">
             <input type="email" id="regEmail" placeholder="Email">
-            <input type="text" id="regWa" placeholder="Nomor WA">
+            <input type="text" id="regWa" placeholder="Nomor WA (Wajib)">
             <div class="pass-wrapper">
                 <input type="password" id="regPass" placeholder="Password">
                 <button class="pass-icon" onclick="togglePass('regPass')">👁️</button>
@@ -147,89 +139,67 @@
         </div>
     </div>
 
-    <!-- HALAMAN AKUN -->
+    <!-- AKUN -->
     <div class="page" id="pageAkun">
         <h2>Akun Saya</h2>
-        <div id="guestView" class="card" style="text-align:center; display:none">
-            <h3>Selamat Datang</h3>
-            <button class="btn-main" onclick="app.go('login')">Login</button>
-        </div>
+        <div id="guestView" class="card" style="text-align:center; display:none"><h3>Selamat Datang</h3><button class="btn-main" onclick="app.go('login')">Login</button></div>
         <div id="userView" style="display:none">
             <div class="card">
-                <p><b>Username:</b> <span id="txtName">-</span></p>
-                <p><b>Email:</b> <span id="txtEmail">-</span></p>
-                <p><b>Status:</b> <span id="txtStatus">-</span></p>
+                <p><b>Username:</b> <span id="txtName">-</span></p><p><b>Email:</b> <span id="txtEmail">-</span></p><p><b>Status:</b> <span id="txtStatus">-</span></p>
                 <hr>
-                <input type="text" id="editWa" placeholder="Ubah WA">
-                <button class="btn-sec" onclick="app.updWa()">Simpan WA</button>
+                <input type="text" id="editWa" placeholder="Ubah WA"><button class="btn-sec" onclick="app.updWa()">Simpan WA</button>
                 <br><br>
                 <div class="pass-wrapper">
                     <input type="password" id="editPass" placeholder="Password Baru">
                     <button class="pass-icon" onclick="togglePass('editPass')">👁️</button>
                 </div>
                 <button class="btn-sec" onclick="app.updPass()">Simpan Pass</button>
-                <br><br>
-                <button class="btn-red" onclick="app.delAcc()">Hapus Akun</button>
+                <br><br><button class="btn-red" onclick="app.delAcc()">Hapus Akun</button>
             </div>
         </div>
     </div>
 
-    <!-- HALAMAN KONTAK -->
+    <!-- KONTAK -->
     <div class="page" id="pageKontak">
         <h2>Daftar Kontak</h2>
         <div class="card">
             <h4 style="margin:0 0 10px 0">Tambah Kontak Baru</h4>
-            <div class="grid-2">
-                <input type="text" id="cName" placeholder="Nama">
-                <input type="text" id="cPhone" placeholder="No HP">
-            </div>
-            <input type="text" id="cLoc" placeholder="Lokasi">
-            <button class="btn-main" onclick="app.addC()">Simpan Kontak</button>
+            <div class="grid-2"><input type="text" id="cName" placeholder="Nama"><input type="text" id="cPhone" placeholder="No HP"></div>
+            <input type="text" id="cLoc" placeholder="Lokasi"><button class="btn-main" onclick="app.addC()">Simpan Kontak</button>
         </div>
         <div class="card" style="padding:10px">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                <span class="badge">Total: <span id="totalContacts">0</span></span>
-            </div>
-            <div class="grid-2">
-                <input type="text" id="fName" placeholder="🔍 Cari Nama" onkeyup="app.searchContacts()">
-                <input type="text" id="fLoc" placeholder="📍 Cari Lokasi" onkeyup="app.searchContacts()">
-            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><span class="badge">Total: <span id="totalContacts">0</span></span></div>
+            <div class="grid-2"><input type="text" id="fName" placeholder="🔍 Cari Nama" onkeyup="app.searchContacts()"><input type="text" id="fLoc" placeholder="📍 Cari Lokasi" onkeyup="app.searchContacts()"></div>
         </div>
         <div id="listC"></div>
     </div>
 
-    <!-- HALAMAN KIRIM -->
+    <!-- KIRIM -->
     <div class="page" id="pageKirim">
         <h2>Kirim Pesan</h2>
-        <div class="card">
-            <textarea id="msgText" rows="2" placeholder="Tulis pesan..."></textarea>
-        </div>
+        <div class="card"><textarea id="msgText" rows="2" placeholder="Tulis pesan..."></textarea></div>
         <div class="card">
             <h4 style="margin:0 0 10px 0">Cari Penerima</h4>
-            <div class="grid-2 mb-10">
-                <input type="text" id="sName" placeholder="Nama" onkeyup="app.searchSend()">
-                <input type="text" id="sLoc" placeholder="Lokasi" onkeyup="app.searchSend()">
-            </div>
+            <div class="grid-2 mb-10"><input type="text" id="sName" placeholder="Nama" onkeyup="app.searchSend()"><input type="text" id="sLoc" placeholder="Lokasi" onkeyup="app.searchSend()"></div>
             <div id="sendAvailList" class="scroll-list-admin" style="max-height:180px"></div>
         </div>
         <div class="card">
-            <h4>List Pengiriman (<span id="cntNum">0</span>)</h4>
-            <div id="listTarget" class="mb-10"></div>
+            <h4>List Pengiriman (<span id="cntNum">0</span>)</h4><div id="listTarget" class="mb-10"></div>
             <button class="btn-main" id="btnSend" style="display:none" onclick="app.send()">Kirim ke urutan teratas</button>
         </div>
     </div>
 
-    <!-- HALAMAN ADMIN -->
+    <!-- ADMIN -->
     <div class="page" id="pageAdmin">
         <h2 style="color:var(--primary)">Admin Panel</h2>
         
-        <!-- SECURITY MONITOR - NEW -->
-        <div class="card security-card">
-            <div class="security-alert">
+        <!-- SECURITY MONITOR -->
+        <div class="card security-panel" id="securityCard">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
                 <h3>🛡️ Security Monitor</h3>
-                <span id="securityStatus" class="badge" style="background:#dc3545; color:white; display:none;">DANGER</span>
+                <span id="securityStatus" class="badge" style="display:none;">!</span>
             </div>
-            <p style="font-size:12px; color:#666">Mendeteksi login ganda (IP berbeda) secara bersamaan.</p>
+            <p style="font-size:12px; color:#666">Aktivitas user 1 jam terakhir. Merah = IP Ganda.</p>
             <div id="securityList" class="scroll-list-admin" style="max-height:300px; border:none;"></div>
             <button class="btn-sec" onclick="app.loadSecurity()" style="margin-top:10px">Refresh Data</button>
         </div>
@@ -239,60 +209,43 @@
             <h3>🎨 Banner Promosi</h3>
             <label><input type="checkbox" id="chkBan" onchange="app.setBanStat(this.checked)"> Aktifkan Banner</label>
             <hr style="border:none; border-top:1px solid #eee; margin:10px 0">
-            <div class="grid-2 mb-10">
-                <input type="number" id="inSpeed" value="5" onchange="app.setSpeed()">
-                <small style="align-self:center">detik</small>
-            </div>
+            <div class="grid-2 mb-10"><input type="number" id="inSpeed" value="5" onchange="app.setSpeed()"><small style="align-self:center">detik</small></div>
             <hr style="border:none; border-top:1px solid #eee; margin:10px 0">
             <h4>Tambah Banner</h4>
-            <input type="text" id="inImg" placeholder="URL Gambar">
-            <input type="text" id="inLink" placeholder="Link">
+            <input type="text" id="inImg" placeholder="URL Gambar"><input type="text" id="inLink" placeholder="Link">
             <button class="btn-sec" onclick="app.addBan()">Tambah</button>
             <div id="listBan" style="margin-top:10px"></div>
         </div>
 
-        <!-- LOG AKTIVITAS -->
+        <!-- LOG -->
         <div class="card">
-            <h3>📊 Log Aktivitas</h3>
-            <div class="grid-2 mb-10">
-                <div><small>Dari</small><input type="date" id="logStart" onchange="app.getLog()"></div>
-                <div><small>Sampai</small><input type="date" id="logEnd" onchange="app.getLog()"></div>
-            </div>
+            <h3>📊 Log Kirim Pesan</h3>
+            <div class="grid-2 mb-10"><div><small>Dari</small><input type="date" id="logStart" onchange="app.getLog()"></div><div><small>Sampai</small><input type="date" id="logEnd" onchange="app.getLog()"></div></div>
             <div class="scroll-list-admin"><table><thead><tr><th>Waktu</th><th>User</th><th>Aksi</th></tr></thead><tbody id="logBody"></tbody></table></div>
         </div>
 
-        <!-- USER LIST -->
+        <!-- USER -->
         <div class="card">
             <h3>👥 Data User</h3>
-            <div class="grid-2 mb-10">
-                <div><small>Dari</small><input type="date" id="usrStart" onchange="app.loadUsers()"></div>
-                <div><small>Sampai</small><input type="date" id="usrEnd" onchange="app.loadUsers()"></div>
-            </div>
+            <div class="grid-2 mb-10"><div><small>Dari</small><input type="date" id="usrStart" onchange="app.loadUsers()"></div><div><small>Sampai</small><input type="date" id="usrEnd" onchange="app.loadUsers()"></div></div>
             <div class="badge mb-10">Total: <span id="usrCount">0</span></div>
             <div id="userList" class="scroll-list-admin"></div>
         </div>
     </div>
 
-    <!-- MODAL EDIT -->
+    <!-- MODAL -->
     <div id="editModal" class="modal-overlay">
         <div class="modal-box">
             <h3>Edit Kontak</h3>
-            <input type="hidden" id="editId">
-            <input type="text" id="editName" placeholder="Nama">
-            <input type="text" id="editPhone" placeholder="No HP">
-            <input type="text" id="editLoc" placeholder="Lokasi">
-            <div class="grid-2" style="margin-top:15px">
-                <button class="btn-sec" onclick="closeModal()">Batal</button>
-                <button class="btn-main" onclick="app.saveEdit()">Simpan</button>
-            </div>
+            <input type="hidden" id="editId"><input type="text" id="editName" placeholder="Nama"><input type="text" id="editPhone" placeholder="No HP"><input type="text" id="editLoc" placeholder="Lokasi">
+            <div class="grid-2" style="margin-top:15px"><button class="btn-sec" onclick="closeModal()">Batal</button><button class="btn-main" onclick="app.saveEdit()">Simpan</button></div>
         </div>
     </div>
 
-    <!-- AUDIO ALERT -->
+    <!-- AUDIO -->
     <audio id="alertAudio" src="https://www.soundjay.com/buttons/sounds/button-09a.mp3" preload="auto"></audio>
 
     <script>
-        // KONFIG
         const S_URL = 'https://gfwygrlyoguyeycrzpdj.supabase.co';
         const S_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdmd3lncmx5b2d1eWV5Y3J6cGRqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5ODAxNzYsImV4cCI6MjA4OTU1NjE3Nn0.LLnonm_gDWfFvTGBg-9lhKTHZdpzz66aP5pRLXMnAnI';
         const LINK_NIAGA = 'https://google.com'; 
@@ -307,29 +260,18 @@
 
         const app = {
             go(p){ window.location.hash = p; },
-            
             init(){
                 window.onhashchange = () => this.render(window.location.hash.substring(1));
-                db.auth.getSession().then(r => {
-                    if(r.data.session){ U=r.data.session.user; this.getProf(); } else { this.render('login'); }
-                }).catch(e => { this.render('login'); });
+                db.auth.getSession().then(r => { if(r.data.session){ U=r.data.session.user; this.getProf(); } else { this.render('login'); } }).catch(e => { this.render('login'); });
             },
-
             async getProf(){
                 if(!U) return;
                 let {data} = await db.from('profiles').select('*').eq('id', U.id).single();
-                if(!data){
-                    await db.from('profiles').insert({ id: U.id, username: U.email.split('@')[0], email: U.email, role: 'user', is_active: false });
-                    let res = await db.from('profiles').select('*').eq('id', U.id).single();
-                    data = res.data;
-                }
+                if(!data){ await db.from('profiles').insert({ id: U.id, username: U.email.split('@')[0], email: U.email, role: 'user', is_active: false }); let res = await db.from('profiles').select('*').eq('id', U.id).single(); data = res.data; }
                 if(data){ ROLE=data.role||'user'; ACTIVE=data.is_active===true; }
-                this.render('akun');
-                this.loadBan();
-                // Track IP for security
+                this.render('akun'); this.loadBan();
                 this.trackSecurity();
             },
-
             render(p){
                 document.getElementById('loadScreen').style.display='none';
                 document.querySelectorAll('.page').forEach(e=>e.style.display='none');
@@ -338,201 +280,122 @@
                 if(el) el.style.display='block'; else document.getElementById('pageLogin').style.display='block';
                 document.getElementById('mainHead').style.display = (p=='login'||p=='register') ? 'none' : 'flex';
                 document.getElementById('bannerCont').style.display = (p=='kirim'||p=='kontak'||p=='akun') ? 'block' : 'none';
-                
                 const m = document.getElementById('menuContent');
                 let h = '';
-                if(!U){
-                    h = `<a class="menu-item" onclick="window.open('${LINK_NIAGA}')">Info Niaga</a>`;
-                    document.getElementById('guestView').style.display='block';
-                    document.getElementById('userView').style.display='none';
-                } else {
-                    document.getElementById('guestView').style.display='none';
-                    document.getElementById('userView').style.display='block';
-                    if(ROLE=='admin') h += `<a class="menu-item" onclick="app.go('admin')">Admin</a>`;
-                    if(ACTIVE) h += `<a class="menu-item" onclick="app.go('kirim')">Kirim WA</a>`;
-                    h += `<a class="menu-item" onclick="app.go('kontak')">Kontak</a>`;
-                    if(!ACTIVE) h += `<a class="menu-item highlight" onclick="window.open('https://wa.me/${ADMIN_WA}')">Aktivasi</a>`;
-                    h += `<a class="menu-item" onclick="app.go('akun')">Akun</a>`;
-                    h += `<a class="menu-item" onclick="window.open('${LINK_NIAGA}')">Info Niaga</a>`;
-                    if(p=='akun') this.loadAkun();
-                    if(p=='kontak') this.loadC();
-                    if(p=='kirim') { this.loadC(); this.searchSend(); }
-                    if(p=='admin') this.loadAdm();
+                if(!U){ h = `<a class="menu-item" onclick="window.open('${LINK_NIAGA}')">Info Niaga</a>`; document.getElementById('guestView').style.display='block'; document.getElementById('userView').style.display='none'; }
+                else { document.getElementById('guestView').style.display='none'; document.getElementById('userView').style.display='block';
+                    if(ROLE=='admin') h += `<a class="menu-item" onclick="app.go('admin')">Admin</a>`; if(ACTIVE) h += `<a class="menu-item" onclick="app.go('kirim')">Kirim WA</a>`; h += `<a class="menu-item" onclick="app.go('kontak')">Kontak</a>`; if(!ACTIVE) h += `<a class="menu-item highlight" onclick="window.open('https://wa.me/${ADMIN_WA}')">Aktivasi</a>`; h += `<a class="menu-item" onclick="app.go('akun')">Akun</a>`; h += `<a class="menu-item" onclick="window.open('${LINK_NIAGA}')">Info Niaga</a>`;
+                    if(p=='akun') this.loadAkun(); if(p=='kontak') this.loadC(); if(p=='kirim') { this.loadC(); this.searchSend(); } if(p=='admin') this.loadAdm();
                 }
-                m.innerHTML = h;
-                document.getElementById('menuBox').classList.remove('active');
+                m.innerHTML = h; document.getElementById('menuBox').classList.remove('active');
             },
 
             // AUTH
-            async login(){
-                try {
-                    const e=document.getElementById('inEmail').value, p=document.getElementById('inPass').value;
-                    if(!e||!p) return alert("Isi email/pass");
-                    const {data,error} = await db.auth.signInWithPassword({email:e,password:p});
-                    if(error) return alert(error.message);
-                    U=data.user;
-                    await this.getProf();
-                } catch(err) { alert("Error koneksi"); }
-            },
+            async login(){ try { const e=document.getElementById('inEmail').value, p=document.getElementById('inPass').value; if(!e||!p) return alert("Isi"); const {data,error} = await db.auth.signInWithPassword({email:e,password:p}); if(error) return alert(error.message); U=data.user; await this.getProf(); } catch(e) {} },
+            
+            // FIX: Menyertakan WA saat register
             async register(){
                 try {
                     const u=document.getElementById('regUser').value, e=document.getElementById('regEmail').value, p=document.getElementById('regPass').value, w=document.getElementById('regWa').value;
                     if(!u||!e||!p) return alert("Isi semua");
-                    const {error} = await db.auth.signUp({email:e,password:p,options:{data:{username:u, wa_number: w}}});
-                    if(error) alert(error.message); 
-                    else { alert("Sukses! Tunggu admin."); this.go('login'); }
-                } catch(err) { alert("Error koneksi"); }
+                    const {error} = await db.auth.signUp({
+                        email:e,
+                        password:p,
+                        options:{
+                            data:{
+                                username:u, 
+                                wa_number: w // FIX: Variabel w dimasukkan di sini
+                            }
+                        }
+                    });
+                    if(error) alert(error.message); else { alert("Sukses! Tunggu admin."); this.go('login'); }
+                } catch(e) {}
             },
             logout(){ U=null; ACTIVE=false; ROLE='user'; db.auth.signOut(); this.go('login'); },
 
             // AKUN
-            async loadAkun(){
-                if(!U) return;
-                const {data} = await db.from('profiles').select('*').eq('id',U.id).single();
-                if(data){
-                    document.getElementById('txtName').innerText = data.username || '-';
-                    document.getElementById('txtEmail').innerText = data.email || '-';
-                    document.getElementById('txtStatus').innerText = ACTIVE ? "AKTIF" : "NON-AKTIF";
-                    document.getElementById('txtStatus').className = ACTIVE ? "status-ok" : "status-no";
-                    document.getElementById('editWa').value = data.wa_number || '';
-                }
-            },
+            async loadAkun(){ if(!U) return; const {data} = await db.from('profiles').select('*').eq('id',U.id).single(); if(data){ document.getElementById('txtName').innerText = data.username || '-'; document.getElementById('txtEmail').innerText = data.email || '-'; document.getElementById('txtStatus').innerText = ACTIVE ? "AKTIF" : "NON-AKTIF"; document.getElementById('txtStatus').className = ACTIVE ? "status-ok" : "status-no"; document.getElementById('editWa').value = data.wa_number || ''; } },
             async updWa(){ try { await db.from('profiles').update({wa_number:document.getElementById('editWa').value}).eq('id',U.id); alert("Sukses"); } catch(e) {} },
             async updPass(){ try { const p = document.getElementById('editPass').value; if(!p) return; const {error} = await db.auth.updateUser({password:p}); alert(error?"Gagal":"Sukses"); } catch(e) {} },
             async delAcc(){ if(!confirm("Hapus?")) return; try { await db.from('profiles').delete().eq('id',U.id); this.logout(); } catch(e) {} },
 
             // KONTAK
             async loadC(){ const {data} = await db.from('contacts').select('*').eq('user_id',U.id); CONTACTS = data||[]; this.searchContacts(); },
-            searchContacts(){
-                const qN = document.getElementById('fName').value.toLowerCase(), qL = document.getElementById('fLoc').value.toLowerCase();
-                const filt = CONTACTS.filter(c => ((c.name||'').toLowerCase().includes(qN) && (c.location||'').toLowerCase().includes(qL)));
-                document.getElementById('totalContacts').innerText = filt.length;
-                document.getElementById('listC').innerHTML = filt.length ? filt.map(c => `
-                    <div class="contact-card"><div class="contact-info"><h4>${c.name}</h4><p>📱 ${c.phone}<br>📍 ${c.location||'-'}</p></div>
-                    <div class="contact-actions"><button class="btn-sec" onclick="app.editC('${c.id}')">Edit</button><button class="btn-red" onclick="app.delC('${c.id}')">Hapus</button></div></div>
-                `).join('') : '<p style="text-align:center;color:#999">Kosong</p>';
-            },
+            searchContacts(){ const qN = document.getElementById('fName').value.toLowerCase(), qL = document.getElementById('fLoc').value.toLowerCase(); const filt = CONTACTS.filter(c => ((c.name||'').toLowerCase().includes(qN) && (c.location||'').toLowerCase().includes(qL))); document.getElementById('totalContacts').innerText = filt.length; document.getElementById('listC').innerHTML = filt.length ? filt.map(c => `<div class="contact-card"><div class="contact-info"><h4>${c.name}</h4><p>📱 ${c.phone}<br>📍 ${c.location||'-'}</p></div><div class="contact-actions"><button class="btn-sec" onclick="app.editC('${c.id}')">Edit</button><button class="btn-red" onclick="app.delC('${c.id}')">Hapus</button></div></div>`).join('') : '<p style="text-align:center;color:#999">Kosong</p>'; },
             async addC(){ try { const n=document.getElementById('cName').value, p=document.getElementById('cPhone').value, l=document.getElementById('cLoc').value; if(!n||!p) return alert("Isi"); await db.from('contacts').insert({user_id:U.id, name:n, phone:p, location:l}); this.loadC(); } catch(e) {} },
             editC(id){ const c = CONTACTS.find(x=>x.id==id); if(!c) return; document.getElementById('editId').value = id; document.getElementById('editName').value = c.name; document.getElementById('editPhone').value = c.phone; document.getElementById('editLoc').value = c.location; document.getElementById('editModal').classList.add('active'); },
             async saveEdit(){ const id = document.getElementById('editId').value; const n = document.getElementById('editName').value; const p = document.getElementById('editPhone').value; const l = document.getElementById('editLoc').value; await db.from('contacts').update({name:n, phone:p, location:l}).eq('id',id); closeModal(); this.loadC(); },
             async delC(id){ if(!confirm("Hapus?")) return; await db.from('contacts').delete().eq('id',id); this.loadC(); },
 
             // KIRIM
-            searchSend(){
-                const qN = document.getElementById('sName').value.toLowerCase(), qL = document.getElementById('sLoc').value.toLowerCase();
-                const filt = CONTACTS.filter(c => ((c.name||'').toLowerCase().includes(qN) && (c.location||'').toLowerCase().includes(qL)));
-                document.getElementById('sendAvailList').innerHTML = filt.length ? filt.map(c => `<div class="target-card" style="cursor:pointer;border-radius:0" onclick="app.addTar('${c.id}')"><span>${c.name}</span><span style="font-size:10px;color:#666">${c.phone}</span></div>`).join('') : '<p style="text-align:center;color:#999;padding:10px;font-size:12px">Kosong</p>';
-            },
+            searchSend(){ const qN = document.getElementById('sName').value.toLowerCase(), qL = document.getElementById('sLoc').value.toLowerCase(); const filt = CONTACTS.filter(c => ((c.name||'').toLowerCase().includes(qN) && (c.location||'').toLowerCase().includes(qL))); document.getElementById('sendAvailList').innerHTML = filt.length ? filt.map(c => `<div class="target-card" style="cursor:pointer;border-radius:0" onclick="app.addTar('${c.id}')"><span>${c.name}</span><span style="font-size:10px;color:#666">${c.phone}</span></div>`).join('') : '<p style="text-align:center;color:#999;padding:10px">Kosong</p>'; },
             addTar(id){ const c = CONTACTS.find(x=>x.id==id); if(TARGETS.find(x=>x.id==id)) return; TARGETS.push(c); this.drawTar(); },
-            drawTar(){ document.getElementById('cntNum').innerText = TARGETS.length; document.getElementById('btnSend').style.display = TARGETS.length ? 'block' : 'none'; document.getElementById('listTarget').innerHTML = TARGETS.length ? TARGETS.map((c,i)=>`<div class="target-card"><span><b>${i+1}.</b> ${c.name}</span><button class="btn-red" onclick="app.remTar(${i})">X</button></div>`).join('') : '<p style="text-align:center;color:#999;font-size:12px">Pilih kontak di atas.</p>'; },
+            drawTar(){ document.getElementById('cntNum').innerText = TARGETS.length; document.getElementById('btnSend').style.display = TARGETS.length ? 'block' : 'none'; document.getElementById('listTarget').innerHTML = TARGETS.length ? TARGETS.map((c,i)=>`<div class="target-card"><span><b>${i+1}.</b> ${c.name}</span><button class="btn-red" onclick="app.remTar(${i})">X</button></div>`).join('') : '<p style="text-align:center;color:#999;font-size:12px">Pilih kontak.</p>'; },
             remTar(i){ TARGETS.splice(i,1); this.drawTar(); },
             async send(){ if(!TARGETS.length) return; const msg = document.getElementById('msgText').value; if(!msg) return alert("Pesan kosong"); const c = TARGETS[0]; window.open(`https://wa.me/${c.phone}?text=${encodeURIComponent(msg)}`); await db.from('activity_logs').insert({user_id:U.id, details: `Kirim ke ${c.name}`}); TARGETS.splice(0,1); this.drawTar(); },
 
             // ADMIN
             async loadAdm(){
-                const {data: s} = await db.from('site_settings').select('*');
-                const en = s?.find(x=>x.key=='banner_enabled')?.value === 'true';
-                document.getElementById('chkBan').checked = en;
-                document.getElementById('inSpeed').value = s?.find(x=>x.key=='slider_speed')?.value || 5;
-                this.listBan();
-                this.getLog();
-                this.loadUsers();
-                this.loadSecurity(); // Load Security
+                const {data: s} = await db.from('site_settings').select('*'); document.getElementById('chkBan').checked = s?.find(x=>x.key=='banner_enabled')?.value === 'true'; document.getElementById('inSpeed').value = s?.find(x=>x.key=='slider_speed')?.value || 5;
+                this.listBan(); this.getLog(); this.loadUsers(); this.loadSecurity();
             },
 
-            // SECURITY TRACKER - NEW
+            // SECURITY TRACKER
             async trackSecurity(){
-                if(ROLE !== 'admin') return; // Only admin triggers tracking? No, all users.
                 try {
-                    // Get IP
                     const ipRes = await fetch('https://api.ipify.org?format=json');
                     const ipData = await ipRes.json();
-                    const ip = ipData.ip;
-                    
-                    // Log to DB
-                    await db.from('security_logs').insert({ user_id: U.id, ip_address: ip, user_agent: navigator.userAgent });
-                } catch(e) { console.log("Security track error", e); }
+                    await db.from('security_logs').insert({ user_id: U.id, ip_address: ipData.ip, user_agent: navigator.userAgent });
+                } catch(e) { console.log("Track failed", e); }
             },
-
             async loadSecurity(){
                 const el = document.getElementById('securityList');
+                const card = document.getElementById('securityCard');
                 const status = document.getElementById('securityStatus');
                 el.innerHTML = '<p style="padding:10px;color:#666">Menganalisis...</p>';
                 
-                // Get logs last 1 hour
-                const oneHourAgo = new Date(Date.now() - 3600000).toISOString();
-                const { data: logs } = await db.from('security_logs').select('*, profiles(username)').gte('created_at', oneHourAgo).order('created_at', {ascending:false});
+                const { data: logs } = await db.from('security_logs').select('created_at, ip_address, profiles(username)').order('created_at', {ascending:false}).limit(20);
                 
-                if(!logs || logs.length === 0){ el.innerHTML = '<p style="padding:10px;color:#666">Tidak ada aktivitas terbaru.</p>'; status.style.display='none'; return; }
+                if(!logs || logs.length === 0){ el.innerHTML = '<p style="padding:10px;color:#666">Belum ada aktivitas.</p>'; card.classList.remove('danger'); status.style.display='none'; return; }
 
-                // Group by User
-                const userMap = {};
-                logs.forEach(log => {
-                    if(!userMap[log.user_id]) userMap[log.user_id] = { info: log.profiles, ips: new Set() };
-                    userMap[log.user_id].ips.add(log.ip_address);
-                });
-
-                // Find Suspicious (IP > 1)
-                let html = '';
+                const seenIPs = {};
                 let dangerFound = false;
+                let html = '';
 
-                Object.keys(userMap).forEach(uid => {
-                    const u = userMap[uid];
-                    const ipArray = Array.from(u.ips);
-                    const isSuspicious = ipArray.length > 1;
-                    
-                    if(isSuspicious) dangerFound = true;
+                logs.forEach(log => {
+                    const isDuplicate = seenIPs[log.user_id] && seenIPs[log.user_id] !== log.ip_address;
+                    if(isDuplicate) dangerFound = true;
+                    seenIPs[log.user_id] = log.ip_address;
 
                     html += `
-                        <div class="ip-card ${isSuspicious ? '' : 'safe'}">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                                <b>${u.info?.username || 'Unknown'}</b>
-                                ${isSuspicious ? `<span style="color:red;font-weight:bold">${ipArray.length} IPs</span>` : `<span style="color:green">OK</span>`}
+                        <div class="activity-item ${isDuplicate ? 'alert' : 'safe'}">
+                            <div class="act-info">
+                                <b>${log.profiles?.username || 'Unknown'}</b>
+                                <small>📍 ${log.ip_address} | 🕒 ${new Date(log.created_at).toLocaleTimeString('id-ID')}</small>
                             </div>
-                            <div style="font-size:11px; color:#555; margin-bottom:5px">
-                                ${ipArray.map(ip => `<span style="margin-right:5px">${ip}</span>`).join('')}
-                            </div>
-                            ${isSuspicious ? `<button class="btn-red" style="margin-top:5px;width:auto;padding:5px 10px;font-size:11px" onclick="app.kickUser('${uid}')">Kick User</button>` : ''}
+                            ${isDuplicate ? `<span class="act-badge alert">GANDA!</span>` : ''}
                         </div>
                     `;
                 });
 
                 el.innerHTML = html;
                 if(dangerFound){
+                    card.classList.add('danger');
                     status.style.display = 'inline-block';
-                    // Play Sound
                     try { document.getElementById('alertAudio').play(); } catch(e) {}
                 } else {
+                    card.classList.remove('danger');
                     status.style.display = 'none';
                 }
             },
 
-            async kickUser(uid){
-                if(!confirm("Kick user ini? User akan dipaksa logout.")) return;
-                // Set is_active = false
-                await db.from('profiles').update({is_active: false}).eq('id', uid);
-                alert("User telah di-kick.");
-                this.loadSecurity();
-            },
-
-            async getLog(){
-                const start = document.getElementById('logStart').value;
-                const end = document.getElementById('logEnd').value;
-                let q = db.from('activity_logs').select('created_at, details, profiles(username)').order('created_at',{ascending:false}).limit(12);
-                if(start) q = q.gte('created_at', start);
-                if(end) q = q.lte('created_at', end + ' 23:59:59');
-                const {data} = await q;
-                document.getElementById('logBody').innerHTML = (data||[]).map(l=>`<tr><td>${new Date(l.created_at).toLocaleString('id-ID')}</td><td>${l.profiles?.username||'-'}</td><td>${l.details}</td></tr>`).join('') || '<tr><td colspan="3">-</td></tr>';
-            },
+            async getLog(){ const start = document.getElementById('logStart').value, end = document.getElementById('logEnd').value; let q = db.from('activity_logs').select('created_at, details, profiles(username)').order('created_at',{ascending:false}).limit(12); if(start) q = q.gte('created_at', start); if(end) q = q.lte('created_at', end + " 23:59:59"); const {data} = await q; document.getElementById('logBody').innerHTML = (data||[]).map(l=>`<tr><td>${new Date(l.created_at).toLocaleString('id-ID')}</td><td>${l.profiles?.username||'-'}</td><td>${l.details}</td></tr>`).join('') || '<tr><td colspan="3">-</td></tr>'; },
             
-            // Load Users - FIX WA
+            // LOAD USERS - FIXED
             async loadUsers(){
-                const start = document.getElementById('usrStart').value;
-                const end = document.getElementById('usrEnd').value;
-                // Explicitly select wa_number
+                const start = document.getElementById('usrStart').value, end = document.getElementById('usrEnd').value;
                 let q = db.from('profiles').select('id, username, email, wa_number, created_at', { count: 'exact' }).order('created_at', {ascending:false});
-                if(start) q = q.gte('created_at', start);
-                if(end) q = q.lte('created_at', end + ' 23:59:59');
+                if(start) q = q.gte('created_at', start); if(end) q = q.lte('created_at', end + " 23:59:59");
                 
                 const {data, count} = await q.limit(7);
                 document.getElementById('usrCount').innerText = count || 0;
@@ -545,7 +408,8 @@
                         <div class="u-info">
                             <div>
                                 <small>👤 ${u.username || '-'}</small>
-                                <small>📱 ${u.wa_number || '-'}</small>
+                                <!-- FIX: Tampilkan peringatan jika WA kosong -->
+                                <small class="${u.wa_number ? '' : 'text-danger'}">📱 ${u.wa_number || '⚠️ No WA'}</small>
                             </div>
                             <div>
                                 <small>📅 Daftar</small>
@@ -559,17 +423,8 @@
             async setBanStat(v){ await db.from('site_settings').upsert({key:'banner_enabled', value:v?'true':'false'}); this.loadBan(); },
             async setSpeed(){ await db.from('site_settings').upsert({key:'slider_speed', value:document.getElementById('inSpeed').value}); this.loadBan(); },
             async addBan(){ await db.from('banners').insert({image_url:document.getElementById('inImg').value, target_url:document.getElementById('inLink').value}); this.listBan(); },
-            async listBan(){
-                const {data} = await db.from('banners').select('*');
-                document.getElementById('listBan').innerHTML = (data||[]).map(b=>`
-                    <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #eee; padding:5px">
-                        <img src="${b.image_url}" style="width:80px; height:40px; object-fit:cover; border-radius:4px">
-                        <button class="btn-red" style="width:auto; padding:2px 8px; font-size:10px" onclick="app.delBan('${b.id}')">Hapus</button>
-                    </div>
-                `).join('') || 'Belum ada';
-            },
+            async listBan(){ const {data} = await db.from('banners').select('*'); document.getElementById('listBan').innerHTML = (data||[]).map(b=>`<div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid #eee; padding:5px"><img src="${b.image_url}" style="width:80px; height:40px; object-fit:cover; border-radius:4px"><button class="btn-red" style="width:auto; padding:2px 8px; font-size:10px" onclick="app.delBan('${b.id}')">Hapus</button></div>`).join('') || 'Belum ada'; },
             async delBan(id){ await db.from('banners').delete().eq('id',id); this.listBan(); },
-
             async loadBan(){
                 const {data:s} = await db.from('site_settings').select('*');
                 if(s?.find(x=>x.key=='banner_enabled')?.value !== 'true') return document.getElementById('bannerCont').style.display='none';
