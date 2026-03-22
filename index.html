@@ -34,35 +34,26 @@
         .page { display:none; padding:15px; max-width:600px; margin:0 auto; padding-bottom:80px; }
         .card { background:white; padding:15px; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.1); margin-bottom:15px; }
         input, textarea, select { width:100%; padding:10px; margin:5px 0; border:1px solid #ddd; border-radius:6px; box-sizing:border-box; font-family:inherit; font-size:14px; }
-        
-        /* GLOBAL BUTTON & FIXES */
         button { cursor: pointer; padding:10px; border:none; border-radius:6px; font-weight:bold; font-family:inherit; font-size:14px; }
         .btn-main { background:var(--primary); color:white; width:100%; }
         .btn-sec { background:#e0e0e0; color:#333; width:100%; }
         .btn-red { background:var(--danger); color:white; width:100%; }
         
-        /* FIX: Password Icon (Mata) */
+        /* PASSWORD & AUTOFILL FIX */
         .pass-wrapper { position: relative; width: 100%; }
         .pass-wrapper input { padding-right: 40px; width: 100%; }
-        .pass-icon { 
-            position: absolute; 
-            right: 10px; 
-            top: 50%; 
-            transform: translateY(-50%); 
-            cursor: pointer; 
-            color: #666; 
-            font-size: 18px; 
-            background: none; 
-            border: none; 
-            padding: 0; 
-            width: auto; /* Penting! */
-            height: auto; 
-            margin: 0; 
+        .pass-icon { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #666; font-size: 18px; background: none; border: none; padding: 0; width: auto; }
+        
+        /* FIX: Override Browser Autofill Styles */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px white inset !important;
         }
         
-        /* FIX: Target Card (List Pengiriman) */
+        /* TARGET CARD */
         .target-card { background:#f9f9f9; padding:8px 12px; border-radius:6px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center; font-size:14px; border:1px solid #eee; }
-        /* Paksa tombol di dalam target-card agar kecil */
         .target-card .btn-red { width: auto; padding: 2px 8px; font-size: 11px; margin: 0; }
         
         /* GRID */
@@ -76,7 +67,6 @@
         .contact-info h4 { margin:0 0 5px 0; font-size:15px; }
         .contact-info p { margin:0; font-size:12px; color:#555; }
         .contact-actions { display:flex; gap:15px; margin-top:10px; border-top:1px solid #eee; padding-top:10px; }
-        /* Paksa tombol di contact actions agar proporsional */
         .contact-actions button { padding:6px 12px; font-size:13px; width: auto; flex: 1; }
         
         /* MODAL */
@@ -87,7 +77,7 @@
         /* ADMIN */
         .scroll-list-admin { max-height: 250px; overflow-y: auto; border: 1px solid #eee; border-radius: 6px; margin-top: 10px; }
         
-        /* USER Card - FIXED */
+        /* USER Card */
         .user-card { padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; }
         .user-card:last-child { border-bottom: none; }
         .user-card .u-email { font-weight: bold; color: #333; display:block; margin-bottom:4px; }
@@ -132,9 +122,10 @@
             <img src="https://i.ibb.co.com/VWg4bJHp/Login-page-1.jpg" style="width:100%">
             <div style="padding:20px">
                 <h2 style="text-align:center">Login</h2>
-                <input type="email" id="inEmail" placeholder="Email">
+                <!-- FIX: Add autocomplete="username" & "current-password" -->
+                <input type="email" id="inEmail" placeholder="Email" autocomplete="username">
                 <div class="pass-wrapper">
-                    <input type="password" id="inPass" placeholder="Password">
+                    <input type="password" id="inPass" placeholder="Password" autocomplete="current-password">
                     <button class="pass-icon" onclick="togglePass('inPass')">👁️</button>
                 </div>
                 <button class="btn-main" onclick="app.login()">Login</button>
@@ -148,11 +139,12 @@
     <div class="page" id="pageRegister">
         <div class="card" style="margin-top:20px">
             <h2>Register</h2>
-            <input type="text" id="regUser" placeholder="Username">
-            <input type="email" id="regEmail" placeholder="Email">
-            <input type="text" id="regWa" placeholder="Nomor WA (Wajib)">
+            <input type="text" id="regUser" placeholder="Username" autocomplete="off">
+            <input type="email" id="regEmail" placeholder="Email" autocomplete="off">
+            <!-- FIX: Add autocomplete="off" -->
+            <input type="text" id="regWa" placeholder="Nomor WA (Wajib)" autocomplete="off">
             <div class="pass-wrapper">
-                <input type="password" id="regPass" placeholder="Password">
+                <input type="password" id="regPass" placeholder="Password" autocomplete="new-password">
                 <button class="pass-icon" onclick="togglePass('regPass')">👁️</button>
             </div>
             <button class="btn-main" onclick="app.register()">Register</button>
@@ -168,10 +160,13 @@
             <div class="card">
                 <p><b>Username:</b> <span id="txtName">-</span></p><p><b>Email:</b> <span id="txtEmail">-</span></p><p><b>Status:</b> <span id="txtStatus">-</span></p>
                 <hr>
-                <input type="text" id="editWa" placeholder="Ubah WA"><button class="btn-sec" onclick="app.updWa()">Simpan WA</button>
+                <!-- FIX: Add autocomplete="off" to prevent browser filling email here -->
+                <input type="text" id="editWa" placeholder="Ubah WA" autocomplete="off">
+                <button class="btn-sec" onclick="app.updWa()">Simpan WA</button>
                 <br><br>
                 <div class="pass-wrapper">
-                    <input type="password" id="editPass" placeholder="Password Baru">
+                    <!-- FIX: Add autocomplete="new-password" -->
+                    <input type="password" id="editPass" placeholder="Password Baru" autocomplete="new-password">
                     <button class="pass-icon" onclick="togglePass('editPass')">👁️</button>
                 </div>
                 <button class="btn-sec" onclick="app.updPass()">Simpan Pass</button>
@@ -185,8 +180,8 @@
         <h2>Daftar Kontak</h2>
         <div class="card">
             <h4 style="margin:0 0 10px 0">Tambah Kontak Baru</h4>
-            <div class="grid-2"><input type="text" id="cName" placeholder="Nama"><input type="text" id="cPhone" placeholder="No HP"></div>
-            <input type="text" id="cLoc" placeholder="Lokasi"><button class="btn-main" onclick="app.addC()">Simpan Kontak</button>
+            <div class="grid-2"><input type="text" id="cName" placeholder="Nama" autocomplete="off"><input type="text" id="cPhone" placeholder="No HP" autocomplete="off"></div>
+            <input type="text" id="cLoc" placeholder="Lokasi" autocomplete="off"><button class="btn-main" onclick="app.addC()">Simpan Kontak</button>
         </div>
         <div class="card" style="padding:10px">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;"><span class="badge">Total: <span id="totalContacts">0</span></span></div>
@@ -317,7 +312,20 @@
             logout(){ U=null; ACTIVE=false; ROLE='user'; db.auth.signOut(); this.go('login'); },
 
             // AKUN
-            async loadAkun(){ if(!U) return; const {data} = await db.from('profiles').select('*').eq('id',U.id).single(); if(data){ document.getElementById('txtName').innerText = data.username || '-'; document.getElementById('txtEmail').innerText = data.email || '-'; document.getElementById('txtStatus').innerText = ACTIVE ? "AKTIF" : "NON-AKTIF"; document.getElementById('txtStatus').className = ACTIVE ? "status-ok" : "status-no"; document.getElementById('editWa').value = data.wa_number || ''; } },
+            async loadAkun(){ 
+                if(!U) return; 
+                const {data} = await db.from('profiles').select('*').eq('id',U.id).single(); 
+                if(data){ 
+                    document.getElementById('txtName').innerText = data.username || '-'; 
+                    document.getElementById('txtEmail').innerText = data.email || '-'; 
+                    document.getElementById('txtStatus').innerText = ACTIVE ? "AKTIF" : "NON-AKTIF"; 
+                    document.getElementById('txtStatus').className = ACTIVE ? "status-ok" : "status-no"; 
+                    // FIX: Clear input explicitly before setting value
+                    const waInput = document.getElementById('editWa');
+                    waInput.value = ''; // Clear first
+                    waInput.value = data.wa_number || ''; // Set correct value
+                } 
+            },
             async updWa(){ try { await db.from('profiles').update({wa_number:document.getElementById('editWa').value}).eq('id',U.id); alert("Sukses"); } catch(e) {} },
             async updPass(){ try { const p = document.getElementById('editPass').value; if(!p) return; const {error} = await db.auth.updateUser({password:p}); alert(error?"Gagal":"Sukses"); } catch(e) {} },
             async delAcc(){ if(!confirm("Hapus?")) return; try { await db.from('profiles').delete().eq('id',U.id); this.logout(); } catch(e) {} },
