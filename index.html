@@ -35,29 +35,31 @@
         .btn-main { background:var(--primary); color:white; width:100%; }
         .btn-sec { background:#e0e0e0; color:#333; width:100%; }
         .btn-red { background:var(--danger); color:white; width:100%; }
+        .btn-sm { width:auto; padding: 4px 10px; font-size: 11px; margin-left: 5px; }
         
         .pass-wrapper { position: relative; width: 100%; }
         .pass-wrapper input { padding-right: 40px; }
         .pass-icon { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; background: none; border: none; color: #666; font-size: 18px; width: auto; }
         
         .grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
-        .badge { background:#eee; padding:3px 8px; border-radius:10px; font-size:12px; font-weight:600; }
-        .status-ok { color:green; font-weight:bold; } .status-no { color:red; font-weight:bold; }
+        .badge { background:#eee; padding:3px 8px; border-radius:10px; font-size:12px; font-weight:600; display: inline-block; }
+        .status-ok { background:#d4edda; color:#155724; }
+        .status-no { background:#f8d7da; color:#721c24; }
         
-        .contact-card { background:white; padding:12px; border-radius:8px; margin-bottom:8px; border:1px solid #eee; }
-        .contact-actions { display:flex; gap:15px; margin-top:10px; border-top:1px solid #eee; padding-top:10px; }
-        .contact-actions button { padding:6px 12px; font-size:13px; width: auto; flex: 1; }
+        /* User Card Admin */
+        .user-card { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; }
+        .user-card:last-child { border-bottom: none; }
+        .user-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .user-info { flex: 1; }
+        .user-info small { color: #666; margin-right: 10px; }
+        .user-actions { text-align: right; }
+
+        /* Warning Banner */
+        .warning-box { background: #fff3cd; color: #856404; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: center; font-weight: 600; border: 1px solid #ffeeba; }
         
         .target-card { background:#f9f9f9; padding:8px 12px; border-radius:6px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center; font-size:14px; border:1px solid #eee; }
         .target-card .btn-red { width: auto; padding: 2px 8px; font-size: 11px; }
 
-        .user-card { padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; }
-        .user-card .u-info { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top:5px; }
-        .user-card small { color: #666; display: block; }
-        .user-card .text-danger { color: var(--danger); font-weight: bold; }
-        
-        .security-panel { border: 1px solid #ddd; }
-        .security-panel.danger { border: 2px solid var(--danger); background: #fff0f0; }
         .activity-item { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
         .activity-item.safe { border-left: 4px solid var(--primary); }
         .activity-item.alert { border-left: 4px solid var(--danger); background: #fff0f0; }
@@ -68,10 +70,7 @@
 </head>
 <body>
 
-    <div id="loadScreen">
-        <div class="spinner"></div><p>Memuat...</p>
-        <button onclick="document.getElementById('loadScreen').style.display='none'" style="margin-top:20px; background:#ddd; border:none; padding:10px 20px; border-radius:20px; cursor:pointer; font-weight:bold;">Lewati</button>
-    </div>
+    <div id="loadScreen"><div class="spinner"></div><p>Memuat...</p><button onclick="document.getElementById('loadScreen').style.display='none'" style="margin-top:20px; background:#ddd; border:none; padding:10px 20px; border-radius:20px; cursor:pointer; font-weight:bold;">Lewati</button></div>
 
     <div class="header" id="mainHead" style="display:none">
         <button class="menu-btn" onclick="document.getElementById('menuBox').classList.toggle('active')">☰ Menu</button>
@@ -124,6 +123,11 @@
         <h2>Akun Saya</h2>
         <div id="guestView" class="card" style="text-align:center; display:none"><h3>Selamat Datang</h3><button class="btn-main" onclick="app.go('login')">Login</button></div>
         <div id="userView" style="display:none">
+            <!-- WARNING BANNER -->
+            <div id="warnInactive" class="warning-box" style="display:none">
+                ⚠️ Akun Anda Belum Aktif.<br>Gunakan menu <b>"Aktivasi Akun"</b> di bawah ini.
+            </div>
+
             <div class="card">
                 <p><b>Username:</b> <span id="txtName">-</span></p><p><b>Email:</b> <span id="txtEmail">-</span></p><p><b>Status:</b> <span id="txtStatus">-</span></p>
                 <hr>
@@ -174,11 +178,10 @@
     <div class="page" id="pageAdmin">
         <h2 style="color:var(--primary)">Admin Panel</h2>
         
-        <div class="card security-panel" id="securityCard">
+        <div class="card" style="border:1px solid #ddd">
             <h3>🛡️ Security Monitor</h3>
-            <p style="font-size:12px; color:#666">Aktivitas 1 jam terakhir. Merah = IP Ganda.</p>
             <div id="securityList" style="max-height:200px; overflow-y:auto;"></div>
-            <button class="btn-sec" onclick="app.loadSecurity()">Refresh</button>
+            <button class="btn-sec" onclick="app.loadSecurity()" style="margin-top:10px">Refresh</button>
         </div>
 
         <div class="card">
@@ -201,7 +204,7 @@
             <h3>👥 Data User</h3>
             <div class="grid-2"><input type="date" id="usrStart" onchange="app.loadUsers()"><input type="date" id="usrEnd" onchange="app.loadUsers()"></div>
             <span class="badge">Total: <span id="usrCount">0</span></span>
-            <div id="userList" style="margin-top:10px; overflow-y:auto; max-height:250px;"></div>
+            <div id="userList" style="margin-top:10px; overflow-y:auto; max-height:300px;"></div>
         </div>
     </div>
 
@@ -263,7 +266,13 @@
                         if(ROLE=='admin') h += `<a class="menu-item" onclick="app.go('admin')">Admin</a>`;
                         if(ACTIVE) h += `<a class="menu-item" onclick="app.go('kirim')">Kirim WA</a>`;
                         h += `<a class="menu-item" onclick="app.go('kontak')">Kontak</a>`;
-                        if(!ACTIVE) h += `<a class="menu-item" style="background:#fff3cd; color:#856404" onclick="window.open('https://wa.me/${ADMIN_WA}')">Aktivasi</a>`;
+                        
+                        // FIX: Menu Inactive dengan Greeting
+                        if(!ACTIVE) {
+                            const msg = `Admin kirimWA, aktifkan Akun saya dengan email ${U.email}`;
+                            h += `<a class="menu-item" style="background:#fff3cd; color:#856404; font-weight:bold" onclick="window.open('https://wa.me/${ADMIN_WA}?text=${encodeURIComponent(msg)}')">Aktivasi Akun</a>`;
+                        }
+                        
                         h += `<a class="menu-item" onclick="app.go('akun')">Akun</a>`;
                         h += `<a class="menu-item" onclick="window.open('${LINK_NIAGA}')">Info Niaga</a>`;
                         
@@ -280,14 +289,28 @@
             logout(){ U=null; ACTIVE=false; ROLE='user'; db.auth.signOut(); this.go('login'); },
 
             // AKUN
-            async loadAkun(){ if(!U) return; const {data} = await db.from('profiles').select('*').eq('id',U.id).single(); if(data){ document.getElementById('txtName').innerText=data.username||'-'; document.getElementById('txtEmail').innerText=data.email||'-'; document.getElementById('txtStatus').innerText=ACTIVE?"AKTIF":"NON-AKTIF"; document.getElementById('txtStatus').className=ACTIVE?"status-ok":"status-no"; document.getElementById('editWa').value=data.wa_number||''; } },
-            async updWa(){ await db.from('profiles').update({wa_number:document.getElementById('editWa').value}).eq('id',U.id); alert("Update sukses"); }
-, async updPass(){ try { const p = document.getElementById('editPass').value; if(!p) return; const {error} = await db.auth.updateUser({password:p}); alert(error?"Gagal":"Sukses"); } catch(e) {} },
+            async loadAkun(){ 
+                if(!U) return; 
+                const {data} = await db.from('profiles').select('*').eq('id',U.id).single(); 
+                if(data){ 
+                    document.getElementById('txtName').innerText=data.username||'-'; 
+                    document.getElementById('txtEmail').innerText=data.email||'-'; 
+                    document.getElementById('txtStatus').innerText=ACTIVE?"AKTIF":"NON-AKTIF"; 
+                    document.getElementById('txtStatus').className=ACTIVE?"badge status-ok":"badge status-no"; 
+                    
+                    // Show Warning Banner
+                    document.getElementById('warnInactive').style.display = ACTIVE ? 'none' : 'block';
+                    
+                    document.getElementById('editWa').value=data.wa_number||''; 
+                } 
+            },
+            async updWa(){ await db.from('profiles').update({wa_number:document.getElementById('editWa').value}).eq('id',U.id); alert("Update sukses"); },
+            async updPass(){ try { const p = document.getElementById('editPass').value; if(!p) return; const {error} = await db.auth.updateUser({password:p}); alert(error?"Gagal":"Sukses"); } catch(e) {} },
             async delAcc(){ if(!confirm("Hapus?")) return; await db.from('profiles').delete().eq('id',U.id); this.logout(); },
 
             // KONTAK
             async loadC(){ const {data} = await db.from('contacts').select('*').eq('user_id',U.id); CONTACTS = data||[]; this.searchContacts(); },
-            searchContacts(){ const qN=(document.getElementById('fName').value||'').toLowerCase(), qL=(document.getElementById('fLoc').value||'').toLowerCase(); const filt=CONTACTS.filter(c=>(c.name||'').toLowerCase().includes(qN)&&(c.location||'').toLowerCase().includes(qL)); document.getElementById('totalContacts').innerText=filt.length; document.getElementById('listC').innerHTML=filt.length?filt.map(c=>`<div class="contact-card"><b>${c.name}</b><small>(${c.phone})</small><br><small>📍 ${c.location||'-'}</small><div class="contact-actions"><button class="btn-sec" onclick="app.editC('${c.id}')">Edit</button><button class="btn-red" onclick="app.delC('${c.id}')">Hapus</button></div></div>`).join(''):'<p style="text-align:center;color:#999">Kosong</p>'; },
+            searchContacts(){ const qN=(document.getElementById('fName').value||'').toLowerCase(), qL=(document.getElementById('fLoc').value||'').toLowerCase(); const filt=CONTACTS.filter(c=>(c.name||'').toLowerCase().includes(qN)&&(c.location||'').toLowerCase().includes(qL)); document.getElementById('totalContacts').innerText=filt.length; document.getElementById('listC').innerHTML=filt.length?filt.map(c=>`<div class="contact-card"><b>${c.name}</b><small>(${c.phone})</small><br><small>📍 ${c.location||'-'}</small><div style="display:flex;gap:10px;margin-top:8px"><button class="btn-sec" style="flex:1" onclick="app.editC('${c.id}')">Edit</button><button class="btn-red" style="flex:1" onclick="app.delC('${c.id}')">Hapus</button></div></div>`).join(''):'<p style="text-align:center;color:#999">Kosong</p>'; },
             async addC(){ const n=document.getElementById('cName').value, p=document.getElementById('cPhone').value, l=document.getElementById('cLoc').value; if(!n||!p) return alert("Isi"); await db.from('contacts').insert({user_id:U.id,name:n,phone:p,location:l}); this.loadC(); },
             editC(id){ const c=CONTACTS.find(x=>x.id==id); if(!c)return; document.getElementById('editId').value=id; document.getElementById('editName').value=c.name; document.getElementById('editPhone').value=c.phone; document.getElementById('editLoc').value=c.location; document.getElementById('editModal').style.display='flex'; },
             async saveEdit(){ await db.from('contacts').update({name:document.getElementById('editName').value,phone:document.getElementById('editPhone').value,location:document.getElementById('editLoc').value}).eq('id',document.getElementById('editId').value); document.getElementById('editModal').style.display='none'; this.loadC(); },
@@ -297,7 +320,7 @@
             searchSend(){ const qN=(document.getElementById('sName').value||'').toLowerCase(), qL=(document.getElementById('sLoc').value||'').toLowerCase(); const filt=CONTACTS.filter(c=>(c.name||'').toLowerCase().includes(qN)&&(c.location||'').toLowerCase().includes(qL)); document.getElementById('sendAvailList').innerHTML=filt.length?filt.map(c=>`<div class="target-card" style="cursor:pointer" onclick="app.addTar('${c.id}')"><span>${c.name}</span><small>${c.phone}</small></div>`).join(''):'<p style="text-align:center;color:#999;padding:10px">Kosong</p>'; },
             addTar(id){ const c=CONTACTS.find(x=>x.id==id); if(TARGETS.find(x=>x.id==id))return; TARGETS.push(c); this.drawTar(); },
             drawTar(){ document.getElementById('cntNum').innerText=TARGETS.length; document.getElementById('btnSend').style.display=TARGETS.length?'block':'none'; document.getElementById('listTarget').innerHTML=TARGETS.length?TARGETS.map((c,i)=>`<div class="target-card"><span>${i+1}. ${c.name}</span><button class="btn-red" onclick="app.remTar(${i})">X</button></div>`).join(''):'<p style="text-align:center;color:#999">Pilih kontak di atas.</p>'; },
-            remTar(i){ TARGETS.splice(i,1); this.drawTar(); },
+            remTar(i){ TARGETS.splice(i, 1); this.drawTar(); },
             async send(){ if(!TARGETS.length)return; const msg=document.getElementById('msgText').value; if(!msg)return alert("Pesan kosong"); const c=TARGETS[0]; window.open(`https://wa.me/${c.phone}?text=${encodeURIComponent(msg)}`); await db.from('activity_logs').insert({user_id:U.id,details:`Kirim ke ${c.name}`}); TARGETS.splice(0,1); this.drawTar(); },
 
             // ADMIN
@@ -305,10 +328,54 @@
             
             // SECURITY
             async trackSecurity(){ try{ const ipRes=await fetch('https://api.ipify.org?format=json'); const ipData=await ipRes.json(); await db.from('security_logs').insert({user_id:U.id,ip_address:ipData.ip}); }catch(e){} },
-            async loadSecurity(){ try{ const el=document.getElementById('securityList'); const card=document.getElementById('securityCard'); el.innerHTML='<p style="padding:10px;color:#666">Analisis...</p>'; const {data:logs}=await db.from('security_logs').select('created_at,ip_address,profiles(username)').order('created_at',{ascending:false}).limit(20); if(!logs||!logs.length){ el.innerHTML='<p style="padding:10px;color:#666">Belum ada aktivitas.</p>'; card.classList.remove('danger'); return; } const seen={}; let danger=false, h=''; logs.forEach(l=>{ const dup=seen[l.user_id]&&seen[l.user_id]!==l.ip_address; if(dup)danger=true; seen[l.user_id]=l.ip_address; h+=`<div class="activity-item ${dup?'alert':'safe'}"><div><b>${l.profiles?.username||'?'}</b><small>📍 ${l.ip_address} | 🕒 ${new Date(l.created_at).toLocaleTimeString('id-ID')}</small></div>${dup?'<span style="background:red;color:white;padding:2px 6px;border-radius:4px;font-size:10px">GANDA!</span>':''}</div>`; }); el.innerHTML=h; if(danger){ card.classList.add('danger'); try{document.getElementById('alertAudio').play()}catch(e){} }else{ card.classList.remove('danger'); } }catch(e){ console.log(e); } },
+            async loadSecurity(){ try{ const el=document.getElementById('securityList'); const card=document.getElementById('securityCard'); el.innerHTML='<p style="padding:10px;color:#666">Analisis...</p>'; const {data:logs}=await db.from('security_logs').select('created_at,ip_address,profiles(username)').order('created_at',{ascending:false}).limit(20); if(!logs||!logs.length){ el.innerHTML='<p style="padding:10px;color:#666">Belum ada aktivitas.</p>'; return; } const seen={}; let danger=false, h=''; logs.forEach(l=>{ const dup=seen[l.user_id]&&seen[l.user_id]!==l.ip_address; if(dup)danger=true; seen[l.user_id]=l.ip_address; h+=`<div class="activity-item ${dup?'alert':'safe'}"><div><b>${l.profiles?.username||'?'}</b><small>📍 ${l.ip_address} | 🕒 ${new Date(l.created_at).toLocaleTimeString('id-ID')}</small></div>${dup?'<span style="background:red;color:white;padding:2px 6px;border-radius:4px;font-size:10px">GANDA!</span>':''}</div>`; }); el.innerHTML=h; if(danger){ card.style.border='2px solid red'; try{document.getElementById('alertAudio').play()}catch(e){} }else{ card.style.border='1px solid #ddd'; } }catch(e){ console.log(e); } },
             
             async getLog(){ try{ const {data}=await db.from('activity_logs').select('created_at,details,profiles(username)').order('created_at',{ascending:false}).limit(12); document.getElementById('logBody').innerHTML=(data||[]).map(l=>`<tr><td>${new Date(l.created_at).toLocaleString('id-ID')}</td><td>${l.profiles?.username||'-'}</td><td>${l.details}</td></tr>`).join('')||'<tr><td colspan="3">-</td></tr>'; }catch(e){} },
-            async loadUsers(){ try{ const {data,count}=await db.from('profiles').select('id,username,email,wa_number,created_at',{count:'exact'}).order('created_at',{ascending:false}).limit(7); document.getElementById('usrCount').innerText=count||0; const el=document.getElementById('userList'); if(!data||!data.length){ el.innerHTML='<p style="padding:10px;color:#999">Tidak ada data.</p>'; return; } el.innerHTML=data.map(u=>`<div class="user-card"><b style="color:#333">📧 ${u.email}</b><div class="u-info"><div><small>👤 ${u.username||'-'}</small><small class="${u.wa_number?'':'text-danger'}">📱 ${u.wa_number||'⚠️ No WA'}</small></div><div><small>📅 Daftar</small><small><b>${new Date(u.created_at).toLocaleDateString('id-ID')}</b></small></div></div></div>`).join(''); }catch(e){ console.log(e); } },
+            
+            // LOAD USERS (FIX: Tombol Aktif/Non-Aktif)
+            async loadUsers(){
+                try {
+                    const {data,count}=await db.from('profiles').select('id,username,email,wa_number,is_active,created_at',{count:'exact'}).order('created_at',{ascending:false}).limit(10);
+                    document.getElementById('usrCount').innerText=count||0;
+                    const el=document.getElementById('userList');
+                    if(!data||!data.length){ el.innerHTML='<p style="padding:10px;color:#999">Tidak ada data.</p>'; return; }
+                    
+                    el.innerHTML = data.map(u => {
+                        const statusBadge = u.is_active 
+                            ? '<span class="badge status-ok">AKTIF</span>' 
+                            : '<span class="badge status-no">NON-AKTIF</span>';
+                        
+                        const actionBtn = u.is_active 
+                            ? `<button class="btn-red btn-sm" onclick="app.toggleUser('${u.id}', false)">Non-Aktifkan</button>`
+                            : `<button class="btn-main btn-sm" onclick="app.toggleUser('${u.id}', true)">Aktifkan</button>`;
+
+                        return `
+                        <div class="user-card">
+                            <div class="user-row">
+                                <div class="user-info">
+                                    <b style="color:#333">📧 ${u.email}</b>
+                                    <div style="margin-top:4px">${statusBadge}</div>
+                                </div>
+                                <div class="user-actions">${actionBtn}</div>
+                            </div>
+                            <div style="margin-top:5px; display:flex; justify-content:space-between; align-items:center">
+                                <small>👤 ${u.username||'-'}</small>
+                                <small class="${u.wa_number?'':'text-danger'}">📱 ${u.wa_number||'⚠️ No WA'}</small>
+                                <small>📅 ${new Date(u.created_at).toLocaleDateString('id-ID')}</small>
+                            </div>
+                        </div>
+                        `;
+                    }).join('');
+                } catch(e) { console.error(e); }
+            },
+
+            // ACTION: Toggle User Status
+            async toggleUser(uid, status){
+                try {
+                    await db.from('profiles').update({is_active: status}).eq('id', uid);
+                    this.loadUsers(); 
+                } catch(e) { alert("Gagal update status"); }
+            },
 
             async setBanStat(v){ await db.from('site_settings').upsert({key:'banner_enabled',value:v?'true':'false'}); this.loadBan(); },
             async setSpeed(){ await db.from('site_settings').upsert({key:'slider_speed',value:document.getElementById('inSpeed').value}); this.loadBan(); },
