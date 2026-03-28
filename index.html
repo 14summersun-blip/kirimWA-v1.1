@@ -49,7 +49,7 @@
         .status-ok { background:#d4edda; color:#155724; }
         .status-no { background:#f8d7da; color:#721c24; }
         
-        /* User Card Admin - FIXED */
+        /* User Card Admin */
         .user-card { padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; }
         .user-card:last-child { border-bottom: none; }
         .user-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
@@ -172,7 +172,7 @@
         <div class="card"><textarea id="msgText" rows="2" placeholder="Tulis pesan..."></textarea></div>
         <div class="card">
             <h4>Cari Penerima</h4>
-            <div class="grid-2"><input type="text" id="sName" placeholder="Nome" onkeyup="app.searchSend()"><input type="text" id="sLoc" placeholder="Lokasi" onkeyup="app.searchSend()"></div>
+            <div class="grid-2"><input type="text" id="sName" placeholder="Nama" onkeyup="app.searchSend()"><input type="text" id="sLoc" placeholder="Lokasi" onkeyup="app.searchSend()"></div>
             <div id="sendAvailList" style="max-height:150px; overflow-y:auto; margin-top:10px;"></div>
         </div>
         <div class="card">
@@ -314,7 +314,7 @@
             searchContacts(){ const qN=(document.getElementById('fName').value||'').toLowerCase(), qL=(document.getElementById('fLoc').value||'').toLowerCase(); const filt=CONTACTS.filter(c=>(c.name||'').toLowerCase().includes(qN)&&(c.location||'').toLowerCase().includes(qL)); document.getElementById('totalContacts').innerText=filt.length; document.getElementById('listC').innerHTML=filt.length?filt.map(c=>`<div class="contact-card"><b>${c.name}</b><small>(${c.phone})</small><br><small>📍 ${c.location||'-'}</small><div style="display:flex;gap:10px;margin-top:8px"><button class="btn-sec" style="flex:1" onclick="app.editC('${c.id}')">Edit</button><button class="btn-red" style="flex:1" onclick="app.delC('${c.id}')">Hapus</button></div></div>`).join(''):'<p style="text-align:center;color:#999">Kosong</p>'; },
             async addC(){ const n=document.getElementById('cName').value, p=document.getElementById('cPhone').value, l=document.getElementById('cLoc').value; if(!n||!p) return alert("Isi"); await db.from('contacts').insert({user_id:U.id,name:n,phone:p,location:l}); this.loadC(); },
             
-            // IMPORT VCF
+            // === FIX: IMPORT VCF WITH 0 to 62 CONVERSION ===
             handleVcf(input){
                 const file = input.files[0];
                 if (!file) return;
@@ -326,24 +326,55 @@
                 reader.readAsText(file);
             },
             async parseVcf(text){
-                // Simple Parser
                 const lines = text.split('\n');
                 let contacts = [];
-                let name = '', phone = '';
+                let name = '';
+                let phone = '';
                 
                 lines.forEach(line => {
                     line = line.trim();
-                    if(line.startsWith('FN:')) name = line.replace('FN:', '').trim();
-                    if(line.startsWith('TEL')) phone = line.split(':').pop().trim().replace(/[^0-9+]/g, ''); // Clean phone
                     
-                    // Jika sudah ketemu FN dan TEL, simpan (asumsi urutan FN lalu TEL)
-                    if(name && phone){
-                        contacts.push({ user_id: U.id, name: name, phone: phone, location: 'Imported' });
-                        name = ''; phone = ''; // reset
+                    // 1. RESET di BEGIN:VCARD
+                    if (line === 'BEGIN:VCARD') {
+                        name = '';
+                        phone = '';
+                    } 
+                    // 2. Simpan di END:VCARD
+                    else if (line === 'END:VCARD') {
+                        if (name && phone) {
+                            contacts.push({ user_id: U.id, name: name, phone: phone, location: 'Import' });
+                        }
+                    } 
+                    // 3. Parse Data
+                    else {
+                        // Handle Nama (FN)
+                        if (line.startsWith('FN')) {
+                            const parts = line.split(':');
+                            if (parts.length > 1) name = parts.slice(1).join(':').trim();
+                        }
+                        // Handle Telepon (TEL)
+                        else if (line.startsWith('TEL')) {
+                            if (!phone) {
+                                const parts = line.split(':');
+                                if (parts.length > 1) {
+                                    let rawPhone = parts.slice(1).join(':').trim();
+                                    
+                                    // A. Hapus semua karakter bukan angka
+                                    rawPhone = rawPhone.replace(/[^0-9]/g, '');
+                                    
+                                    // B. RENOVASI: Ubah 08xxx jadi 628xxx
+                                    if (rawPhone.startsWith('0')) {
+                                        rawPhone = '62' + rawPhone.substring(1);
+                                    }
+                                    
+                                    phone = rawPhone;
+                                }
+                            }
+                        }
                     }
                 });
 
-                // Filter duplikat berdasarkan nama+phone jika perlu, atau langsung insert
+                // Filter duplikat berdasarkan nomor HP
                 const unique = contacts.filter((v, i, a) => a.findIndex(t => t.phone === v.phone) === i); 
 
                 if(unique.length === 0) return alert("Tidak ada kontak valid ditemukan di file.");
@@ -376,7 +407,7 @@
             
             async getLog(){ try{ const {data}=await db.from('activity_logs').select('created_at,details,profiles(username)').order('created_at',{ascending:false}).limit(12); document.getElementById('logBody').innerHTML=(data||[]).map(l=>`<tr><td>${new Date(l.created_at).toLocaleString('id-ID')}</td><td>${l.profiles?.username||'-'}</td><td>${l.details}</td></tr>`).join('')||'<tr><td colspan="3">-</td></tr>'; }catch(e){} },
             
-            // LOAD USERS (Tombol Pasti Ada)
+            // LOAD USERS
             async loadUsers(){
                 try {
                     const {data,count}=await db.from('profiles').select('id,username,email,wa_number,is_active,created_at',{count:'exact'}).order('created_at',{ascending:false}).limit(10);
@@ -389,7 +420,6 @@
                             ? '<span class="badge status-ok">AKTIF</span>' 
                             : '<span class="badge status-no">NON-AKTIF</span>';
                         
-                        // Tombol Aksi
                         const actionBtn = u.is_active 
                             ? `<button class="btn-red btn-sm" onclick="app.toggleUser('${u.id}', false)">Non-Aktifkan</button>`
                             : `<button class="btn-main btn-sm" onclick="app.toggleUser('${u.id}', true)">Aktifkan</button>`;
@@ -415,7 +445,6 @@
                 } catch(e) { console.error(e); }
             },
 
-            // ACTION: Toggle Status
             async toggleUser(uid, status){
                 try {
                     await db.from('profiles').update({is_active: status}).eq('id', uid);
